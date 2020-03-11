@@ -28,7 +28,6 @@ Currently, all the code does is read a Gherkin file that describes a hierarchy o
 	            And I click "Apply to selected"
 	            Then I see "2 users changed"
 	            And I see "2 users selected"
-                And I see "2 users selected"
 
 
 ...and write a flat Gherkin file that can be run:
