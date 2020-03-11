@@ -70,4 +70,6 @@ Currently, all it does is read a nested (indented) Gherkin file...
     Then I see "2 users changed"
     And I see "2 users selected"
 
-              
+ The nested version eliminates repetition and therefore is a bit more compact. My hope is that is is more readable.
+ 
+ Far down the road, I think it would be awesome to run tests by walking the scenario tree which could be very eficient. If a scenario fails (in an action, not an assertion) then you can mark all descendant scenarios as failed without running them!
