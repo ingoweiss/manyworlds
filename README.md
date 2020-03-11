@@ -1,6 +1,6 @@
 Just playing around with the idea of Gherkin scenarios trees.
 
-Currently, all it does is read an Gherkin file that describes a hierarchy of szenarios using indentation ...
+Currently, all the code does is read a Gherkin file that describes a hierarchy of scenarios using indentation ...
 
 
 	Scenario: Users
