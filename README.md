@@ -1,4 +1,4 @@
-Just playing around with the idea of Gherkin scenarios trees.
+Just playing around with the idea of Gherkin scenario trees.
 
 Currently, all the code does is read a Gherkin file that describes a hierarchy of scenarios using indentation ...
 
