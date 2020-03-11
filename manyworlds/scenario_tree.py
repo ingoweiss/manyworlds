@@ -53,9 +53,27 @@ class ScenarioTree:
                 elif new_step.type == 'assertion':
                     current_scenario.add_assertion(new_step)
 
-
     def add_root(self, root):
         self.roots.append(root)
 
     def add_scenario(self, scenario):
         self.scenarios.append(scenario)
+
+    def flatten(self, file):
+        with open(file, 'w') as f:
+            for scenario in self.scenarios:
+                ancestry = [scenario]
+                parent = scenario.parent
+                while parent:
+                    ancestry.insert(0, parent)
+                    parent = parent.parent
+                f.write("Scenario: " + " > ".join([s.name for s in ancestry]) + "\n")
+                ancestry_actions = [a for actions in [s.actions for s in ancestry] for a in actions]
+                for action_num in range(len(ancestry_actions)):
+                    conjunction = ('When' if action_num == 0 else 'And')
+                    f.write(conjunction + " " + ancestry_actions[action_num].name + "\n")
+                for assertion_num in range(len(scenario.assertions)):
+                    conjunction = ('Then' if assertion_num == 0 else 'And')
+                    f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
+                f.write("\n")
+    
