@@ -1,6 +1,7 @@
 import re
 import pdb
 from manyworlds import scenario as sc
+from manyworlds import step as st
 
 class ScenarioTree:
     
@@ -26,22 +27,32 @@ class ScenarioTree:
             if scenario_match:
                 scenario_name = scenario_match['scenario_name']
                 scenario_level = len(scenario_match['indentation']) / ScenarioTree.INDENTATION
-                new_node = sc.Scenario(scenario_name, level=scenario_level, id=line_num)
-                current_scenarios[new_node.level] = new_node
-                self.add_scenario(new_node)
-                if new_node.is_root():
-                    self.add_root(new_node)
+                new_scenario = sc.Scenario(scenario_name, level=scenario_level, id=line_num)
+                current_scenarios[new_scenario.level] = new_scenario
+                self.add_scenario(new_scenario)
+                if new_scenario.is_root():
+                    self.add_root(new_scenario)
                 else:
-                    current_scenarios[new_node.level-1].add_child(new_node)
+                    current_scenarios[new_scenario.level-1].add_child(new_scenario)
             elif step_match:
                 step_level = len(step_match['indentation']) / ScenarioTree.INDENTATION
                 current_scenario = current_scenarios[step_level]
                 step_name = step_match['step_name']
                 step_type = step_match['step_type']
-                if step_type == 'When' or step_type == 'Given':
-                    current_scenario.add_action('I ' + step_name)
-                else:
-                    current_scenario.add_assertion('I ' + step_name)
+                if step_type in ['Given', 'When']:
+                    new_step_type = 'action'
+                elif step_type == 'Then':
+                    new_step_type = 'assertion'
+                elif step_type in ['And', 'But']:
+                    existing_steps = (current_scenario.actions + current_scenario.assertions)
+                    last_step = sorted(existing_steps, key=lambda s: s.id, reverse=False)[-1]
+                    new_step_type = last_step.type
+                new_step = st.Step('I ' + step_name, id=line_num, type=new_step_type)
+                if new_step.type == 'action':
+                    current_scenario.add_action(new_step)
+                elif new_step.type == 'assertion':
+                    current_scenario.add_assertion(new_step)
+
 
     def add_root(self, root):
         self.roots.append(root)

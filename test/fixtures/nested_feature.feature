@@ -20,6 +20,6 @@ Then I see "Users"
             
             Scenario: Bulk change permissions
             When I select "Edit" from "Permissions"
-            When I click "Apply to selected"
+            And I click "Apply to selected"
             Then I see "2 users changed"
-            Then I see "2 users selected"
+            And I see "2 users selected"
