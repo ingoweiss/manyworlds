@@ -1,6 +1,6 @@
-Just playing around with the idea of nested Gherkin scenarios
+Just playing around with the idea of Gherkin scenarios trees.
 
-Currently, all it does is read a nested (indented) Gherkin file...
+Currently, all it does is read an Gherkin file that describes a hierarchy of szenarios using indentation ...
 
 
 	Scenario: Users
@@ -72,4 +72,4 @@ Currently, all it does is read a nested (indented) Gherkin file...
 
  The nested version eliminates repetition and therefore is a bit more compact. My hope is that is is more readable.
  
- Far down the road, I think it would be awesome to run tests by walking the scenario tree which could be very eficient. If a scenario fails (in an action, not an assertion) then you can mark all descendant scenarios as failed without running them!
+ Far down the road, I think it would be awesome to run tests by walking the scenario tree which could be very efficient. If a scenario fails (in an action, not an assertion) then you can mark all descendant scenarios as failed without running them!
