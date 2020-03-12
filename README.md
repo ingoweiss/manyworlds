@@ -77,11 +77,9 @@ In order to reap the real benefits of scenario trees, however, the code needs to
 
 Ultimately, instead of each scenario having to run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
 
-The code can also create a graph visualizing the scenario tree using Mermaid:
+The code can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
 
     mv.ScenarioTree('tree.feature').graph('tree.mermaid.txt')
 
  
- The above writes the file 'tree.mermaid.txt' describing the scenario tree in the Mermaid syntax which can be used to create this graph:
- 
- ![Tree graph](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVERcbjAoVXNlcnMpXG4wIC0tPiAzKFNlbGVjdCB1c2VyKVxuMyAtLT4gNihEZXNlbGVjdCB1c2VyKVxuMyAtLT4gOShTZWxlY3QgYW5vdGhlciB1c2VyKVxuOSAtLT4gMTIoRGVzZWxlY3QgYWxsKVxuOSAtLT4gMTUoQnVsayBjaGFuZ2UgcGVybWlzc2lvbnMpXG5cdCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9 "Title")
+  ![Tree graph](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVERcbjAoVXNlcnMpXG4wIC0tPiAzKFNlbGVjdCB1c2VyKVxuMyAtLT4gNihEZXNlbGVjdCB1c2VyKVxuMyAtLT4gOShTZWxlY3QgYW5vdGhlciB1c2VyKVxuOSAtLT4gMTIoRGVzZWxlY3QgYWxsKVxuOSAtLT4gMTUoQnVsayBjaGFuZ2UgcGVybWlzc2lvbnMpXG5cdCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9 "Title")
