@@ -4,7 +4,7 @@ from manyworlds import scenario as sc
 from manyworlds import step as st
 
 class ScenarioTree:
-    
+
     SCENARIO_PATTERN = re.compile("^(?P<indentation> *)Scenario: (?P<scenario_name>.*)")
     STEP_PATTERN = re.compile("^(?P<indentation> *)(?P<step_type>Given|When|Then|And|But) (I )?(?P<step_name>.*)")
     INDENTATION = 4
@@ -76,4 +76,15 @@ class ScenarioTree:
                     conjunction = ('Then' if assertion_num == 0 else 'And')
                     f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
                 f.write("\n")
-    
+
+    def graph(self, file):
+        with open(file, 'w') as f:
+            f.write("graph TD\n")
+            for scenario in self.scenarios:
+                # actions = ['fa:fa-angle-down {}'.format(a) for a in scenario.actions]
+                # assertions = ['fa:fa-check {}'.format(a) for a in scenario.assertions]
+                if not scenario.parent:
+                    f.write('{}({})\n'.format(scenario.id, scenario.name))
+                else:
+                    f.write('{} --> {}({})\n'.format(scenario.parent.id, scenario.id, scenario.name))
+

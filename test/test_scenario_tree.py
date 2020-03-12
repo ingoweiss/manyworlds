@@ -17,3 +17,8 @@ def test_flatten():
     tree = st.ScenarioTree('test/fixtures/nested_feature.feature')
     tree.flatten('test/out/flat_feature.feature')
     filecmp.cmp('test/out/flat_feature.feature', 'test/fixtures/flat_feature.feature')
+
+def test_graph():
+    tree = st.ScenarioTree('test/fixtures/nested_feature.feature')
+    tree.graph('test/out/feature_graph.mermaid.txt')
+    filecmp.cmp('test/out/feature_graph.mermaid.txt', 'test/fixtures/feature_graph.mermaid.txt')

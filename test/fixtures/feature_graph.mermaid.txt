@@ -1,0 +1,7 @@
+graph TD
+0(Users)
+0 --> 3(Select user)
+3 --> 6(Deselect user)
+3 --> 9(Select another user)
+9 --> 12(Deselect all)
+9 --> 15(Bulk change permissions)
