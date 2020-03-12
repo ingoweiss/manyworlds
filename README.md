@@ -4,7 +4,7 @@ Currently, the code does little more than parse a file describing a hierarchy of
 
     mw.ScenarioTree('tree.feature').flatten('flat.feature')
 
-The above reads the file 'tree.feature' ...
+The above reads a file that looks like this ...
 
 	Scenario: Users
 	Given I go to "Users"
@@ -32,7 +32,7 @@ The above reads the file 'tree.feature' ...
 	            Then I see "2 users changed"
 	            And I see "2 users selected"
 
-... and writes the file 'flat.feature':
+... and writes a file that looks like this:
 
     Scenario: Users
     When I go to "Users"
