@@ -65,6 +65,10 @@ class ScenarioTree:
         else:
             self.flatten_relaxed(file)
 
+    # One scenario per scenario in tree, resulting in:
+    # 1. one when/then pair per scenario (generally recommended)
+    # 2. more scenarios
+    # 3. Duplication of actions
     def flatten_strict(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
@@ -79,6 +83,10 @@ class ScenarioTree:
                     f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
                 f.write("\n")
 
+    # One scenario per leaf scenario in tree, resulting in:
+    # 1. multiple when/then pairs per scenario (generally considered an anti-pattern)
+    # 2. fewer scenarios
+    # 3. No duplication of actions
     def flatten_relaxed(self, file):
         with open(file, 'w') as f:
             scenarios = [s for s in self.scenarios if s.is_leaf()]
