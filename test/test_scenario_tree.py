@@ -18,6 +18,11 @@ def test_flatten_strict():
     tree.flatten('test/out/scenarios_flat_strict.feature')
     filecmp.cmp('test/out/scenarios_flat_strict.feature', 'test/fixtures/scenarios_flat_strict.feature')
 
+def test_flatten_relaxed():
+    tree = st.ScenarioTree('test/fixtures/scenarios_tree.feature')
+    tree.flatten('test/out/scenarios_flat_relaxed.feature', strict=False)
+    filecmp.cmp('test/out/scenarios_flat_relaxed.feature', 'test/fixtures/scenarios_flat_relaxed.feature')
+
 def test_graph():
     tree = st.ScenarioTree('test/fixtures/scenarios_tree.feature')
     tree.graph('test/out/scenarios_graph.mermaid.txt')
