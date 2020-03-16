@@ -62,16 +62,13 @@ class ScenarioTree:
     def flatten(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
-                ancestry = [scenario]
-                parent = scenario.parent
-                while parent:
-                    ancestry.insert(0, parent)
-                    parent = parent.parent
-                f.write("Scenario: " + " > ".join([s.name for s in ancestry]) + "\n")
-                ancestry_actions = [a for actions in [s.actions for s in ancestry] for a in actions]
-                for action_num in range(len(ancestry_actions)):
+                lineage = scenario.ancestors()
+                lineage.append(scenario)
+                f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
+                lineage_actions = [a for actions in [s.actions for s in lineage] for a in actions]
+                for action_num in range(len(lineage_actions)):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + ancestry_actions[action_num].name + "\n")
+                    f.write(conjunction + " " + lineage_actions[action_num].name + "\n")
                 for assertion_num in range(len(scenario.assertions)):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
                     f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
