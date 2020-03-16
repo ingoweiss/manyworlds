@@ -27,4 +27,12 @@ class Scenario:
 
     def is_leaf(self):
         return len(self.children) == 0
-    
+
+    def ancestors(self):
+        ancestors = []
+        parent = self.parent
+        while parent:
+            ancestors.insert(0, parent)
+            parent = parent.parent
+        return ancestors
+        

@@ -59,22 +59,47 @@ class ScenarioTree:
     def add_scenario(self, scenario):
         self.scenarios.append(scenario)
 
-    def flatten(self, file):
+    def flatten(self, file, strict=True):
+        if strict:
+            self.flatten_strict(file)
+        else:
+            self.flatten_relaxed(file)
+
+    # One scenario per scenario in tree, resulting in:
+    # 1. one when/then pair per scenario (generally recommended)
+    # 2. more scenarios
+    # 3. Duplication of actions
+    def flatten_strict(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
-                ancestry = [scenario]
-                parent = scenario.parent
-                while parent:
-                    ancestry.insert(0, parent)
-                    parent = parent.parent
-                f.write("Scenario: " + " > ".join([s.name for s in ancestry]) + "\n")
-                ancestry_actions = [a for actions in [s.actions for s in ancestry] for a in actions]
-                for action_num in range(len(ancestry_actions)):
+                lineage = scenario.ancestors() + [scenario]
+                f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
+                lineage_actions = [a for actions in [s.actions for s in lineage] for a in actions]
+                for action_num in range(len(lineage_actions)):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + ancestry_actions[action_num].name + "\n")
+                    f.write(conjunction + " " + lineage_actions[action_num].name + "\n")
                 for assertion_num in range(len(scenario.assertions)):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
                     f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
+                f.write("\n")
+
+    # One scenario per leaf scenario in tree, resulting in:
+    # 1. multiple when/then pairs per scenario (generally considered an anti-pattern)
+    # 2. fewer scenarios
+    # 3. No duplication of actions
+    def flatten_relaxed(self, file):
+        with open(file, 'w') as f:
+            scenarios = [s for s in self.scenarios if s.is_leaf()]
+            for scenario in scenarios:
+                lineage = scenario.ancestors() + [scenario]
+                f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
+                for scenario in lineage:
+                    for action_num in range(len(scenario.actions)):
+                        conjunction = ('When' if action_num == 0 else 'And')
+                        f.write(conjunction + " " + scenario.actions[action_num].name + "\n")
+                    for assertion_num in range(len(scenario.assertions)):
+                        conjunction = ('Then' if assertion_num == 0 else 'And')
+                        f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
                 f.write("\n")
 
     def graph(self, file):
