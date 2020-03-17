@@ -72,12 +72,16 @@ class ScenarioTree:
     def flatten_strict(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
-                lineage = scenario.ancestors() + [scenario]
+                ancestors = scenario.ancestors()
+                lineage = ancestors + [scenario]
                 f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
-                lineage_actions = [a for actions in [s.actions for s in lineage] for a in actions]
-                for action_num in range(len(lineage_actions)):
+                ancestor_actions = [a for actions in [s.actions for s in ancestors] for a in actions]
+                for action_num in range(len(ancestor_actions)):
+                    conjunction = ('Given' if action_num == 0 else 'And')
+                    f.write(conjunction + " " + ancestor_actions[action_num].name + "\n")
+                for action_num in range(len(scenario.actions)):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + lineage_actions[action_num].name + "\n")
+                    f.write(conjunction + " " + scenario.actions[action_num].name + "\n")
                 for assertion_num in range(len(scenario.assertions)):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
                     f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")

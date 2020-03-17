@@ -27,3 +27,4 @@ When I select "Edit" from "Permissions"
 And I click "Apply to selected"
 Then I see "2 users changed"
 And I see "2 users selected"
+

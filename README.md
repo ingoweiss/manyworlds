@@ -8,31 +8,31 @@ I created this project to explore this concept. Currently, it does little more t
 
 The above reads a file that looks like this ...
 
-	Scenario: Users
-	When I go to "Users"
-	Then I see "Users"
+    Scenario: Users
+    When I go to "Users"
+    Then I see "Users"
     
-	    Scenario: Select user
-	    When I select user "Ben"
-	    Then I see "1 user selected"
+        Scenario: Select user
+        When I select user "Ben"
+        Then I see "1 user selected"
     
-	        Scenario: Deselect user
-	        When I deselect user "Ben"
-	        Then I see "0 users selected"
+            Scenario: Deselect user
+            When I deselect user "Ben"
+            Then I see "0 users selected"
         
-	        Scenario: Select another user
-	        When I select user "Alice"
-	        Then I see "2 users selected"
+            Scenario: Select another user
+            When I select user "Alice"
+            Then I see "2 users selected"
         
-	            Scenario: Deselect all
-	            When I click "Deselect all"
-	            Then I see "0 users selected"
+                Scenario: Deselect all
+                When I click "Deselect all"
+                Then I see "0 users selected"
             
-	            Scenario: Bulk change permissions
-	            When I select "Edit" from "Permissions"
-	            And I click "Apply to selected"
-	            Then I see "2 users changed"
-	            And I see "2 users selected"
+                Scenario: Bulk change permissions
+                When I select "Edit" from "Permissions"
+                And I click "Apply to selected"
+                Then I see "2 users changed"
+                And I see "2 users selected"
 
 ... and writes a file that looks like this:
 
@@ -41,34 +41,34 @@ The above reads a file that looks like this ...
     Then I see "Users"
     
     Scenario: Users > Select user
-    When I go to "Users"
-    And I select user "Ben"
+    Given I go to "Users"
+    When I select user "Ben"
     Then I see "1 user selected"
     
     Scenario: Users > Select user > Deselect user
-    When I go to "Users"
+    Given I go to "Users"
     And I select user "Ben"
-    And I deselect user "Ben"
+    When I deselect user "Ben"
     Then I see "0 users selected"
     
     Scenario: Users > Select user > Select another user
-    When I go to "Users"
+    Given I go to "Users"
     And I select user "Ben"
-    And I select user "Alice"
+    When I select user "Alice"
     Then I see "2 users selected"
     
     Scenario: Users > Select user > Select another user > Deselect all
-    When I go to "Users"
+    Given I go to "Users"
     And I select user "Ben"
     And I select user "Alice"
-    And I click "Deselect all"
+    When I click "Deselect all"
     Then I see "0 users selected"
     
     Scenario: Users > Select user > Select another user > Bulk change permissions
-    When I go to "Users"
+    Given I go to "Users"
     And I select user "Ben"
     And I select user "Alice"
-    And I select "Edit" from "Permissions"
+    When I select "Edit" from "Permissions"
     And I click "Apply to selected"
     Then I see "2 users changed"
     And I see "2 users selected"
