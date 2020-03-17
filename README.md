@@ -1,8 +1,8 @@
 Just playing around with the idea of scenario trees.
 
-I've been frustrated with the amount of repetition and verbosity in automated tests (especially when using Gherkin syntax) for a long time, and felt that some of this could be addressed if behavior would be described in the form of a (decision) tree of scenarios. Each scenario in the tree would have a name, a set of actions ('When ...') and a set of assertions ('Then ...') just like regular scenarios. 'Given...' steps, however, are no longer needed since the 'Given' state is nothing more than the accumulative effect of a scenario's chain of ancestor scenarios.
+Having been frustrated with the amount of repetition and verbosity in automated tests (especially when using Gherkin syntax) for a long time, I felt that some of this could be addressed if behavior would be described in the form of a (decision) tree of scenarios. Each scenario in the tree would have a name, a set of actions ('When ...') and a set of assertions ('Then ...') just like regular scenarios. 'Given...' steps, however, would no longer be needed since the 'Given' state would be nothing more than the accumulative effect of each scenario's chain of ancestor scenarios.
 
-I created this project to explore this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
+The purpose of this project is to explore this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
 
     mw.ScenarioTree('tree.feature').flatten('flat.feature')
 
@@ -73,7 +73,7 @@ The above reads a file that looks like this ...
     Then I see "2 users changed"
     And I see "2 users selected"
 
-The nested version is significantly shorter by eliminating repetition. My hope is that is is more structured and readable. 
+The nested version is significantly shorter by eliminating repetition. My hope is that it is also more structured and readable. 
 
 In order to reap the full benefits of scenario trees, however, the test runner needs to be able to walk the scenario tree which is what I would like to explore next. This could be very efficient because if a scenario fails (in an action, not an assertion) then all it's descendant scenarios can be marked as failed without running them!
 
