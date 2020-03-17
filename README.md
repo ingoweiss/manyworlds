@@ -73,11 +73,11 @@ The above reads a file that looks like this ...
     Then I see "2 users changed"
     And I see "2 users selected"
 
-The nested version is significantly shorter by eliminating repetition. My hope is that is is more structured and readable. Both could already provide some benefits.
+The nested version is significantly shorter by eliminating repetition. My hope is that is is more structured and readable. 
 
 In order to reap the full benefits of scenario trees, however, the test runner needs to be able to walk the scenario tree which is what I would like to explore next. This could be very efficient because if a scenario fails (in an action, not an assertion) then all it's descendant scenarios can be marked as failed without running them!
 
-Ultimately, instead of each scenario having to run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
+Ultimately, instead of each scenario having to re-run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
 
 The library can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
 
