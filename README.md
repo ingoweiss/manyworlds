@@ -1,13 +1,15 @@
 Just playing around with the idea of scenario trees.
 
-Currently, the code does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
+I've been frustrated with the amount of repetition and verbosity in automated tests (especially when using Gherkin syntax) for a long time, and felt that some of this could be addressed if behavior would be described in the form of a (decision) tree of scenarios. Each scenario in the tree would have a name, a set of actions ('When ...') and a set of assertions ('Then ...') just like regular scenarios. 'Given...' steps, however, are no longer needed since the 'Given' state is nothing more than the accumulative effect of a scenario's chain of ancestor scenarios.
+
+I created this project to explore this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
 
     mw.ScenarioTree('tree.feature').flatten('flat.feature')
 
 The above reads a file that looks like this ...
 
 	Scenario: Users
-	Given I go to "Users"
+	When I go to "Users"
 	Then I see "Users"
     
 	    Scenario: Select user
@@ -71,13 +73,13 @@ The above reads a file that looks like this ...
     Then I see "2 users changed"
     And I see "2 users selected"
 
-The nested version eliminates repetition and therefore is a bit more compact. My hope is that is is more structured and readable. Both could already provide some benefits.
+The nested version is significantly shorter by eliminating repetition. My hope is that is is more structured and readable. Both could already provide some benefits.
 
-In order to reap the real benefits of scenario trees, however, the code needs to be able to run tests by walking the scenario tree which is what I would like to explore next. This could be very efficient because if a scenario fails (in an action, not an assertion) then all it's descendant scenarios can be marked as failed without running them!
+In order to reap the full benefits of scenario trees, however, the test runner needs to be able to walk the scenario tree which is what I would like to explore next. This could be very efficient because if a scenario fails (in an action, not an assertion) then all it's descendant scenarios can be marked as failed without running them!
 
 Ultimately, instead of each scenario having to run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
 
-The code can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
+The library can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
 
     mv.ScenarioTree('tree.feature').graph('tree.mermaid.txt')
 
