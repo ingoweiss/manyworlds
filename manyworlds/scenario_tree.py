@@ -1,7 +1,7 @@
 import re
 import pdb
-from manyworlds import scenario as sc
-from manyworlds import step as st
+from manyworlds.scenario import Scenario
+from manyworlds.step import Step
 
 class ScenarioTree:
 
@@ -27,7 +27,7 @@ class ScenarioTree:
             if scenario_match:
                 scenario_name = scenario_match['scenario_name']
                 scenario_level = len(scenario_match['indentation']) / ScenarioTree.INDENTATION
-                new_scenario = sc.Scenario(scenario_name, level=scenario_level, id=line_num)
+                new_scenario = Scenario(scenario_name, level=scenario_level, id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
                 if new_scenario.is_root():
@@ -47,7 +47,7 @@ class ScenarioTree:
                     existing_steps = (current_scenario.actions + current_scenario.assertions)
                     last_step = sorted(existing_steps, key=lambda s: s.id, reverse=False)[-1]
                     new_step_type = last_step.type
-                new_step = st.Step('I ' + step_name, id=line_num, type=new_step_type)
+                new_step = Step('I ' + step_name, id=line_num, type=new_step_type)
                 if new_step.type == 'action':
                     current_scenario.add_action(new_step)
                 elif new_step.type == 'assertion':
