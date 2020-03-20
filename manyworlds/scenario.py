@@ -1,5 +1,5 @@
 class Scenario:
-    
+
     def __init__(self, name, level=None, id=None):
         self.id = id
         self.name = name
@@ -15,13 +15,13 @@ class Scenario:
     def add_child(self, child):
         self.children.append(child)
         child.set_parent(self)
-    
+
     def add_action(self, action):
         self.actions.append(action)
-    
+
     def add_assertion(self, assertion):
         self.assertions.append(assertion)
-    
+
     def set_parent(self, parent):
         self.parent = parent
 
@@ -35,4 +35,3 @@ class Scenario:
             ancestors.insert(0, parent)
             parent = parent.parent
         return ancestors
-        
