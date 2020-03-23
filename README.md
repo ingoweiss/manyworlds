@@ -127,6 +127,6 @@ The library also supports a 'relaxed' mode that creates one scenrio per _leaf no
     And I see "2 users selected"
 
 
-
+The 'relaxed' Gherkin still unnecessarily repeats some assertions which I would like to address next
 
 
