@@ -96,6 +96,9 @@ By default, the library creates one scenario per node in the scenario tree, resu
 
 The library also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' pairs in one scenario which is widely considered an anti-pattern. However, it does reduce repetition and is therefore shorter:
 
+    mw.ScenarioTree('tree.feature').flatten('flat.feature', strict=False)
+
+
     Scenario: Users > Select user > Deselect user
     When I go to "Users"
     Then I see "Users"
