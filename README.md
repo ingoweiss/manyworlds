@@ -98,6 +98,7 @@ The library also supports a 'relaxed' mode that creates one scenrio per _leaf no
 
     mw.ScenarioTree('tree.feature').flatten('flat.feature', strict=False)
 
+This will write:
 
     Scenario: Users > Select user > Deselect user
     When I go to "Users"
