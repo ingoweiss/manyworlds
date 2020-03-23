@@ -81,7 +81,7 @@ In order to reap the full benefits of scenario trees, however, the test runner n
 
 Ultimately, instead of each scenario having to re-run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
 
--	Visualization
+### Visualization
 
 The library can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
 
@@ -90,11 +90,11 @@ The library can also create a graph visualizing the scenario tree using [Mermaid
  
   ![Tree graph](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVERcbjAoVXNlcnMpXG4wIC0tPiAzKFNlbGVjdCB1c2VyKVxuMyAtLT4gNihEZXNlbGVjdCB1c2VyKVxuMyAtLT4gOShTZWxlY3QgYW5vdGhlciB1c2VyKVxuOSAtLT4gMTIoRGVzZWxlY3QgYWxsKVxuOSAtLT4gMTUoQnVsayBjaGFuZ2UgcGVybWlzc2lvbnMpXG5cdCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9 "Title")
 
--	Flattening Modes
+### Flattening Modes
 
 By default, the library creates one scenario per node in the scenario tree, resulting in Gherkin with one set of 'When' actions followed by one set of 'Then' assertions which is generally considered best practice. This is the 'strict' mode.
 
-The library also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' groups in one scenario which is widely considered an anti-pattern. However, it reduces repetition and is therefore shorter:
+The library also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' pairs in one scenario which is widely considered an anti-pattern. However, it does reduce repetition and is therefore shorter:
 
     Scenario: Users > Select user > Deselect user
     When I go to "Users"
