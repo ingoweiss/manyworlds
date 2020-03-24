@@ -14,14 +14,14 @@ class ScenarioTree:
         self.roots = []
         self.parse_file(file)
 
-    def parse_file(self, file):        
+    def parse_file(self, file):
         with open(file) as f:
             raw_lines = [l for l in f.readlines() if not l.strip() == ""]
         current_scenarios = {}
         for line_num in range(len(raw_lines)):
             this_line = raw_lines[line_num]
             scenario_match = ScenarioTree.SCENARIO_PATTERN.match(this_line)
-            step_match     = ScenarioTree.STEP_PATTERN.match(this_line)
+            step_match = ScenarioTree.STEP_PATTERN.match(this_line)
             if not (scenario_match or step_match):
                 raise ValueError('Unable to parse line: ' + this_line.strip())
             if scenario_match:
@@ -123,4 +123,3 @@ class ScenarioTree:
                     f.write('{}({})\n'.format(scenario.id, scenario.name))
                 else:
                     f.write('{} --> {}({})\n'.format(scenario.parent.id, scenario.id, scenario.name))
-
