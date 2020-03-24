@@ -97,13 +97,20 @@ class ScenarioTree:
             for scenario in scenarios:
                 lineage = scenario.ancestors() + [scenario]
                 f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
-                for scenario in lineage:
+                given_scenarios = [s for s in lineage if s.given]
+                given_actions = [a for actions in [s.actions for s in given_scenarios] for a in actions]
+                for action_num in range(len(given_actions)):
+                    conjunction = ('Given' if action_num == 0 else 'And')
+                    f.write(conjunction + " " + given_actions[action_num].name + "\n")
+                new_scenarios = [s for s in lineage if not s.given]
+                for scenario in new_scenarios:
                     for action_num in range(len(scenario.actions)):
                         conjunction = ('When' if action_num == 0 else 'And')
                         f.write(conjunction + " " + scenario.actions[action_num].name + "\n")
                     for assertion_num in range(len(scenario.assertions)):
                         conjunction = ('Then' if assertion_num == 0 else 'And')
                         f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
+                    scenario.mark_as_given()
                 f.write("\n")
 
     def graph(self, file):

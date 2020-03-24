@@ -8,6 +8,7 @@ class Scenario:
         self.actions = []
         self.assertions = []
         self.parent = None
+        self.given = False
 
     def is_root(self):
         return self.level == 0
@@ -27,6 +28,9 @@ class Scenario:
 
     def is_leaf(self):
         return len(self.children) == 0
+
+    def mark_as_given(self):
+        self.given = True
 
     def ancestors(self):
         ancestors = []
