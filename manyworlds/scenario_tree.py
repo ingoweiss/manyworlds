@@ -21,8 +21,6 @@ class ScenarioTree:
             this_line = raw_lines[line_num]
             scenario_match = ScenarioTree.SCENARIO_PATTERN.match(this_line)
             step_match = ScenarioTree.STEP_PATTERN.match(this_line)
-            if not (scenario_match or step_match):
-                raise ValueError('Unable to parse line: ' + this_line.strip())
             if scenario_match:
                 scenario_name = scenario_match['scenario_name']
                 scenario_level = len(scenario_match['indentation']) / ScenarioTree.INDENTATION
@@ -49,6 +47,8 @@ class ScenarioTree:
                     current_scenario.add_action(new_step)
                 elif new_step.type == 'assertion':
                     current_scenario.add_assertion(new_step)
+            else:
+                raise ValueError('Unable to parse line: ' + this_line.strip())
 
     def root_scenarios(self):
         return [s for s in self.scenarios if s.is_root()]
