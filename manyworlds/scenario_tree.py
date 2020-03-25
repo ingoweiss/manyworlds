@@ -11,7 +11,6 @@ class ScenarioTree:
 
     def __init__(self, file):
         self.scenarios = []
-        self.roots = []
         self.parse_file(file)
 
     def parse_file(self, file):
@@ -30,9 +29,7 @@ class ScenarioTree:
                 new_scenario = Scenario(scenario_name, level=scenario_level, id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
-                if new_scenario.is_root():
-                    self.add_root(new_scenario)
-                else:
+                if not new_scenario.is_root():
                     current_scenarios[new_scenario.level-1].add_child(new_scenario)
             elif step_match:
                 step_level = len(step_match['indentation']) / ScenarioTree.INDENTATION
@@ -53,8 +50,8 @@ class ScenarioTree:
                 elif new_step.type == 'assertion':
                     current_scenario.add_assertion(new_step)
 
-    def add_root(self, root):
-        self.roots.append(root)
+    def root_scenarios(self):
+        return [s for s in self.scenarios if s.is_root()]
 
     def add_scenario(self, scenario):
         self.scenarios.append(scenario)
