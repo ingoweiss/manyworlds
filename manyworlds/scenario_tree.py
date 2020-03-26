@@ -75,13 +75,14 @@ class ScenarioTree:
     def flatten_strict(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
-                ancestors = scenario.ancestors()
-                lineage = ancestors + [scenario]
+                lineage = scenario.ancestors() + [scenario]
                 f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
-                ancestor_actions = [a for actions in [s.actions for s in ancestors] for a in actions]
-                for action_num in range(len(ancestor_actions)):
+                given_actions = [a
+                                    for s in scenario.ancestors()
+                                    for a in s.actions]
+                for action_num in range(len(given_actions)):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + ancestor_actions[action_num].name + "\n")
+                    f.write(conjunction + " " + given_actions[action_num].name + "\n")
                 for action_num in range(len(scenario.actions)):
                     conjunction = ('When' if action_num == 0 else 'And')
                     f.write(conjunction + " " + scenario.actions[action_num].name + "\n")
@@ -100,7 +101,9 @@ class ScenarioTree:
                 lineage = scenario.ancestors() + [scenario]
                 f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
                 given_scenarios = [s for s in lineage if s.given]
-                given_actions = [a for actions in [s.actions for s in given_scenarios] for a in actions]
+                given_actions = [a
+                                 for s in given_scenarios
+                                 for a in s.actions]
                 for action_num in range(len(given_actions)):
                     conjunction = ('Given' if action_num == 0 else 'And')
                     f.write(conjunction + " " + given_actions[action_num].name + "\n")
