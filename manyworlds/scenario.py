@@ -39,3 +39,9 @@ class Scenario:
             ancestors.insert(0, parent)
             parent = parent.parent
         return ancestors
+
+    def lineage(self):
+        return self.ancestors() + [self]
+
+    def long_name(self):
+        return ' > '.join([s.name for s in self.lineage()])
