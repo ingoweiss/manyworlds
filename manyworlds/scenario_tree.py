@@ -50,7 +50,7 @@ class ScenarioTree:
                 elif new_step.type == 'assertion':
                     current_scenario.add_assertion(new_step)
             else:
-                raise ValueError('Unable to parse line: ' + this_line.strip())
+                raise ValueError('Unable to parse line: ' + line.strip())
 
     def root_scenarios(self):
         return [s for s in self.scenarios if s.is_root()]
