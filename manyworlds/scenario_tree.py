@@ -3,6 +3,7 @@ from manyworlds.scenario import Scenario
 from manyworlds.step import Step
 
 class ScenarioTree:
+    '''a tree of BDD scenarios'''
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
@@ -38,8 +39,7 @@ class ScenarioTree:
                 elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
-                    existing_steps = (current_scenario.actions + current_scenario.assertions)
-                    last_step = sorted(existing_steps, key=lambda s: s.id, reverse=False)[-1]
+                    last_step = max(current_scenario.steps(), key=lambda s: s.id)
                     new_step_type = last_step.type
                 new_step = Step('I ' + step_match['step_name'],
                                 type=new_step_type,

@@ -45,3 +45,6 @@ class Scenario:
 
     def long_name(self):
         return ' > '.join([s.name for s in self.lineage()])
+
+    def steps(self):
+        return self.actions + self.assertions
