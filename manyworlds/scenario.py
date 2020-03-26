@@ -47,4 +47,4 @@ class Scenario:
         return ' > '.join([s.name for s in self.lineage()])
 
     def steps(self):
-        return self.actions + self.assertions
+        return sorted(self.actions + self.assertions, key=lambda s: s.id)

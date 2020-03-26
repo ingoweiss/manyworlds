@@ -39,8 +39,7 @@ class ScenarioTree:
                 elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
-                    last_step = max(current_scenario.steps(), key=lambda s: s.id)
-                    new_step_type = last_step.type
+                    new_step_type = current_scenario.steps()[-1].type
                 new_step = Step('I ' + step_match['step_name'],
                                 type=new_step_type,
                                 id=line_num)
