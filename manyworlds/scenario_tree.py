@@ -22,18 +22,18 @@ class ScenarioTree:
         current_scenarios = {}
         for line_num in range(len(raw_lines)):
             this_line = raw_lines[line_num]
-            scenario_match = ScenarioTree.SCENARIO_LINE_PATTERN.match(this_line)
-            step_match = ScenarioTree.STEP_LINE_PATTERN.match(this_line)
+            scenario_match = self.SCENARIO_LINE_PATTERN.match(this_line)
+            step_match = self.STEP_LINE_PATTERN.match(this_line)
             if scenario_match:
                 scenario_name = scenario_match['scenario_name']
-                scenario_level = len(scenario_match['indentation']) / ScenarioTree.TAB_SIZE
+                scenario_level = len(scenario_match['indentation']) / self.TAB_SIZE
                 new_scenario = Scenario(scenario_name, level=scenario_level, id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
                 if not new_scenario.is_root():
                     current_scenarios[new_scenario.level-1].add_child(new_scenario)
             elif step_match:
-                step_level = len(step_match['indentation']) / ScenarioTree.TAB_SIZE
+                step_level = len(step_match['indentation']) / self.TAB_SIZE
                 current_scenario = current_scenarios[step_level]
                 step_name = step_match['step_name']
                 step_type = step_match['step_type']
