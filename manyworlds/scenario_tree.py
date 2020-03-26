@@ -8,7 +8,7 @@ class ScenarioTree:
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
-    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (I )?(?P<step_name>.*)'
+    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>.*)'
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
 
@@ -40,7 +40,7 @@ class ScenarioTree:
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
                     new_step_type = current_scenario.steps()[-1].type
-                new_step = Step('I ' + step_match['step_name'],
+                new_step = Step(step_match['step_name'],
                                 type=new_step_type,
                                 id=line_num)
                 if new_step.type == 'action':
