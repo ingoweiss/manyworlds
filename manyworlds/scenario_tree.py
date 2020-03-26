@@ -1,5 +1,4 @@
 import re
-import pdb
 from manyworlds.scenario import Scenario
 from manyworlds.step import Step
 
