@@ -20,10 +20,9 @@ class ScenarioTree:
         with open(file) as f:
             raw_lines = [l.rstrip('\n') for l in f.readlines() if not l.strip() == ""]
         current_scenarios = {}
-        for line_num in range(len(raw_lines)):
-            this_line = raw_lines[line_num]
-            scenario_match = self.SCENARIO_LINE_PATTERN.match(this_line)
-            step_match = self.STEP_LINE_PATTERN.match(this_line)
+        for line_num, line in enumerate(raw_lines):
+            scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
+            step_match = self.STEP_LINE_PATTERN.match(line)
             if scenario_match:
                 new_scenario = Scenario(scenario_match['scenario_name'],
                                         level=len(scenario_match['indentation']) / self.TAB_SIZE,
@@ -79,18 +78,15 @@ class ScenarioTree:
                 given_actions = [a
                                  for s in scenario.ancestors()
                                  for a in s.actions]
-                for action_num in range(len(given_actions)):
+                for action_num, action in enumerate(given_actions):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction,
-                                             given_actions[action_num].name))
-                for action_num in range(len(scenario.actions)):
+                    f.write("{} {}\n".format(conjunction, action.name))
+                for action_num, action in enumerate(scenario.actions):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction,
-                                             scenario.actions[action_num].name))
-                for assertion_num in range(len(scenario.assertions)):
+                    f.write("{} {}\n".format(conjunction, action.name))
+                for assertion_num, assertion in enumerate(scenario.assertions):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction,
-                                             scenario.assertions[assertion_num].name))
+                    f.write("{} {}\n".format(conjunction, assertion.name))
                 f.write("\n")
 
     # One scenario per leaf scenario in tree, resulting in:
@@ -105,20 +101,17 @@ class ScenarioTree:
                 given_actions = [a
                                  for s in given_scenarios
                                  for a in s.actions]
-                for action_num in range(len(given_actions)):
+                for action_num, action in enumerate(given_actions):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction,
-                                             given_actions[action_num].name))
+                    f.write("{} {}\n".format(conjunction, action.name))
                 new_scenarios = [s for s in scenario.lineage() if not s.given]
                 for new_scenario in new_scenarios:
-                    for action_num in range(len(new_scenario.actions)):
+                    for action_num, action in enumerate(new_scenario.actions):
                         conjunction = ('When' if action_num == 0 else 'And')
-                        f.write("{} {}\n".format(conjunction,
-                                                 new_scenario.actions[action_num].name))
-                    for assertion_num in range(len(new_scenario.assertions)):
+                        f.write("{} {}\n".format(conjunction, action.name))
+                    for assertion_num, assertion in enumerate(new_scenario.assertions):
                         conjunction = ('Then' if assertion_num == 0 else 'And')
-                        f.write("{} {}\n".format(conjunction,
-                                                 new_scenario.assertions[assertion_num].name))
+                        f.write("{} {}\n".format(conjunction, assertion.name))
                     new_scenario.mark_as_given()
                 f.write("\n")
 
