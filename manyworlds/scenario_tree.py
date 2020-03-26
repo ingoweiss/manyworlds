@@ -25,27 +25,27 @@ class ScenarioTree:
             scenario_match = self.SCENARIO_LINE_PATTERN.match(this_line)
             step_match = self.STEP_LINE_PATTERN.match(this_line)
             if scenario_match:
-                scenario_name = scenario_match['scenario_name']
-                scenario_level = len(scenario_match['indentation']) / self.TAB_SIZE
-                new_scenario = Scenario(scenario_name, level=scenario_level, id=line_num)
+                new_scenario = Scenario(scenario_match['scenario_name'],
+                    level=len(scenario_match['indentation']) / self.TAB_SIZE,
+                    id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
                 if not new_scenario.is_root():
                     current_scenarios[new_scenario.level-1].add_child(new_scenario)
             elif step_match:
-                step_level = len(step_match['indentation']) / self.TAB_SIZE
-                current_scenario = current_scenarios[step_level]
-                step_name = step_match['step_name']
-                step_type = step_match['step_type']
-                if step_type in ['Given', 'When']:
+                level = len(step_match['indentation']) / self.TAB_SIZE
+                current_scenario = current_scenarios[level]
+                if step_match['step_type'] in ['Given', 'When']:
                     new_step_type = 'action'
-                elif step_type == 'Then':
+                elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
-                elif step_type in ['And', 'But']:
+                elif step_match['step_type'] in ['And', 'But']:
                     existing_steps = (current_scenario.actions + current_scenario.assertions)
                     last_step = sorted(existing_steps, key=lambda s: s.id, reverse=False)[-1]
                     new_step_type = last_step.type
-                new_step = Step('I ' + step_name, id=line_num, type=new_step_type)
+                new_step = Step('I ' + step_match['step_name'],
+                    type=new_step_type,
+                    id=line_num)
                 if new_step.type == 'action':
                     current_scenario.add_action(new_step)
                 elif new_step.type == 'assertion':
