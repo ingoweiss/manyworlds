@@ -26,8 +26,8 @@ class ScenarioTree:
             step_match = self.STEP_LINE_PATTERN.match(this_line)
             if scenario_match:
                 new_scenario = Scenario(scenario_match['scenario_name'],
-                    level=len(scenario_match['indentation']) / self.TAB_SIZE,
-                    id=line_num)
+                                        level=len(scenario_match['indentation']) / self.TAB_SIZE,
+                                        id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
                 if not new_scenario.is_root():
@@ -44,8 +44,8 @@ class ScenarioTree:
                     last_step = sorted(existing_steps, key=lambda s: s.id, reverse=False)[-1]
                     new_step_type = last_step.type
                 new_step = Step('I ' + step_match['step_name'],
-                    type=new_step_type,
-                    id=line_num)
+                                type=new_step_type,
+                                id=line_num)
                 if new_step.type == 'action':
                     current_scenario.add_action(new_step)
                 elif new_step.type == 'assertion':
@@ -75,19 +75,22 @@ class ScenarioTree:
     def flatten_strict(self, file):
         with open(file, 'w') as f:
             for scenario in self.scenarios:
-                f.write("Scenario: " + scenario.long_name() + "\n")
+                f.write("Scenario: {}\n".format(scenario.long_name()))
                 given_actions = [a
-                                    for s in scenario.ancestors()
-                                    for a in s.actions]
+                                 for s in scenario.ancestors()
+                                 for a in s.actions]
                 for action_num in range(len(given_actions)):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + given_actions[action_num].name + "\n")
+                    f.write("{} {}\n".format(conjunction,
+                                             given_actions[action_num].name))
                 for action_num in range(len(scenario.actions)):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + scenario.actions[action_num].name + "\n")
+                    f.write("{} {}\n".format(conjunction,
+                                             scenario.actions[action_num].name))
                 for assertion_num in range(len(scenario.assertions)):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
-                    f.write(conjunction + " " + scenario.assertions[assertion_num].name + "\n")
+                    f.write("{} {}\n".format(conjunction,
+                                             scenario.assertions[assertion_num].name))
                 f.write("\n")
 
     # One scenario per leaf scenario in tree, resulting in:
@@ -97,22 +100,25 @@ class ScenarioTree:
     def flatten_relaxed(self, file):
         with open(file, 'w') as f:
             for scenario in self.leaf_scenarios():
-                f.write("Scenario: " + scenario.long_name() + "\n")
+                f.write("Scenario: {}\n".format(scenario.long_name()))
                 given_scenarios = [s for s in scenario.ancestors() if s.given]
                 given_actions = [a
                                  for s in given_scenarios
                                  for a in s.actions]
                 for action_num in range(len(given_actions)):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write(conjunction + " " + given_actions[action_num].name + "\n")
+                    f.write("{} {}\n".format(conjunction,
+                                             given_actions[action_num].name))
                 new_scenarios = [s for s in scenario.lineage() if not s.given]
                 for new_scenario in new_scenarios:
                     for action_num in range(len(new_scenario.actions)):
                         conjunction = ('When' if action_num == 0 else 'And')
-                        f.write(conjunction + " " + new_scenario.actions[action_num].name + "\n")
+                        f.write("{} {}\n".format(conjunction,
+                                                 new_scenario.actions[action_num].name))
                     for assertion_num in range(len(new_scenario.assertions)):
                         conjunction = ('Then' if assertion_num == 0 else 'And')
-                        f.write(conjunction + " " + new_scenario.assertions[assertion_num].name + "\n")
+                        f.write("{} {}\n".format(conjunction,
+                                                 new_scenario.assertions[assertion_num].name))
                     new_scenario.mark_as_given()
                 f.write("\n")
 
@@ -125,4 +131,6 @@ class ScenarioTree:
                 if not scenario.parent:
                     f.write('{}({})\n'.format(scenario.id, scenario.name))
                 else:
-                    f.write('{} --> {}({})\n'.format(scenario.parent.id, scenario.id, scenario.name))
+                    f.write('{} --> {}({})\n'.format(scenario.parent.id,
+                                                     scenario.id,
+                                                     scenario.name))
