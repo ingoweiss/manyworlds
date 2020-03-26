@@ -56,6 +56,9 @@ class ScenarioTree:
     def root_scenarios(self):
         return [s for s in self.scenarios if s.is_root()]
 
+    def leaf_scenarios(self):
+        return [s for s in self.scenarios if s.is_leaf()]
+
     def add_scenario(self, scenario):
         self.scenarios.append(scenario)
 
@@ -93,8 +96,7 @@ class ScenarioTree:
     # 3. No duplication of actions
     def flatten_relaxed(self, file):
         with open(file, 'w') as f:
-            scenarios = [s for s in self.scenarios if s.is_leaf()]
-            for scenario in scenarios:
+            for scenario in self.leaf_scenarios():
                 lineage = scenario.ancestors() + [scenario]
                 f.write("Scenario: " + " > ".join([s.name for s in lineage]) + "\n")
                 given_scenarios = [s for s in lineage if s.given]
