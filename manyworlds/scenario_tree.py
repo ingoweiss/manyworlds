@@ -1,9 +1,10 @@
+'''Defines the ScenarioTree Class'''
 import re
 from manyworlds.scenario import Scenario
 from manyworlds.step import Step
 
 class ScenarioTree:
-    '''a tree of BDD scenarios'''
+    '''A tree of BDD scenarios'''
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
@@ -13,10 +14,20 @@ class ScenarioTree:
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
 
     def __init__(self, file):
+        '''
+        Init method for the ScenarioTree Class
+
+        Parameters:
+        file (string): Path to indented feature file
+
+        Returns:
+        Instance of ScenarioTree
+        '''
         self.scenarios = []
         self.parse_file(file)
 
     def parse_file(self, file):
+        '''Parse indented feature file into a tree of Scenario instances'''
         with open(file) as f:
             raw_lines = [l.rstrip('\n') for l in f.readlines() if not l.strip() == ""]
         current_scenarios = {}
@@ -51,25 +62,42 @@ class ScenarioTree:
                 raise ValueError('Unable to parse line: ' + line.strip())
 
     def root_scenarios(self):
+        '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
         return [s for s in self.scenarios if s.is_root()]
 
     def leaf_scenarios(self):
+        '''Return the leaf scenarios of the scenario tree (the ones with no children)'''
         return [s for s in self.scenarios if s.is_leaf()]
 
     def add_scenario(self, scenario):
+        '''Add a scenrio instance to the tree'''
         self.scenarios.append(scenario)
 
     def flatten(self, file, mode='strict'):
+        '''
+        Write a flat (no indentation) feature file representing the scenario tree.
+
+        Parameters:
+        file (string): Path to flat feature file
+        mode (string): Either 'strict' or 'relaxed'
+        '''
         if mode == 'strict':
             self.flatten_strict(file)
         elif mode == 'relaxed':
             self.flatten_relaxed(file)
 
-    # One scenario per scenario in tree, resulting in:
-    # 1. one when/then pair per scenario (generally recommended)
-    # 2. more scenarios
-    # 3. Duplication of actions
     def flatten_strict(self, file):
+        '''
+        Writes a flat (no indentation) feature file representing the tree using the 'strict' mode.
+
+        The 'strict' mode writes a feature file with:
+        1. One when/then pair per scenario (generally recommended)
+        2. More scenarios
+        3. More duplicate actions
+
+        Parameters:
+        file (string): Path to flat feature file
+        '''
         with open(file, 'w') as f:
             for scenario in self.scenarios:
                 f.write("Scenario: {}\n".format(scenario.long_name()))
@@ -87,11 +115,18 @@ class ScenarioTree:
                     f.write("{} {}\n".format(conjunction, assertion.name))
                 f.write("\n")
 
-    # One scenario per leaf scenario in tree, resulting in:
-    # 1. multiple when/then pairs per scenario (generally considered an anti-pattern)
-    # 2. fewer scenarios
-    # 3. No duplication of actions
     def flatten_relaxed(self, file):
+        '''
+        Writes a flat (no indentation) feature file representing the tree using the 'relaxed' mode.
+
+        The 'relaxed' mode writes a feature file with:
+        1. Multiple when/then pairs per scenario (generally considered an anti-pattern)
+        2. Fewer scenarios
+        3. Fewer duplicate actions
+
+        Parameters:
+        file (string): Path to flat feature file
+        '''
         with open(file, 'w') as f:
             for scenario in self.leaf_scenarios():
                 f.write("Scenario: {}\n".format(scenario.long_name()))
@@ -114,6 +149,12 @@ class ScenarioTree:
                 f.write("\n")
 
     def graph(self, file):
+        '''
+        Writes a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
+
+        Parameters:
+        file (string): Path to Mermaid file
+        '''
         with open(file, 'w') as f:
             f.write("graph TD\n")
             for scenario in self.scenarios:
