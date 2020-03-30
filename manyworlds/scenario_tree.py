@@ -90,10 +90,11 @@ class ScenarioTree:
         '''
         Writes a flat (no indentation) feature file representing the tree using the 'strict' mode.
 
-        The 'strict' mode writes a feature file with:
+        The 'strict' mode writes one scenario per scenario in the tree.
+        This results in a feature file with:
         1. One when/then pair per scenario (generally recommended)
         2. More scenarios
-        3. More duplicate actions
+        3. More duplicate (given) actions
 
         Parameters:
         file (string): Path to flat feature file
@@ -119,10 +120,11 @@ class ScenarioTree:
         '''
         Writes a flat (no indentation) feature file representing the tree using the 'relaxed' mode.
 
-        The 'relaxed' mode writes a feature file with:
+        The 'relaxed' mode writes one scenario per leaf scenario in the tree.
+        This results in a feature file with:
         1. Multiple when/then pairs per scenario (generally considered an anti-pattern)
         2. Fewer scenarios
-        3. Fewer duplicate actions
+        3. Fewer duplicate (given) actions
 
         Parameters:
         file (string): Path to flat feature file
