@@ -20,7 +20,7 @@ def test_flatten_strict():
 
 def test_flatten_relaxed():
     tree = ScenarioTree('test/fixtures/scenarios_tree.feature')
-    tree.flatten('test/out/scenarios_flat_relaxed.feature', strict=False)
+    tree.flatten('test/out/scenarios_flat_relaxed.feature', mode='relaxed')
     assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature', 'test/fixtures/scenarios_flat_relaxed.feature')
 
 def test_graph():

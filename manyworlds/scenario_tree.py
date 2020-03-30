@@ -59,10 +59,10 @@ class ScenarioTree:
     def add_scenario(self, scenario):
         self.scenarios.append(scenario)
 
-    def flatten(self, file, strict=True):
-        if strict:
+    def flatten(self, file, mode='strict'):
+        if mode == 'strict':
             self.flatten_strict(file)
-        else:
+        elif mode == 'relaxed':
             self.flatten_relaxed(file)
 
     # One scenario per scenario in tree, resulting in:
