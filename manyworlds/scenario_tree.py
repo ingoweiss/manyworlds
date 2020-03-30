@@ -28,8 +28,8 @@ class ScenarioTree:
 
     def parse_file(self, file):
         '''Parse indented feature file into a tree of Scenario instances'''
-        with open(file) as f:
-            raw_lines = [l.rstrip('\n') for l in f.readlines() if not l.strip() == ""]
+        with open(file) as indented_file:
+            raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
         current_scenarios = {}
         for line_num, line in enumerate(raw_lines):
             scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
@@ -98,22 +98,22 @@ class ScenarioTree:
         Parameters:
         file (string): Path to flat feature file
         '''
-        with open(file, 'w') as f:
+        with open(file, 'w') as flat_file:
             for scenario in self.scenarios:
-                f.write("Scenario: {}\n".format(scenario.long_name()))
+                flat_file.write("Scenario: {}\n".format(scenario.long_name()))
                 given_actions = [a
                                  for s in scenario.ancestors()
                                  for a in s.actions]
                 for action_num, action in enumerate(given_actions):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction, action.name))
+                    flat_file.write("{} {}\n".format(conjunction, action.name))
                 for action_num, action in enumerate(scenario.actions):
                     conjunction = ('When' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction, action.name))
+                    flat_file.write("{} {}\n".format(conjunction, action.name))
                 for assertion_num, assertion in enumerate(scenario.assertions):
                     conjunction = ('Then' if assertion_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction, assertion.name))
-                f.write("\n")
+                    flat_file.write("{} {}\n".format(conjunction, assertion.name))
+                flat_file.write("\n")
 
     def flatten_relaxed(self, file):
         '''
@@ -127,26 +127,26 @@ class ScenarioTree:
         Parameters:
         file (string): Path to flat feature file
         '''
-        with open(file, 'w') as f:
+        with open(file, 'w') as flat_file:
             for scenario in self.leaf_scenarios():
-                f.write("Scenario: {}\n".format(scenario.long_name()))
+                flat_file.write("Scenario: {}\n".format(scenario.long_name()))
                 given_scenarios = [s for s in scenario.ancestors() if s.given]
                 given_actions = [a
                                  for s in given_scenarios
                                  for a in s.actions]
                 for action_num, action in enumerate(given_actions):
                     conjunction = ('Given' if action_num == 0 else 'And')
-                    f.write("{} {}\n".format(conjunction, action.name))
+                    flat_file.write("{} {}\n".format(conjunction, action.name))
                 new_scenarios = [s for s in scenario.lineage() if not s.given]
                 for new_scenario in new_scenarios:
                     for action_num, action in enumerate(new_scenario.actions):
                         conjunction = ('When' if action_num == 0 else 'And')
-                        f.write("{} {}\n".format(conjunction, action.name))
+                        flat_file.write("{} {}\n".format(conjunction, action.name))
                     for assertion_num, assertion in enumerate(new_scenario.assertions):
                         conjunction = ('Then' if assertion_num == 0 else 'And')
-                        f.write("{} {}\n".format(conjunction, assertion.name))
+                        flat_file.write("{} {}\n".format(conjunction, assertion.name))
                     new_scenario.mark_as_given()
-                f.write("\n")
+                flat_file.write("\n")
 
     def graph(self, file):
         '''
@@ -155,14 +155,14 @@ class ScenarioTree:
         Parameters:
         file (string): Path to Mermaid file
         '''
-        with open(file, 'w') as f:
-            f.write("graph TD\n")
+        with open(file, 'w') as mermaid_file:
+            mermaid_file.write("graph TD\n")
             for scenario in self.scenarios:
                 # actions = ['fa:fa-angle-down {}'.format(a) for a in scenario.actions]
                 # assertions = ['fa:fa-check {}'.format(a) for a in scenario.assertions]
                 if not scenario.parent:
-                    f.write('{}({})\n'.format(scenario.id, scenario.name))
+                    mermaid_file.write('{}({})\n'.format(scenario.id, scenario.name))
                 else:
-                    f.write('{} --> {}({})\n'.format(scenario.parent.id,
-                                                     scenario.id,
-                                                     scenario.name))
+                    mermaid_file.write('{} --> {}({})\n'.format(scenario.parent.id,
+                                                                scenario.id,
+                                                                scenario.name))
