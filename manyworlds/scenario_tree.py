@@ -30,20 +30,23 @@ class ScenarioTree:
         '''Parse indented feature file into a tree of Scenario instances'''
         with open(file) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
+        # current_scenarios keeps track of the last ('current') scenario encountered at each level.
+        # Any action/assertion encountered at a given level will be added to that level's 'current' scenario
         current_scenarios = {}
         for line_num, line in enumerate(raw_lines):
             scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
             step_match = self.STEP_LINE_PATTERN.match(line)
+            if scenario_match or step_match:
+                level = len((scenario_match or step_match)['indentation']) / self.TAB_SIZE
             if scenario_match:
                 new_scenario = Scenario(scenario_match['scenario_name'],
-                                        level=len(scenario_match['indentation']) / self.TAB_SIZE,
+                                        level=level,
                                         id=line_num)
                 current_scenarios[new_scenario.level] = new_scenario
                 self.add_scenario(new_scenario)
                 if not new_scenario.is_root():
                     current_scenarios[new_scenario.level-1].add_child(new_scenario)
             elif step_match:
-                level = len(step_match['indentation']) / self.TAB_SIZE
                 current_scenario = current_scenarios[level]
                 if step_match['step_type'] in ['Given', 'When']:
                     new_step_type = 'action'
