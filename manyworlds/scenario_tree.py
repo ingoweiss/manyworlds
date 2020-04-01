@@ -133,16 +133,17 @@ class ScenarioTree:
         file (string): Path to flat feature file
         '''
         with open(file, 'w') as flat_file:
+            given_scenarios = []
             for scenario in self.leaf_scenarios():
                 flat_file.write("Scenario: {}\n".format(scenario.long_name()))
-                given_scenarios = [s for s in scenario.ancestors() if s.given]
+                given_ancestors = [s for s in scenario.ancestors() if s in given_scenarios]
                 given_actions = [a
-                                 for s in given_scenarios
+                                 for s in given_ancestors
                                  for a in s.actions]
                 for action_num, action in enumerate(given_actions):
                     conjunction = ('Given' if action_num == 0 else 'And')
                     flat_file.write("{} {}\n".format(conjunction, action.name))
-                new_scenarios = [s for s in scenario.lineage() if not s.given]
+                new_scenarios = [s for s in scenario.lineage() if not s in given_scenarios]
                 for new_scenario in new_scenarios:
                     for action_num, action in enumerate(new_scenario.actions):
                         conjunction = ('When' if action_num == 0 else 'And')
@@ -150,7 +151,7 @@ class ScenarioTree:
                     for assertion_num, assertion in enumerate(new_scenario.assertions):
                         conjunction = ('Then' if assertion_num == 0 else 'And')
                         flat_file.write("{} {}\n".format(conjunction, assertion.name))
-                    new_scenario.mark_as_given()
+                    given_scenarios.append(new_scenario)
                 flat_file.write("\n")
 
     def graph(self, file):

@@ -22,7 +22,6 @@ class Scenario:
         self.actions = []
         self.assertions = []
         self.parent = None
-        self.given = False
 
     def is_root(self):
         '''Returns True if scenario is a root scenario, False otherwise'''
@@ -64,17 +63,6 @@ class Scenario:
     def is_leaf(self):
         '''Returns True if scenario is a leaf scenario, False otherwise'''
         return len(self.children) == 0
-
-    def mark_as_given(self):
-        '''Marks a scenario as given
-
-        'Given' in this context means that the scenario's assertions have been run once already,
-        so if the scenario is run as part of another scenario chain, it's assertions don't need
-        to be re-run and it's actions are run as 'Given' steps.
-
-        This is used in the 'relaxed' flattening mode
-        '''
-        self.given = True
 
     def ancestors(self):
         '''Returns the chain of the scenario's ancestor scenarios
