@@ -96,7 +96,7 @@ By default, the library creates one scenario per node in the scenario tree, resu
 
 The library also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' pairs in one scenario which is widely considered an anti-pattern. However, it does reduce repetition and is therefore shorter:
 
-    mw.ScenarioTree('tree.feature').flatten('flat.feature', strict=False)
+    mw.ScenarioTree('tree.feature').flatten('flat.feature', mode='relaxed')
 
 This will write:
 
@@ -124,3 +124,13 @@ This will write:
     And I click "Apply to selected"
     Then I see "2 users changed"
     And I see "2 users selected"
+
+
+### CLI
+
+The library can be used from the command line like so:
+
+    python manyworlds_cli.py flatten --mode relaxed --input test/fixtures/scenarios_tree.feature --output test/out/scenarios_flat_relaxed.feature
+	python manyworlds_cli.py graph --input test/fixtures/scenarios_tree.feature --output test/out/scenarios.mermaid.txt
+	python manyworlds_cli.py --help
+
