@@ -1,7 +1,9 @@
 '''Defines the ScenarioTree Class'''
 import re
+from igraph import *
 from manyworlds.scenario import Scenario
 from manyworlds.step import Step
+import pdb
 
 class ScenarioTree:
     '''A tree of BDD scenarios'''
@@ -13,18 +15,51 @@ class ScenarioTree:
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
 
-    def __init__(self, file):
+    def __init__(self, graph):
         '''
         Init method for the ScenarioTree Class
 
         Parameters:
-        file (string): Path to indented feature file
+        graph (igraph.Graph instance): graph representing the scenario tree
 
         Returns:
         Instance of ScenarioTree
         '''
-        self.scenarios = []
-        self.parse_file(file)
+        self.graph = graph
+
+    @classmethod
+    def from_file(self, file):
+        graph = Graph(directed=True)
+        with open(file) as indented_file:
+            raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
+        current_scenarios = {}
+        for line_num, line in enumerate(raw_lines):
+            scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
+            step_match = self.STEP_LINE_PATTERN.match(line)
+            if not (scenario_match or step_match):
+                raise ValueError('Unable to parse line: ' + line.strip())
+            current_level = len((scenario_match or step_match)['indentation']) / self.TAB_SIZE
+            if scenario_match:
+                new_scenario = graph.add_vertex(name=scenario_match['scenario_name'], actions=[], assertions=[])
+                current_scenarios[current_level] = new_scenario
+                if not current_level == 0:
+                    current_parent_scenario = current_scenarios[current_level-1]
+                    graph.add_edge(current_parent_scenario, new_scenario)
+            elif step_match:
+                current_scenario = current_scenarios[current_level]
+                if step_match['step_type'] in ['Given', 'When']:
+                    new_step_type = 'action'
+                elif step_match['step_type'] == 'Then':
+                    new_step_type = 'assertion'
+                elif step_match['step_type'] in ['And', 'But']:
+                    new_step_type = last_step_type
+                new_step = step_match['step_name']
+                if new_step_type == 'action':
+                    current_scenario['actions'].append(new_step)
+                elif new_step_type == 'assertion':
+                    current_scenario['assertions'].append(new_step)
+                last_step_type = new_step_type
+        return ScenarioTree(graph)
 
     def parse_file(self, file):
         '''Parse indented feature file into a tree of Scenario instances'''
@@ -66,11 +101,11 @@ class ScenarioTree:
 
     def root_scenarios(self):
         '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
-        return [s for s in self.scenarios if s.is_root()]
+        return [v for v in self.graph.vs if v.indegree() == 0]
 
     def leaf_scenarios(self):
         '''Return the leaf scenarios of the scenario tree (the ones with no children)'''
-        return [s for s in self.scenarios if s.is_leaf()]
+        return [v for v in self.graph.vs if v.outdegree() == 0]
 
     def add_scenario(self, scenario):
         '''Add a scenrio instance to the tree'''
@@ -103,21 +138,28 @@ class ScenarioTree:
         file (string): Path to flat feature file
         '''
         with open(file, 'w') as flat_file:
-            for scenario in self.scenarios:
-                flat_file.write("Scenario: {}\n".format(scenario.long_name()))
-                given_actions = [a
-                                 for s in scenario.ancestors()
-                                 for a in s.actions]
-                for action_num, action in enumerate(given_actions):
-                    conjunction = ('Given' if action_num == 0 else 'And')
-                    flat_file.write("{} {}\n".format(conjunction, action.name))
-                for action_num, action in enumerate(scenario.actions):
-                    conjunction = ('When' if action_num == 0 else 'And')
-                    flat_file.write("{} {}\n".format(conjunction, action.name))
-                for assertion_num, assertion in enumerate(scenario.assertions):
-                    conjunction = ('Then' if assertion_num == 0 else 'And')
-                    flat_file.write("{} {}\n".format(conjunction, assertion.name))
-                flat_file.write("\n")
+            for root_scenario in self.root_scenarios():
+                possible_destinations = self.graph.neighborhood(root_scenario, mode=OUT, order=100)
+                possible_paths = self.graph.get_all_shortest_paths(root_scenario, to=possible_destinations, mode=OUT)
+                for path in possible_paths:
+                    path_scenarios = self.graph.vs[path]
+                    path_name = ' > '.join([v['name'] for v in path_scenarios])
+                    flat_file.write("Scenario: {}\n".format(path_name))
+                    given_scenarios = []
+                    given_actions = [a
+                                     for s in path_scenarios[:-1]
+                                     for a in s['actions']]
+                    for action_num, action in enumerate(given_actions):
+                        conjunction = ('Given' if action_num == 0 else 'And')
+                        flat_file.write("{} {}\n".format(conjunction, action))
+                    destination_scenario = path_scenarios[-1]
+                    for action_num, action in enumerate(destination_scenario['actions']):
+                        conjunction = ('When' if action_num == 0 else 'And')
+                        flat_file.write("{} {}\n".format(conjunction, action))
+                    for assertion_num, assertion in enumerate(destination_scenario['assertions']):
+                        conjunction = ('Then' if assertion_num == 0 else 'And')
+                        flat_file.write("{} {}\n".format(conjunction, assertion))
+                    flat_file.write("\n")
 
     def flatten_relaxed(self, file):
         '''
@@ -134,27 +176,31 @@ class ScenarioTree:
         '''
         with open(file, 'w') as flat_file:
             given_scenarios = []
-            for scenario in self.leaf_scenarios():
-                flat_file.write("Scenario: {}\n".format(scenario.long_name()))
-                given_ancestors = [s for s in scenario.ancestors() if s in given_scenarios]
-                given_actions = [a
-                                 for s in given_ancestors
-                                 for a in s.actions]
-                for action_num, action in enumerate(given_actions):
-                    conjunction = ('Given' if action_num == 0 else 'And')
-                    flat_file.write("{} {}\n".format(conjunction, action.name))
-                new_scenarios = [s for s in scenario.lineage() if not s in given_scenarios]
-                for new_scenario in new_scenarios:
-                    for action_num, action in enumerate(new_scenario.actions):
-                        conjunction = ('When' if action_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, action.name))
-                    for assertion_num, assertion in enumerate(new_scenario.assertions):
-                        conjunction = ('Then' if assertion_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, assertion.name))
-                    given_scenarios.append(new_scenario)
-                flat_file.write("\n")
+            for root_scenario in self.root_scenarios():
+                possible_destinations = self.graph.neighborhood(root_scenario, mode=OUT, order=100)
+                possible_leaf_destinations = [v for v in possible_destinations if self.graph.vs[v].outdegree() == 0]
+                possible_paths = self.graph.get_all_shortest_paths(root_scenario, to=possible_leaf_destinations, mode=OUT)
+                for path in possible_paths:
+                    path_scenarios = self.graph.vs[path]
+                    path_name = ' > '.join([v['name'] for v in path_scenarios])
+                    flat_file.write("Scenario: {}\n".format(path_name))
+                    given_actions = [a
+                                     for s in path_scenarios if s in given_scenarios
+                                     for a in s['actions']]
+                    for action_num, action in enumerate(given_actions):
+                        conjunction = ('Given' if action_num == 0 else 'And')
+                        flat_file.write("{} {}\n".format(conjunction, action))
+                    for path_scenario in [s for s in path_scenarios if s not in given_scenarios]:
+                        for action_num, action in enumerate(path_scenario['actions']):
+                            conjunction = ('When' if action_num == 0 else 'And')
+                            flat_file.write("{} {}\n".format(conjunction, action))
+                        for assertion_num, assertion in enumerate(path_scenario['assertions']):
+                            conjunction = ('Then' if assertion_num == 0 else 'And')
+                            flat_file.write("{} {}\n".format(conjunction, assertion))
+                        given_scenarios.append(path_scenario)
+                    flat_file.write("\n")
 
-    def graph(self, file):
+    def graph_mermaid(self, file):
         '''
         Writes a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
 
@@ -163,12 +209,7 @@ class ScenarioTree:
         '''
         with open(file, 'w') as mermaid_file:
             mermaid_file.write("graph TD\n")
-            for scenario in self.scenarios:
-                # actions = ['fa:fa-angle-down {}'.format(a) for a in scenario.actions]
-                # assertions = ['fa:fa-check {}'.format(a) for a in scenario.assertions]
-                if not scenario.parent:
-                    mermaid_file.write('{}({})\n'.format(scenario.id, scenario.name))
-                else:
-                    mermaid_file.write('{} --> {}({})\n'.format(scenario.parent.id,
-                                                                scenario.id,
-                                                                scenario.name))
+            for scenario in self.graph.vs:
+                mermaid_file.write('{}({})\n'.format(scenario.index, scenario['name']))
+            for edge in self.graph.es:
+                mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index, edge.target_vertex.index))
