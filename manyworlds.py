@@ -73,6 +73,26 @@ class ScenarioTree:
         '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
         return [v for v in self.graph.vs if v.indegree() == 0]
 
+    def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
+        '''
+        Return all possible paths from the source scenario provided
+        
+        Parameters:
+        source_scenario (Vertex): The source scenario from which to get possible paths
+        leaf_destinations_only (Boolean): If True, get paths to leaf scenarios only
+        '''
+        neighborhood = self.graph.neighborhood(source_scenario,
+                                               mode='OUT',
+                                               order=100)
+        possible_destinations = self.graph.vs[neighborhood]
+        if leaf_destinations_only:
+            possible_destinations = [v for v in possible_destinations
+                                     if v.outdegree() == 0]
+        possible_paths = self.graph.get_all_shortest_paths(source_scenario,
+                                                           to=possible_destinations,
+                                                           mode='OUT')
+        return possible_paths
+
     def flatten(self, file, mode='strict'):
         '''
         Write a flat (no indentation) feature file representing the scenario tree.
@@ -101,12 +121,7 @@ class ScenarioTree:
         '''
         with open(file, 'w') as flat_file:
             for root_scenario in self.root_scenarios():
-                possible_destinations = self.graph.neighborhood(root_scenario,
-                                                                mode='OUT',
-                                                                order=100)
-                possible_paths = self.graph.get_all_shortest_paths(root_scenario,
-                                                                   to=possible_destinations,
-                                                                   mode='OUT')
+                possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
                     path_name = ' > '.join([v['name'] for v in path_scenarios])
@@ -142,14 +157,8 @@ class ScenarioTree:
         with open(file, 'w') as flat_file:
             given_scenarios = []
             for root_scenario in self.root_scenarios():
-                possible_destinations = self.graph.neighborhood(root_scenario,
-                                                                mode='OUT',
-                                                                order=100)
-                possible_leaf_destinations = [v for v in possible_destinations
-                                              if self.graph.vs[v].outdegree() == 0]
-                possible_paths = self.graph.get_all_shortest_paths(root_scenario,
-                                                                   to=possible_leaf_destinations,
-                                                                   mode='OUT')
+                possible_paths = self.possible_paths_from_source(root_scenario,
+                                                                 leaf_destinations_only=True)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
                     path_name = ' > '.join([v['name'] for v in path_scenarios])
