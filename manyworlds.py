@@ -95,7 +95,7 @@ class ScenarioForest:
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, default_conjunction):
         '''
-        Write formatted scenario stes to file
+        Write formatted scenario steps to file
 
         Parameters:
         file_handle (file handle): The file to which to write the steps
@@ -105,6 +105,18 @@ class ScenarioForest:
         for step_num, step in enumerate(steps):
             conjunction = (default_conjunction if step_num == 0 else 'And')
             file_handle.write("{} {}\n".format(conjunction, step))
+
+    @classmethod
+    def write_scenario_name(cls, file_handle, path_scenarios):
+        '''
+        Write formatted scenario name to file
+
+        Parameters:
+        file_handle (file handle): The file to which to write the steps
+        path_scenarios (list of Vertex): The scenarios/vertices on the path
+        '''
+        path_name = ' > '.join([v['name'] for v in path_scenarios])
+        file_handle.write("Scenario: {}\n".format(path_name))
 
     def flatten(self, file, mode='strict'):
         '''
@@ -137,8 +149,7 @@ class ScenarioForest:
                 possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
-                    path_name = ' > '.join([v['name'] for v in path_scenarios])
-                    flat_file.write("Scenario: {}\n".format(path_name))
+                    ScenarioForest.write_scenario_name(flat_file, path_scenarios)
                     given_actions = [a
                                      for s in path_scenarios[:-1]
                                      for a in s['actions']]
@@ -174,8 +185,7 @@ class ScenarioForest:
                                                                  leaf_destinations_only=True)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
-                    path_name = ' > '.join([v['name'] for v in path_scenarios])
-                    flat_file.write("Scenario: {}\n".format(path_name))
+                    ScenarioForest.write_scenario_name(flat_file, path_scenarios)
                     given_actions = [a
                                      for s in path_scenarios if s in given_scenarios
                                      for a in s['actions']]
