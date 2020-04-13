@@ -7,7 +7,7 @@ Having been frustrated with the amount of repetition and verbosity in automated 
 The purpose of this project is to explore whether there is value in this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
 
 	import manyworlds as mw
-    mw.ScenarioTree('tree.feature').flatten('flat.feature')
+    mw.ScenarioTree.from_file('tree.feature').flatten('flat.feature')
 
 The above reads a file that looks like this ...
 
@@ -86,7 +86,7 @@ Ultimately, instead of each scenario having to re-run all the actions of it's an
 
 MW can also create a graph visualizing the scenario tree using [Mermaid](https://mermaid-js.github.io/mermaid/#/):
 
-    mv.ScenarioTree('tree.feature').graph('tree.mermaid.txt')
+    mv.ScenarioTree.from_file('tree.feature').graph('tree.mermaid.txt')
 
  
   ![Tree graph](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVERcbjAoVXNlcnMpXG4wIC0tPiAzKFNlbGVjdCB1c2VyKVxuMyAtLT4gNihEZXNlbGVjdCB1c2VyKVxuMyAtLT4gOShTZWxlY3QgYW5vdGhlciB1c2VyKVxuOSAtLT4gMTIoRGVzZWxlY3QgYWxsKVxuOSAtLT4gMTUoQnVsayBjaGFuZ2UgcGVybWlzc2lvbnMpXG5cdCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9 "Title")
@@ -97,7 +97,7 @@ By default, MW creates one scenario per node in the scenario tree, resulting in 
 
 MW also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' pairs in one scenario which is widely considered an anti-pattern. However, it does reduce repetition and is therefore shorter:
 
-    mw.ScenarioTree('tree.feature').flatten('flat.feature', mode='relaxed')
+    mw.ScenarioTree.from_file('tree.feature').flatten('flat.feature', mode='relaxed')
 
 This will write:
 
