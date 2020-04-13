@@ -81,13 +81,12 @@ class ScenarioTree:
         source_scenario (Vertex): The source scenario from which to get possible paths
         leaf_destinations_only (Boolean): If True, get paths to leaf scenarios only
         '''
-        neighborhood = self.graph.neighborhood(source_scenario,
+        possible_destinations = self.graph.neighborhood(source_scenario,
                                                mode='OUT',
                                                order=100)
-        possible_destinations = self.graph.vs[neighborhood]
         if leaf_destinations_only:
             possible_destinations = [v for v in possible_destinations
-                                     if v.outdegree() == 0]
+                                     if self.graph.vs[v].outdegree() == 0]
         possible_paths = self.graph.get_all_shortest_paths(source_scenario,
                                                            to=possible_destinations,
                                                            mode='OUT')
