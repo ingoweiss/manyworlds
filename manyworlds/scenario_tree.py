@@ -1,9 +1,6 @@
 '''Defines the ScenarioTree Class'''
 import re
 from igraph import *
-from manyworlds.scenario import Scenario
-from manyworlds.step import Step
-import pdb
 
 class ScenarioTree:
     '''A tree of BDD scenarios'''
@@ -32,6 +29,8 @@ class ScenarioTree:
         graph = Graph(directed=True)
         with open(file) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
+        # current_scenarios keeps track of the last ('current') scenario encountered at each level.
+        # Any action/assertion encountered at a given level will be added to that level's 'current' scenario
         current_scenarios = {}
         for line_num, line in enumerate(raw_lines):
             scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
@@ -61,55 +60,9 @@ class ScenarioTree:
                 last_step_type = new_step_type
         return ScenarioTree(graph)
 
-    def parse_file(self, file):
-        '''Parse indented feature file into a tree of Scenario instances'''
-        with open(file) as indented_file:
-            raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
-        # current_scenarios keeps track of the last ('current') scenario encountered at each level.
-        # Any action/assertion encountered at a given level will be added to that level's 'current' scenario
-        current_scenarios = {}
-        for line_num, line in enumerate(raw_lines):
-            scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
-            step_match = self.STEP_LINE_PATTERN.match(line)
-            if scenario_match or step_match:
-                level = len((scenario_match or step_match)['indentation']) / self.TAB_SIZE
-            if scenario_match:
-                new_scenario = Scenario(scenario_match['scenario_name'],
-                                        level=level,
-                                        id=line_num)
-                current_scenarios[new_scenario.level] = new_scenario
-                self.add_scenario(new_scenario)
-                if not new_scenario.is_root():
-                    current_scenarios[new_scenario.level-1].add_child(new_scenario)
-            elif step_match:
-                current_scenario = current_scenarios[level]
-                if step_match['step_type'] in ['Given', 'When']:
-                    new_step_type = 'action'
-                elif step_match['step_type'] == 'Then':
-                    new_step_type = 'assertion'
-                elif step_match['step_type'] in ['And', 'But']:
-                    new_step_type = current_scenario.steps()[-1].type
-                new_step = Step(step_match['step_name'],
-                                type=new_step_type,
-                                id=line_num)
-                if new_step.type == 'action':
-                    current_scenario.add_action(new_step)
-                elif new_step.type == 'assertion':
-                    current_scenario.add_assertion(new_step)
-            else:
-                raise ValueError('Unable to parse line: ' + line.strip())
-
     def root_scenarios(self):
         '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
         return [v for v in self.graph.vs if v.indegree() == 0]
-
-    def leaf_scenarios(self):
-        '''Return the leaf scenarios of the scenario tree (the ones with no children)'''
-        return [v for v in self.graph.vs if v.outdegree() == 0]
-
-    def add_scenario(self, scenario):
-        '''Add a scenrio instance to the tree'''
-        self.scenarios.append(scenario)
 
     def flatten(self, file, mode='strict'):
         '''
