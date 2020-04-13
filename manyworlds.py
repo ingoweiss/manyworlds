@@ -76,14 +76,14 @@ class ScenarioForest:
     def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
         '''
         Return all possible paths from the source scenario provided
-        
+
         Parameters:
         source_scenario (Vertex): The source scenario from which to get possible paths
         leaf_destinations_only (Boolean): If True, get paths to leaf scenarios only
         '''
         possible_destinations = self.graph.neighborhood(source_scenario,
-                                               mode='OUT',
-                                               order=100)
+                                                        mode='OUT',
+                                                        order=100)
         if leaf_destinations_only:
             possible_destinations = [v for v in possible_destinations
                                      if self.graph.vs[v].outdegree() == 0]
@@ -91,6 +91,20 @@ class ScenarioForest:
                                                            to=possible_destinations,
                                                            mode='OUT')
         return possible_paths
+
+    @classmethod
+    def write_scenario_steps(cls, file_handle, steps, default_conjunction):
+        '''
+        Write formatted scenario stes to file
+
+        Parameters:
+        file_handle (file handle): The file to which to write the steps
+        steps (list of string): The steps to write
+        default_conjunction ('Given', 'When' or 'Then'): The conjunction to use
+        '''
+        for step_num, step in enumerate(steps):
+            conjunction = (default_conjunction if step_num == 0 else 'And')
+            file_handle.write("{} {}\n".format(conjunction, step))
 
     def flatten(self, file, mode='strict'):
         '''
@@ -128,16 +142,16 @@ class ScenarioForest:
                     given_actions = [a
                                      for s in path_scenarios[:-1]
                                      for a in s['actions']]
-                    for action_num, action in enumerate(given_actions):
-                        conjunction = ('Given' if action_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, action))
+                    ScenarioForest.write_scenario_steps(flat_file,
+                                                        given_actions,
+                                                        'Given')
                     destination_scenario = path_scenarios[-1]
-                    for action_num, action in enumerate(destination_scenario['actions']):
-                        conjunction = ('When' if action_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, action))
-                    for assertion_num, assertion in enumerate(destination_scenario['assertions']):
-                        conjunction = ('Then' if assertion_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, assertion))
+                    ScenarioForest.write_scenario_steps(flat_file,
+                                                        destination_scenario['actions'],
+                                                        'When')
+                    ScenarioForest.write_scenario_steps(flat_file,
+                                                        destination_scenario['assertions'],
+                                                        'Then')
                     flat_file.write("\n")
 
     def flatten_relaxed(self, file):
@@ -165,16 +179,14 @@ class ScenarioForest:
                     given_actions = [a
                                      for s in path_scenarios if s in given_scenarios
                                      for a in s['actions']]
-                    for action_num, action in enumerate(given_actions):
-                        conjunction = ('Given' if action_num == 0 else 'And')
-                        flat_file.write("{} {}\n".format(conjunction, action))
+                    ScenarioForest.write_scenario_steps(flat_file, given_actions, 'Given')
                     for path_scenario in [s for s in path_scenarios if s not in given_scenarios]:
-                        for action_num, action in enumerate(path_scenario['actions']):
-                            conjunction = ('When' if action_num == 0 else 'And')
-                            flat_file.write("{} {}\n".format(conjunction, action))
-                        for assertion_num, assertion in enumerate(path_scenario['assertions']):
-                            conjunction = ('Then' if assertion_num == 0 else 'And')
-                            flat_file.write("{} {}\n".format(conjunction, assertion))
+                        ScenarioForest.write_scenario_steps(flat_file,
+                                                            path_scenario['actions'],
+                                                            'When')
+                        ScenarioForest.write_scenario_steps(flat_file,
+                                                            path_scenario['assertions'],
+                                                            'Then')
                         given_scenarios.append(path_scenario)
                     flat_file.write("\n")
 
