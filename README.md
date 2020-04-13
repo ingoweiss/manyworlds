@@ -131,7 +131,7 @@ This will write:
 
 MW can be used from the command line like so:
 
-    python manyworlds_cli.py flatten --mode relaxed --input test/fixtures/scenarios_tree.feature --output test/out/scenarios_flat_relaxed.feature
-	python manyworlds_cli.py graph --input test/fixtures/scenarios_tree.feature --output test/out/scenarios.mermaid.txt
+    python manyworlds_cli.py flatten --mode relaxed --input test/fixtures/scenarios_forest.feature --output test/out/scenarios_flat_relaxed.feature
+	python manyworlds_cli.py graph --input test/fixtures/scenarios_forest.feature --output test/out/scenarios.mermaid.txt
 	python manyworlds_cli.py --help
 
