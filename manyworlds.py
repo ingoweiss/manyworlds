@@ -1,9 +1,9 @@
-'''Defines the ScenarioTree Class'''
+'''Defines the ScenarioForest Class'''
 import re
 from igraph import Graph
 
-class ScenarioTree:
-    '''A tree of BDD scenarios'''
+class ScenarioForest:
+    '''A collection of one or more trees, the vertices of which are representing BDD scenarios'''
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
@@ -14,13 +14,13 @@ class ScenarioTree:
 
     def __init__(self, graph):
         '''
-        Init method for the ScenarioTree Class
+        Init method for the ScenarioForest Class
 
         Parameters:
         graph (igraph.Graph instance): graph representing the scenario tree
 
         Returns:
-        Instance of ScenarioTree
+        Instance of ScenarioForest
         '''
         self.graph = graph
 
@@ -67,7 +67,7 @@ class ScenarioTree:
                 elif new_step_type == 'assertion':
                     current_scenario['assertions'].append(new_step)
                 last_step_type = new_step_type
-        return ScenarioTree(graph)
+        return ScenarioForest(graph)
 
     def root_scenarios(self):
         '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
