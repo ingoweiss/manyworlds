@@ -8,7 +8,7 @@ parser.add_argument('--output', help="output file (either flat scenario file or 
 parser.add_argument('--mode', choices=['strict', 'relaxed'], default='strict')
 args = parser.parse_args()
 
-tree = mw.ScenarioTree(args.input)
+tree = mw.ScenarioTree.from_file(args.input)
 
 if args.action == 'flatten':
     tree.flatten(args.output, mode=args.mode)
