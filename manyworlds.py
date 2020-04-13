@@ -1,6 +1,6 @@
 '''Defines the ScenarioTree Class'''
 import re
-from igraph import *
+from igraph import Graph
 
 class ScenarioTree:
     '''A tree of BDD scenarios'''
@@ -25,21 +25,30 @@ class ScenarioTree:
         self.graph = graph
 
     @classmethod
-    def from_file(self, file):
+    def from_file(cls, file):
+        '''
+        Create a scenario tree from an indented feature file
+
+        Parameters:
+        file (string): Path to indented feature file
+        '''
         graph = Graph(directed=True)
         with open(file) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
-        # current_scenarios keeps track of the last ('current') scenario encountered at each level.
-        # Any action/assertion encountered at a given level will be added to that level's 'current' scenario
+        # 'current_scenarios' keeps track of the last ('current') scenario encountered at each
+        # level. Any action/assertion encountered at a given level will be added to that level's
+        # 'current' scenario
         current_scenarios = {}
-        for line_num, line in enumerate(raw_lines):
-            scenario_match = self.SCENARIO_LINE_PATTERN.match(line)
-            step_match = self.STEP_LINE_PATTERN.match(line)
+        for line in raw_lines:
+            scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
+            step_match = cls.STEP_LINE_PATTERN.match(line)
             if not (scenario_match or step_match):
                 raise ValueError('Unable to parse line: ' + line.strip())
-            current_level = len((scenario_match or step_match)['indentation']) / self.TAB_SIZE
+            current_level = len((scenario_match or step_match)['indentation']) / cls.TAB_SIZE
             if scenario_match:
-                current_scenario = graph.add_vertex(name=scenario_match['scenario_name'], actions=[], assertions=[])
+                current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
+                                                    actions=[],
+                                                    assertions=[])
                 current_scenarios[current_level] = current_scenario
                 if current_level > 0:
                     current_scenario_parent = current_scenarios[current_level-1]
@@ -92,13 +101,16 @@ class ScenarioTree:
         '''
         with open(file, 'w') as flat_file:
             for root_scenario in self.root_scenarios():
-                possible_destinations = self.graph.neighborhood(root_scenario, mode=OUT, order=100)
-                possible_paths = self.graph.get_all_shortest_paths(root_scenario, to=possible_destinations, mode=OUT)
+                possible_destinations = self.graph.neighborhood(root_scenario,
+                                                                mode='OUT',
+                                                                order=100)
+                possible_paths = self.graph.get_all_shortest_paths(root_scenario,
+                                                                   to=possible_destinations,
+                                                                   mode='OUT')
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
                     path_name = ' > '.join([v['name'] for v in path_scenarios])
                     flat_file.write("Scenario: {}\n".format(path_name))
-                    given_scenarios = []
                     given_actions = [a
                                      for s in path_scenarios[:-1]
                                      for a in s['actions']]
@@ -130,9 +142,14 @@ class ScenarioTree:
         with open(file, 'w') as flat_file:
             given_scenarios = []
             for root_scenario in self.root_scenarios():
-                possible_destinations = self.graph.neighborhood(root_scenario, mode=OUT, order=100)
-                possible_leaf_destinations = [v for v in possible_destinations if self.graph.vs[v].outdegree() == 0]
-                possible_paths = self.graph.get_all_shortest_paths(root_scenario, to=possible_leaf_destinations, mode=OUT)
+                possible_destinations = self.graph.neighborhood(root_scenario,
+                                                                mode='OUT',
+                                                                order=100)
+                possible_leaf_destinations = [v for v in possible_destinations
+                                              if self.graph.vs[v].outdegree() == 0]
+                possible_paths = self.graph.get_all_shortest_paths(root_scenario,
+                                                                   to=possible_leaf_destinations,
+                                                                   mode='OUT')
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
                     path_name = ' > '.join([v['name'] for v in path_scenarios])
@@ -165,4 +182,5 @@ class ScenarioTree:
             for scenario in self.graph.vs:
                 mermaid_file.write('{}({})\n'.format(scenario.index, scenario['name']))
             for edge in self.graph.es:
-                mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index, edge.target_vertex.index))
+                mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index,
+                                                        edge.target_vertex.index))
