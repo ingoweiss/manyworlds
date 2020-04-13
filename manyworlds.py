@@ -39,11 +39,11 @@ class ScenarioTree:
                 raise ValueError('Unable to parse line: ' + line.strip())
             current_level = len((scenario_match or step_match)['indentation']) / self.TAB_SIZE
             if scenario_match:
-                new_scenario = graph.add_vertex(name=scenario_match['scenario_name'], actions=[], assertions=[])
-                current_scenarios[current_level] = new_scenario
-                if not current_level == 0:
-                    current_parent_scenario = current_scenarios[current_level-1]
-                    graph.add_edge(current_parent_scenario, new_scenario)
+                current_scenario = graph.add_vertex(name=scenario_match['scenario_name'], actions=[], assertions=[])
+                current_scenarios[current_level] = current_scenario
+                if current_level > 0:
+                    current_scenario_parent = current_scenarios[current_level-1]
+                    graph.add_edge(current_scenario_parent, current_scenario)
             elif step_match:
                 current_scenario = current_scenarios[current_level]
                 if step_match['step_type'] in ['Given', 'When']:
