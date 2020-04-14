@@ -1,9 +1,13 @@
-'''Defines the ScenarioForest Class'''
+"""Defines the ScenarioForest Class"""
 import re
 from igraph import Graph
 
 class ScenarioForest:
-    '''A collection of one or more trees, the vertices of which are representing BDD scenarios'''
+    """A collection of one or more directed trees the vertices of which represent BDD scenarios
+
+    :param graph: A graph
+    :type graph: class:`igraph.Graph`
+    """
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
@@ -13,25 +17,19 @@ class ScenarioForest:
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
 
     def __init__(self, graph):
-        '''
-        Init method for the ScenarioForest Class
-
-        Parameters:
-        graph (igraph.Graph instance): graph representing the scenario tree
-
-        Returns:
-        Instance of ScenarioForest
-        '''
+        """Constructor method
+        """
         self.graph = graph
 
     @classmethod
     def from_file(cls, file):
-        '''
-        Create a scenario tree from an indented feature file
+        """Create a scenario tree from an indented feature file
 
-        Parameters:
-        file (string): Path to indented feature file
-        '''
+        :param file_path: Fath to indented feature file
+        :type file_path: str
+        :return: A new instance of manyworlds.ScenarioForest
+        :rtype: class:'manyworlds.ScenarioForest'
+        """
         graph = Graph(directed=True)
         with open(file) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
@@ -70,17 +68,21 @@ class ScenarioForest:
         return ScenarioForest(graph)
 
     def root_scenarios(self):
-        '''Return the root scenarios of the scenario tree (the ones with level=0 and no parent)'''
+        """Return the root scenarios of the scenario forest (the vertices with no incoming edges)'
+
+        :return: A list of igraph.Vertex
+        :rtype: list
+        """
         return [v for v in self.graph.vs if v.indegree() == 0]
 
     def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
-        '''
-        Return all possible paths from the source scenario provided
+        """Return the paths from a source vertex to vertices that are reachable from the source vertex
 
-        Parameters:
-        source_scenario (Vertex): The source scenario from which to get possible paths
-        leaf_destinations_only (Boolean): If True, get paths to leaf scenarios only
-        '''
+        :param source_scenario: Source (root) vertex. First element of all paths returned
+        :type source_scenario: class:'igraph.Vertex'
+        :param leaf_destinations_only: If True, return paths to leaf scenarios only
+        :type leaf_destinations_only: bool, optionsl
+        """
         possible_destinations = self.graph.neighborhood(source_scenario,
                                                         mode='OUT',
                                                         order=100)
@@ -94,56 +96,53 @@ class ScenarioForest:
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, default_conjunction):
-        '''
-        Write formatted scenario steps to file
+        """Write formatted scenario steps to file
 
-        Parameters:
-        file_handle (file handle): The file to which to write the steps
-        steps (list of string): The steps to write
-        default_conjunction ('Given', 'When' or 'Then'): The conjunction to use
-        '''
+        :param file_handle: The file to which to write the steps
+        :type file_handle: class:'io.TextIOWrapper'
+        :param steps: The steps to write
+        :type steps: list of str
+        :param default_conjunction: The conjunction to use (either 'Given', 'When' or 'Then')
+        :type default_conjunction: str
+        """
         for step_num, step in enumerate(steps):
             conjunction = (default_conjunction if step_num == 0 else 'And')
             file_handle.write("{} {}\n".format(conjunction, step))
 
     @classmethod
     def write_scenario_name(cls, file_handle, path_scenarios):
-        '''
-        Write formatted scenario name to file
+        """Write formatted scenario name to file
 
-        Parameters:
-        file_handle (file handle): The file to which to write the steps
-        path_scenarios (list of Vertex): The scenarios/vertices on the path
-        '''
+        :param file_handle: The file to which to write the scenario name
+        :type file_handle: class:'io.TextIOWrapper'
+        :param path_scenarios: The scenarios/vertices on the path
+        :type path_scenarios: list of class:'igraph.Vertex'
+        """
         path_name = ' > '.join([v['name'] for v in path_scenarios])
         file_handle.write("Scenario: {}\n".format(path_name))
 
     def flatten(self, file, mode='strict'):
-        '''
-        Write a flat (no indentation) feature file representing the scenario tree.
+        """Write a flat (no indentation) feature file representing the scenario forest
 
-        Parameters:
-        file (string): Path to flat feature file
-        mode (string): Either 'strict' or 'relaxed'
-        '''
+        :param file: Path to flat feature file to be written
+        :type file: str
+        :param mode: Flattening mode. Either 'strict' or 'relaxed'
+        :type mode: str
+        """
         if mode == 'strict':
             self.flatten_strict(file)
         elif mode == 'relaxed':
             self.flatten_relaxed(file)
 
     def flatten_strict(self, file):
-        '''
-        Writes a flat (no indentation) feature file representing the tree using the 'strict' mode.
+        """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
-        The 'strict' mode writes one scenario per scenario in the tree.
-        This results in a feature file with:
-        1. One when/then pair per scenario (generally recommended)
-        2. More scenarios
-        3. More duplicate (given) actions
+        The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
+        a feature file with one set of 'When' steps followed by one set of 'Then' steps (generally recommended)
 
-        Parameters:
-        file (string): Path to flat feature file
-        '''
+        :param file: Path to flat feature file
+        :type file: str
+        """
         with open(file, 'w') as flat_file:
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario)
@@ -166,18 +165,14 @@ class ScenarioForest:
                     flat_file.write("\n")
 
     def flatten_relaxed(self, file):
-        '''
-        Writes a flat (no indentation) feature file representing the tree using the 'relaxed' mode.
+        """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
-        The 'relaxed' mode writes one scenario per leaf scenario in the tree.
-        This results in a feature file with:
-        1. Multiple when/then pairs per scenario (generally considered an anti-pattern)
-        2. Fewer scenarios
-        3. Fewer duplicate (given) actions
+        The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
+        a feature file with multiple alternating sets of "When" and "Then" steps per (generally considered an anti-pattern)
 
-        Parameters:
-        file (string): Path to flat feature file
-        '''
+        :param file: Path to flat feature file
+        :type file: str
+        """
         with open(file, 'w') as flat_file:
             given_scenarios = []
             for root_scenario in self.root_scenarios():
@@ -201,12 +196,11 @@ class ScenarioForest:
                     flat_file.write("\n")
 
     def graph_mermaid(self, file):
-        '''
-        Writes a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
+        """Write a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
 
-        Parameters:
-        file (string): Path to Mermaid file
-        '''
+        :parmam file: Path to Mermaid file to be written
+        :type file: strex
+        """
         with open(file, 'w') as mermaid_file:
             mermaid_file.write("graph TD\n")
             for scenario in self.graph.vs:
