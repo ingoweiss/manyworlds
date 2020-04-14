@@ -22,7 +22,7 @@ class ScenarioForest:
         self.graph = graph
 
     @classmethod
-    def from_file(cls, file):
+    def from_file(cls, file_path):
         """Create a scenario tree from an indented feature file
 
         :param file_path: Fath to indented feature file
@@ -31,7 +31,7 @@ class ScenarioForest:
         :rtype: class:'manyworlds.ScenarioForest'
         """
         graph = Graph(directed=True)
-        with open(file) as indented_file:
+        with open(file_path) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
         # 'current_scenarios' keeps track of the last ('current') scenario encountered at each
         # level. Any action/assertion encountered at a given level will be added to that level's
@@ -83,30 +83,30 @@ class ScenarioForest:
         :param leaf_destinations_only: If True, return paths to leaf scenarios only
         :type leaf_destinations_only: bool, optionsl
         """
-        possible_destinations = self.graph.neighborhood(source_scenario,
-                                                        mode='OUT',
-                                                        order=100)
+        destinations = self.graph.neighborhood(source_scenario,
+                                               mode='OUT',
+                                               order=100)
         if leaf_destinations_only:
-            possible_destinations = [v for v in possible_destinations
-                                     if self.graph.vs[v].outdegree() == 0]
-        possible_paths = self.graph.get_all_shortest_paths(source_scenario,
-                                                           to=possible_destinations,
-                                                           mode='OUT')
-        return possible_paths
+            destinations = [v for v in destinations
+                            if self.graph.vs[v].outdegree() == 0]
+        paths = self.graph.get_all_shortest_paths(source_scenario,
+                                                  to=destinations,
+                                                  mode='OUT')
+        return paths
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps, default_conjunction):
+    def write_scenario_steps(cls, file_handle, steps, conjunction):
         """Write formatted scenario steps to file
 
         :param file_handle: The file to which to write the steps
         :type file_handle: class:'io.TextIOWrapper'
         :param steps: The steps to write
         :type steps: list of str
-        :param default_conjunction: The conjunction to use (either 'Given', 'When' or 'Then')
-        :type default_conjunction: str
+        :param conjunction: The conjunction to use (either 'Given', 'When' or 'Then')
+        :type conjunction: str
         """
         for step_num, step in enumerate(steps):
-            conjunction = (default_conjunction if step_num == 0 else 'And')
+            conjunction = (conjunction if step_num == 0 else 'And')
             file_handle.write("{} {}\n".format(conjunction, step))
 
     @classmethod
@@ -134,16 +134,16 @@ class ScenarioForest:
         elif mode == 'relaxed':
             self.flatten_relaxed(file)
 
-    def flatten_strict(self, file):
+    def flatten_strict(self, file_path):
         """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
         The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
         a feature file with one set of 'When' steps followed by one set of 'Then' steps (generally recommended)
 
-        :param file: Path to flat feature file
-        :type file: str
+        :param file_path: Path to flat feature file
+        :type file_path: str
         """
-        with open(file, 'w') as flat_file:
+        with open(file_path, 'w') as flat_file:
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
@@ -164,16 +164,16 @@ class ScenarioForest:
                                                         'Then')
                     flat_file.write("\n")
 
-    def flatten_relaxed(self, file):
+    def flatten_relaxed(self, file_path):
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
         The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
         a feature file with multiple alternating sets of "When" and "Then" steps per (generally considered an anti-pattern)
 
-        :param file: Path to flat feature file
-        :type file: str
+        :param file_path: Path to flat feature file
+        :type file_path: str
         """
-        with open(file, 'w') as flat_file:
+        with open(file_path, 'w') as flat_file:
             given_scenarios = []
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario,
@@ -195,13 +195,13 @@ class ScenarioForest:
                         given_scenarios.append(path_scenario)
                     flat_file.write("\n")
 
-    def graph_mermaid(self, file):
+    def graph_mermaid(self, file_path):
         """Write a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
 
-        :parmam file: Path to Mermaid file to be written
-        :type file: strex
+        :parmam file_path: Path to Mermaid file to be written
+        :type file_path: strex
         """
-        with open(file, 'w') as mermaid_file:
+        with open(file_path, 'w') as mermaid_file:
             mermaid_file.write("graph TD\n")
             for scenario in self.graph.vs:
                 mermaid_file.write('{}({})\n'.format(scenario.index, scenario['name']))
