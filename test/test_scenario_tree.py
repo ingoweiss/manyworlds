@@ -1,8 +1,4 @@
-import sys
-import pdb
 import filecmp
-sys.path.insert(0, '..')
-
 import manyworlds as mw
 
 def test_parse():
