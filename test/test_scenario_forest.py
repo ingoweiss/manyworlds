@@ -12,6 +12,8 @@ def clear_out_directory():
     """Delete all files in test/out"""
     folder = os.path.dirname(os.path.realpath(__file__)) + '/out'
     for filename in os.listdir(folder):
+        if filename == '.gitignore':
+            next
         file_path = os.path.join(folder, filename)
         os.unlink(file_path)
     yield
