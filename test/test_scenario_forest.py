@@ -29,7 +29,7 @@ def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
     forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     forest.flatten('test/out/scenarios_flat_strict.feature')
-    assert filecmp.cmp('test/out/scenarios_flat_strict.feature', \
+    assert filecmp.cmp('test/out/scenarios_flat_strict.feature',
                        'test/fixtures/scenarios_flat_strict.feature')
 
 def test_flatten_relaxed():
