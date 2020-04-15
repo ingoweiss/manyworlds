@@ -1,5 +1,15 @@
 import filecmp
+import pytest
+import os
 import manyworlds as mw
+
+@pytest.fixture(scope='session', autouse=True)
+def clear_out_directory():
+    folder = os.path.dirname(os.path.realpath(__file__)) + '/out'
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        os.unlink(file_path)
+    yield
 
 def test_parse():
     tree = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
