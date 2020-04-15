@@ -1,10 +1,15 @@
-import filecmp
-import pytest
+"""Test the ScenarioForest class"""
+
 import os
+import filecmp
+
+import pytest
+
 import manyworlds as mw
 
 @pytest.fixture(scope='session', autouse=True)
 def clear_out_directory():
+    """Delete all files in test/out"""
     folder = os.path.dirname(os.path.realpath(__file__)) + '/out'
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
@@ -12,24 +17,31 @@ def clear_out_directory():
     yield
 
 def test_parse():
-    tree = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    assert len(tree.root_scenarios()) == 1
-    bulk_change_scenario = tree.root_scenarios()[0].successors()[0].successors()[1].successors()[1]
-    assert bulk_change_scenario['name'] == 'Bulk change permissions'
-    assert len(bulk_change_scenario['actions']) == 2
-    assert len(bulk_change_scenario['assertions']) == 2
+    """Test the structure of the forest graph after using the 'from_file' method"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    assert len(forest.root_scenarios()) == 1
+    scenario = forest.root_scenarios()[0].successors()[0].successors()[1].successors()[1]
+    assert scenario['name'] == 'Bulk change permissions'
+    assert len(scenario['actions']) == 2
+    assert len(scenario['assertions']) == 2
 
 def test_flatten_strict():
-    tree = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    tree.flatten('test/out/scenarios_flat_strict.feature')
-    assert filecmp.cmp('test/out/scenarios_flat_strict.feature', 'test/fixtures/scenarios_flat_strict.feature')
+    """Test the 'flatten' method in 'strict' mode"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest.flatten('test/out/scenarios_flat_strict.feature')
+    assert filecmp.cmp('test/out/scenarios_flat_strict.feature', \
+                       'test/fixtures/scenarios_flat_strict.feature')
 
 def test_flatten_relaxed():
-    tree = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    tree.flatten('test/out/scenarios_flat_relaxed.feature', mode='relaxed')
-    assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature', 'test/fixtures/scenarios_flat_relaxed.feature')
+    """Test the 'flatten' method in 'relaxed' mode"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest.flatten('test/out/scenarios_flat_relaxed.feature', mode='relaxed')
+    assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature',
+                       'test/fixtures/scenarios_flat_relaxed.feature')
 
 def test_graph_mermaid():
-    tree = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    tree.graph_mermaid('test/out/scenarios_graph.mermaid.txt')
-    assert filecmp.cmp('test/out/scenarios_graph.mermaid.txt', 'test/fixtures/scenarios_graph.mermaid.txt')
+    """Test the 'graph_mermaid' method"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest.graph_mermaid('test/out/scenarios_graph.mermaid.txt')
+    assert filecmp.cmp('test/out/scenarios_graph.mermaid.txt',
+                       'test/fixtures/scenarios_graph.mermaid.txt')
