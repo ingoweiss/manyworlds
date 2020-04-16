@@ -13,4 +13,4 @@ tree = mw.ScenarioForest.from_file(args.input)
 if args.action == 'flatten':
     tree.flatten(args.output, mode=args.mode)
 elif args.action == 'graph':
-    tree.graph(args.output)
+    tree.graph_mermaid(args.output)
