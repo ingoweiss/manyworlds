@@ -23,7 +23,14 @@ class ScenarioForest:
 
     @classmethod
     def from_file(cls, file_path):
-        """Create a scenario tree from an indented feature file
+        """Create a scenario tree instance from an indented feature file
+
+        Scan the indented file line by line and:
+        1. Keep track of the last scenario encountered at each indentation level
+        2. Any scenario encountered is added as a child to the last scenario encounterd
+           at the parent level
+        3. Any action or assertion encountered is added to the last scenarion encountered
+           at that level
 
         :param file_path: Fath to indented feature file
         :type file_path: str
@@ -33,17 +40,19 @@ class ScenarioForest:
         graph = Graph(directed=True)
         with open(file_path) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
-        # 'current_scenarios' keeps track of the last ('current') scenario encountered at each
-        # level. Any action/assertion encountered at a given level will be added to that level's
-        # 'current' scenario
-        current_scenarios = {}
+        current_scenarios = {} # used to keep track of last scenario encountered at each level
+
+        # Scan the file line by line
         for line in raw_lines:
+
+            # Determine whether line is scenario, actio or assertion
             scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
             step_match = cls.STEP_LINE_PATTERN.match(line)
             if not (scenario_match or step_match):
                 raise ValueError('Unable to parse line: ' + line.strip())
             current_level = len((scenario_match or step_match)['indentation']) / cls.TAB_SIZE
-            if scenario_match:
+
+            if scenario_match: # Line is scenario
                 current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
                                                     actions=[],
                                                     assertions=[])
@@ -51,7 +60,8 @@ class ScenarioForest:
                 if current_level > 0:
                     current_scenario_parent = current_scenarios[current_level-1]
                     graph.add_edge(current_scenario_parent, current_scenario)
-            elif step_match:
+
+            elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
                 if step_match['step_type'] in ['Given', 'When']:
                     new_step_type = 'action'
@@ -65,6 +75,7 @@ class ScenarioForest:
                 elif new_step_type == 'assertion':
                     current_scenario['assertions'].append(new_step)
                 last_step_type = new_step_type
+
         return ScenarioForest(graph)
 
     def root_scenarios(self):
@@ -76,7 +87,7 @@ class ScenarioForest:
         return [v for v in self.graph.vs if v.indegree() == 0]
 
     def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
-        """Return the paths from a source vertex to vertices that are reachable from the source vertex
+        """Return paths from a source vertex to vertices that are reachable from the source vertex
 
         :param source_scenario: Source (root) vertex. First element of all paths returned
         :type source_scenario: class:'igraph.Vertex'
