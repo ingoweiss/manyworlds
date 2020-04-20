@@ -11,70 +11,77 @@ The purpose of this project is to explore whether there is value in this concept
 
 The above reads a file that looks like this ...
 
-    Scenario: Users
-    When I go to "Users"
-    Then I see "Users"
+```Cucumber
+
+Scenario: Users
+When I go to "Users"
+Then I see "Users"
+
+    Scenario: Select user
+    When I select user "Ben"
+    Then I see "1 user selected"
+
+        Scenario: Deselect user
+        When I deselect user "Ben"
+        Then I see "0 users selected"
     
-        Scenario: Select user
-        When I select user "Ben"
-        Then I see "1 user selected"
+        Scenario: Select another user
+        When I select user "Alice"
+        Then I see "2 users selected"
     
-            Scenario: Deselect user
-            When I deselect user "Ben"
+            Scenario: Deselect all
+            When I click "Deselect all"
             Then I see "0 users selected"
         
-            Scenario: Select another user
-            When I select user "Alice"
-            Then I see "2 users selected"
-        
-                Scenario: Deselect all
-                When I click "Deselect all"
-                Then I see "0 users selected"
-            
-                Scenario: Bulk change permissions
-                When I select "Edit" from "Permissions"
-                And I click "Apply to selected"
-                Then I see "2 users changed"
-                And I see "2 users selected"
+            Scenario: Bulk change permissions
+            When I select "Edit" from "Permissions"
+            And I click "Apply to selected"
+            Then I see "2 users changed"
+            And I see "2 users selected"
+```
 
 ... and writes a file that looks like this:
 
-    Scenario: Users
-    When I go to "Users"
-    Then I see "Users"
+```Cucumber
+
+Scenario: Users
+When I go to "Users"
+Then I see "Users"
+
+Scenario: Users > Select user
+Given I go to "Users"
+When I select user "Ben"
+Then I see "1 user selected"
+
+Scenario: Users > Select user > Deselect user
+Given I go to "Users"
+And I select user "Ben"
+When I deselect user "Ben"
+Then I see "0 users selected"
+
+Scenario: Users > Select user > Select another user
+Given I go to "Users"
+And I select user "Ben"
+When I select user "Alice"
+Then I see "2 users selected"
+
+Scenario: Users > Select user > Select another user > Deselect all
+Given I go to "Users"
+And I select user "Ben"
+And I select user "Alice"
+When I click "Deselect all"
+Then I see "0 users selected"
+
+Scenario: Users > Select user > Select another user > Bulk change permissions
+Given I go to "Users"
+And I select user "Ben"
+And I select user "Alice"
+When I select "Edit" from "Permissions"
+And I click "Apply to selected"
+Then I see "2 users changed"
+And I see "2 users selected"
     
-    Scenario: Users > Select user
-    Given I go to "Users"
-    When I select user "Ben"
-    Then I see "1 user selected"
-    
-    Scenario: Users > Select user > Deselect user
-    Given I go to "Users"
-    And I select user "Ben"
-    When I deselect user "Ben"
-    Then I see "0 users selected"
-    
-    Scenario: Users > Select user > Select another user
-    Given I go to "Users"
-    And I select user "Ben"
-    When I select user "Alice"
-    Then I see "2 users selected"
-    
-    Scenario: Users > Select user > Select another user > Deselect all
-    Given I go to "Users"
-    And I select user "Ben"
-    And I select user "Alice"
-    When I click "Deselect all"
-    Then I see "0 users selected"
-    
-    Scenario: Users > Select user > Select another user > Bulk change permissions
-    Given I go to "Users"
-    And I select user "Ben"
-    And I select user "Alice"
-    When I select "Edit" from "Permissions"
-    And I click "Apply to selected"
-    Then I see "2 users changed"
-    And I see "2 users selected"
+```
 
 The nested version is significantly shorter by eliminating repetition. My hope is that it is also more structured and readable. 
 
@@ -101,31 +108,34 @@ MW also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in th
 
 This will write:
 
-    Scenario: Users > Select user > Deselect user
-    When I go to "Users"
-    Then I see "Users"
-    When I select user "Ben"
-    Then I see "1 user selected"
-    When I deselect user "Ben"
-    Then I see "0 users selected"
-    
-    Scenario: Users > Select user > Select another user > Deselect all
-    Given I go to "Users"
-    And I select user "Ben"
-    When I select user "Alice"
-    Then I see "2 users selected"
-    When I click "Deselect all"
-    Then I see "0 users selected"
-    
-    Scenario: Users > Select user > Select another user > Bulk change permissions
-    Given I go to "Users"
-    And I select user "Ben"
-    And I select user "Alice"
-    When I select "Edit" from "Permissions"
-    And I click "Apply to selected"
-    Then I see "2 users changed"
-    And I see "2 users selected"
+```Cucumber
 
+Scenario: Users > Select user > Deselect user
+When I go to "Users"
+Then I see "Users"
+When I select user "Ben"
+Then I see "1 user selected"
+When I deselect user "Ben"
+Then I see "0 users selected"
+
+Scenario: Users > Select user > Select another user > Deselect all
+Given I go to "Users"
+And I select user "Ben"
+When I select user "Alice"
+Then I see "2 users selected"
+When I click "Deselect all"
+Then I see "0 users selected"
+
+Scenario: Users > Select user > Select another user > Bulk change permissions
+Given I go to "Users"
+And I select user "Ben"
+And I select user "Alice"
+When I select "Edit" from "Permissions"
+And I click "Apply to selected"
+Then I see "2 users changed"
+And I see "2 users selected"
+
+```
 
 ### CLI
 
