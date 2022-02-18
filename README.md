@@ -4,7 +4,9 @@ Just playing around with the idea of scenario trees.
 
 Having been frustrated with the amount of repetition and verbosity in automated tests (especially when using Gherkin syntax) for a long time, I felt that some of this could be addressed if behavior could be described as a tree of scenarios.
 
-Just like regular scenarios, each scenario in the tree would have a name, a set of actions ('When ...') and a set of assertions ('Then ...'). **'Given...' steps, however, would no longer be needed since any scenario's 'Given' state would simply be the cumulative effect of running its chain of ancestor scenarios**.
+Just like regular scenarios, each scenario in the tree would have a name, a set of actions ('When ...') and a set of assertions ('Then ...').
+
+*'Given...' steps, however, would no longer be needed since any scenario's 'Given' state would simply be the cumulative effect of running its chain of ancestor scenarios*.
 
 The purpose of this project is to explore whether there is value in this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
 
