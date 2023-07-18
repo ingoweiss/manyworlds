@@ -77,7 +77,7 @@ class ScenarioForest:
                     new_step_type = current_step['type']
                 new_step = {'name': step_match['step_name'], 'type': new_step_type}
                 if current_table:
-                    current_step['table'] = current_table
+                    current_step['data'] = current_table
                     current_table = None
                 if new_step_type == 'action':
                     current_scenario['actions'].append(new_step)
@@ -135,10 +135,10 @@ class ScenarioForest:
         for step_num, step in enumerate(steps):
             conjunction = (conjunction if step_num == 0 else 'And')
             file_handle.write("{} {}\n".format(conjunction, step['name']))
-            if 'table' in step.keys():
-                table = step['table']
+            if 'data' in step.keys():
+                table = step['data']
                 col_widths = [max([len(cell) for cell in col]) for col in list(zip(*table))]
-                for row in step['table']:
+                for row in table:
                     padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
                     file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
