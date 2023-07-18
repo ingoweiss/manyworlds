@@ -1,6 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 from igraph import Graph
+import pdb
 
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios
@@ -13,8 +14,10 @@ class ScenarioForest:
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
     step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>.*)'
+    table_pattern = r'| ([^|]* +|)+'
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
+    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, table_pattern))
 
     def __init__(self, graph):
         """Constructor method
@@ -41,6 +44,8 @@ class ScenarioForest:
         with open(file_path) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
         current_scenarios = {} # used to keep track of last scenario encountered at each level
+        current_table = None
+        current_step = None
 
         # Scan the file line by line
         for line in raw_lines:
@@ -48,11 +53,12 @@ class ScenarioForest:
             # Determine whether line is scenario, actio or assertion
             scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
             step_match = cls.STEP_LINE_PATTERN.match(line)
-            if not (scenario_match or step_match):
+            table_match = cls.TABLE_LINE_PATTERN.match(line)
+            if not (scenario_match or step_match or table_match):
                 raise ValueError('Unable to parse line: ' + line.strip())
-            current_level = len((scenario_match or step_match)['indentation']) / cls.TAB_SIZE
 
             if scenario_match: # Line is scenario
+                current_level = len((scenario_match)['indentation']) / cls.TAB_SIZE
                 current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
                                                     actions=[],
                                                     assertions=[])
@@ -68,14 +74,24 @@ class ScenarioForest:
                 elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
-                    new_step_type = last_step_type
-                new_step = step_match['step_name']
+                    new_step_type = current_step['type']
+                new_step = {'name': step_match['step_name'], 'type': new_step_type}
+                if current_table:
+                    current_step['table'] = current_table
+                    current_table = None
                 if new_step_type == 'action':
                     current_scenario['actions'].append(new_step)
                 elif new_step_type == 'assertion':
                     current_scenario['assertions'].append(new_step)
-                last_step_type = new_step_type
+                current_step = new_step
 
+            elif table_match: # Line is table
+                if current_table == None:
+                    current_table = []
+                row = [s.strip() for s in line.split('|')[1:-1]]
+                current_table.append(row)
+
+        # pdb.set_trace()
         return ScenarioForest(graph)
 
     def root_scenarios(self):
@@ -118,7 +134,14 @@ class ScenarioForest:
         """
         for step_num, step in enumerate(steps):
             conjunction = (conjunction if step_num == 0 else 'And')
-            file_handle.write("{} {}\n".format(conjunction, step))
+            file_handle.write("{} {}\n".format(conjunction, step['name']))
+            if 'table' in step.keys():
+                table = step['table']
+                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*table))]
+                for row in step['table']:
+                    padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
+                    file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
+
 
     @classmethod
     def write_scenario_name(cls, file_handle, path_scenarios):

@@ -1,6 +1,16 @@
 Scenario: Users
-Given I go to "Users"
-Then I see "Users"
+Given the following users:
+    | Name   | Status      |
+    | Ben    | Active      |
+    | Alice  | Active      |
+    | Connie | Active      |
+    | Dan    | Deactivated |
+When I go to "Users"
+Then I see the following "Users":
+    | Name   | Status |
+    | Ben    | Active |
+    | Alice  | Active |
+    | Connie | Active |
 
     Scenario: Select user
     When I select user "Ben"
