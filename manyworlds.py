@@ -58,7 +58,9 @@ class ScenarioForest:
                 raise ValueError('Unable to parse line: ' + line.strip())
 
             if scenario_match: # Line is scenario
-                current_level = len((scenario_match)['indentation']) / cls.TAB_SIZE
+                current_level = int(len((scenario_match)['indentation']) / cls.TAB_SIZE)
+                print(('' if current_level == 0 else '   '*current_level + '└─ ') + scenario_match['scenario_name'])
+
                 current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
                                                     actions=[],
                                                     assertions=[])
