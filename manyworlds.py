@@ -57,6 +57,10 @@ class ScenarioForest:
             if not (scenario_match or step_match or table_match):
                 raise ValueError('Unable to parse line: ' + line.strip())
 
+            if (scenario_match or step_match) and current_table:
+                current_step['data'] = current_table
+                current_table = None
+
             if scenario_match: # Line is scenario
                 current_level = int(len((scenario_match)['indentation']) / cls.TAB_SIZE)
                 print(('' if current_level == 0 else '   '*current_level + '└─ ') + scenario_match['scenario_name'])
@@ -78,9 +82,6 @@ class ScenarioForest:
                 elif step_match['step_type'] in ['And', 'But']:
                     new_step_type = current_step['type']
                 new_step = {'name': step_match['step_name'], 'type': new_step_type}
-                if current_table:
-                    current_step['data'] = current_table
-                    current_table = None
                 if new_step_type == 'action':
                     current_scenario['actions'].append(new_step)
                 elif new_step_type == 'assertion':
@@ -93,7 +94,10 @@ class ScenarioForest:
                 row = [s.strip() for s in line.split('|')[1:-1]]
                 current_table.append(row)
 
-        # pdb.set_trace()
+        # In case the file ends with a data table:
+        if current_table:
+            current_step['data'] = current_table
+
         return ScenarioForest(graph)
 
     def root_scenarios(self):
