@@ -66,6 +66,7 @@ class ScenarioForest:
                 print(('' if current_level == 0 else '   '*current_level + '└─ ') + scenario_match['scenario_name'])
 
                 current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
+                                                    prerequisites=[],
                                                     actions=[],
                                                     assertions=[])
                 current_scenarios[current_level] = current_scenario
@@ -75,13 +76,17 @@ class ScenarioForest:
 
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
-                if step_match['step_type'] in ['Given', 'When']:
+                if step_match['step_type'] == 'Given':
+                    new_step_type = 'prerequisite'
+                elif step_match['step_type'] == 'When':
                     new_step_type = 'action'
                 elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
                     new_step_type = current_step['type']
                 new_step = {'name': step_match['step_name'], 'type': new_step_type}
+                if new_step_type == 'prerequisite':
+                    current_scenario['prerequisites'].append(new_step)
                 if new_step_type == 'action':
                     current_scenario['actions'].append(new_step)
                 elif new_step_type == 'assertion':
@@ -150,7 +155,7 @@ class ScenarioForest:
 
 
     @classmethod
-    def write_scenario_name(cls, file_handle, path_scenarios):
+    def write_scenario_name(cls, file_handle, path_scenarios, destination_scenario):
         """Write formatted scenario name to file
 
         :param file_handle: The file to which to write the scenario name
@@ -158,7 +163,7 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        scenario_name = path_scenarios[-1]['name']
+        scenario_name = destination_scenario['name']
         file_handle.write("Scenario: {}\n".format(scenario_name))
 
     def flatten(self, file, mode='strict'):
@@ -187,19 +192,24 @@ class ScenarioForest:
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
-                    path_scenarios = self.graph.vs[path]
+                    scenarios = self.graph.vs[path]
+                    path_scenarios = scenarios[:-1]
+                    destination_scenario = scenarios[-1]
 
-                    if not path_scenarios[-1]['assertions']:
+                    if not (destination_scenario['prerequisites'] or destination_scenario['assertions']):
                         continue # don't ouput scenario unless it has assertions
 
-                    ScenarioForest.write_scenario_name(flat_file, path_scenarios)
-                    given_actions = [a
-                                     for s in path_scenarios[:-1]
-                                     for a in s['actions']]
+                    ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
+
+                    if path_scenarios:
+                        given_steps = [st
+                                    for sc in path_scenarios
+                                    for st in sc['prerequisites'] + sc['actions']]
+                    else:
+                        given_steps = destination_scenario['prerequisites']
                     ScenarioForest.write_scenario_steps(flat_file,
-                                                        given_actions,
+                                                        given_steps,
                                                         'Given')
-                    destination_scenario = path_scenarios[-1]
                     ScenarioForest.write_scenario_steps(flat_file,
                                                         destination_scenario['actions'],
                                                         'When')
@@ -218,29 +228,32 @@ class ScenarioForest:
         :type file_path: str
         """
         with open(file_path, 'w') as flat_file:
-            given_scenarios = []
+            tested_scenarios = []
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario,
                                                                  leaf_destinations_only=True)
                 for path in possible_paths:
-                    path_scenarios = self.graph.vs[path]
+                    scenarios = self.graph.vs[path]
+                    path_scenarios = scenarios[:-1]
+                    destination_scenario = scenarios[-1]
 
-                    if not path_scenarios[-1]['assertions']:
+                    if not (destination_scenario['prerequisites'] or destination_scenario['assertions']):
                         continue # don't ouput scenario unless it has assertions
 
-                    ScenarioForest.write_scenario_name(flat_file, path_scenarios)
-                    given_actions = [a
-                                     for s in path_scenarios if s in given_scenarios
-                                     for a in s['actions']]
-                    ScenarioForest.write_scenario_steps(flat_file, given_actions, 'Given')
-                    for path_scenario in [s for s in path_scenarios if s not in given_scenarios]:
+                    ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
+
+                    for scenario in scenarios:
                         ScenarioForest.write_scenario_steps(flat_file,
-                                                            path_scenario['actions'],
+                                                            scenario['prerequisites'],
+                                                            'Given')
+                        ScenarioForest.write_scenario_steps(flat_file,
+                                                            scenario['actions'],
                                                             'When')
-                        ScenarioForest.write_scenario_steps(flat_file,
-                                                            path_scenario['assertions'],
-                                                            'Then')
-                        given_scenarios.append(path_scenario)
+                        if scenario not in tested_scenarios:
+                            ScenarioForest.write_scenario_steps(flat_file,
+                                                                scenario['assertions'],
+                                                                'Then')
+                        tested_scenarios.append(scenario)
                     flat_file.write("\n")
 
     def graph_mermaid(self, file_path):
