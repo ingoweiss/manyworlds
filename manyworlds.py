@@ -188,6 +188,10 @@ class ScenarioForest:
                 possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
+
+                    if not path_scenarios[-1]['assertions']:
+                        continue # don't ouput scenario unless it has assertions
+
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios)
                     given_actions = [a
                                      for s in path_scenarios[:-1]
@@ -220,6 +224,10 @@ class ScenarioForest:
                                                                  leaf_destinations_only=True)
                 for path in possible_paths:
                     path_scenarios = self.graph.vs[path]
+
+                    if not path_scenarios[-1]['assertions']:
+                        continue # don't ouput scenario unless it has assertions
+
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios)
                     given_actions = [a
                                      for s in path_scenarios if s in given_scenarios
