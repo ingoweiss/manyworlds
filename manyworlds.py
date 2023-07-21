@@ -3,6 +3,22 @@ import re
 from igraph import Graph
 import pdb
 
+class Step:
+
+    def __init__(self, name, type, data=None):
+        """Constructor method
+        """
+        self.name = name
+        self.type = type
+        self.data = data
+
+    def conjunction(self):
+        return {'prerequisite': 'Given', 'action': 'When', 'assertion': 'Then'}[self.type]
+
+    def format(self, first_of_type=True):
+        conjunction = (self.conjunction() if first_of_type else 'And')
+        return conjunction + ' ' + self.name
+
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios
 
@@ -58,7 +74,7 @@ class ScenarioForest:
                 raise ValueError('Unable to parse line: ' + line.strip())
 
             if (scenario_match or step_match) and current_table:
-                current_step['data'] = current_table
+                current_step.data = current_table
                 current_table = None
 
             if scenario_match: # Line is scenario
@@ -83,8 +99,8 @@ class ScenarioForest:
                 elif step_match['step_type'] == 'Then':
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
-                    new_step_type = current_step['type']
-                new_step = {'name': step_match['step_name'], 'type': new_step_type}
+                    new_step_type = current_step.type
+                new_step = Step(name=step_match['step_name'], type=new_step_type)
                 if new_step_type == 'prerequisite':
                     current_scenario['prerequisites'].append(new_step)
                 if new_step_type == 'action':
@@ -101,7 +117,7 @@ class ScenarioForest:
 
         # In case the file ends with a data table:
         if current_table:
-            current_step['data'] = current_table
+            current_step.data = current_table
 
         return ScenarioForest(graph)
 
@@ -133,25 +149,25 @@ class ScenarioForest:
         return paths
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps, conjunction):
+    def write_scenario_steps(cls, file_handle, steps):
         """Write formatted scenario steps to file
 
         :param file_handle: The file to which to write the steps
         :type file_handle: class:'io.TextIOWrapper'
         :param steps: The steps to write
-        :type steps: list of str
-        :param conjunction: The conjunction to use (either 'Given', 'When' or 'Then')
-        :type conjunction: str
+        :type steps: list of Step
         """
+        last_step = None
         for step_num, step in enumerate(steps):
-            conjunction = (conjunction if step_num == 0 else 'And')
-            file_handle.write("{} {}\n".format(conjunction, step['name']))
-            if 'data' in step.keys():
-                table = step['data']
-                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*table))]
-                for row in table:
+            first_of_type = (last_step == None or last_step.type != step.type)
+            # pdb.set_trace()
+            file_handle.write(step.format(first_of_type=first_of_type) + "\n")
+            if step.data:
+                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*step.data))]
+                for row in step.data:
                     padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
                     file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
+            last_step = step
 
 
     @classmethod
@@ -201,21 +217,16 @@ class ScenarioForest:
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
 
+                    steps=[]
                     if path_scenarios:
-                        given_steps = [st
-                                    for sc in path_scenarios
-                                    for st in sc['prerequisites'] + sc['actions']]
+                        steps += [st
+                                  for sc in path_scenarios
+                                  for st in sc['prerequisites'] + sc['actions']]
                     else:
-                        given_steps = destination_scenario['prerequisites']
-                    ScenarioForest.write_scenario_steps(flat_file,
-                                                        given_steps,
-                                                        'Given')
-                    ScenarioForest.write_scenario_steps(flat_file,
-                                                        destination_scenario['actions'],
-                                                        'When')
-                    ScenarioForest.write_scenario_steps(flat_file,
-                                                        destination_scenario['assertions'],
-                                                        'Then')
+                        steps += destination_scenario['prerequisites']
+                    steps += destination_scenario['actions']
+                    steps += destination_scenario['assertions']
+                    ScenarioForest.write_scenario_steps(flat_file, steps)
                     flat_file.write("\n")
 
     def flatten_relaxed(self, file_path):
@@ -233,6 +244,7 @@ class ScenarioForest:
                 possible_paths = self.possible_paths_from_source(root_scenario,
                                                                  leaf_destinations_only=True)
                 for path in possible_paths:
+
                     scenarios = self.graph.vs[path]
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
@@ -242,18 +254,15 @@ class ScenarioForest:
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
 
+                    steps=[]
                     for scenario in scenarios:
-                        ScenarioForest.write_scenario_steps(flat_file,
-                                                            scenario['prerequisites'],
-                                                            'Given')
-                        ScenarioForest.write_scenario_steps(flat_file,
-                                                            scenario['actions'],
-                                                            'When')
+                        steps += scenario['prerequisites']
+                        steps += scenario['actions']
                         if scenario not in tested_scenarios:
-                            ScenarioForest.write_scenario_steps(flat_file,
-                                                                scenario['assertions'],
-                                                                'Then')
+                            steps += scenario['assertions']
                         tested_scenarios.append(scenario)
+
+                    ScenarioForest.write_scenario_steps(flat_file, steps)
                     flat_file.write("\n")
 
     def graph_mermaid(self, file_path):

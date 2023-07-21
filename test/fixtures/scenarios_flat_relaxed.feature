@@ -1,11 +1,11 @@
 Scenario: Deselect user
-When the following users:
+Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
     | Dan    | Deactivated |
-And I go to "Users"
+When I go to "Users"
 Then I see the following "Users":
     | Name   | Status |
     | Ben    | Active |
@@ -23,9 +23,9 @@ Given the following users:
     | Alice  | Active      |
     | Connie | Active      |
     | Dan    | Deactivated |
-And I go to "Users"
+When I go to "Users"
 And I select user "Ben"
-When I select user "Alice"
+And I select user "Alice"
 Then I see "2 users selected"
 When I click "Deselect all"
 Then I see "0 users selected"
@@ -37,10 +37,10 @@ Given the following users:
     | Alice  | Active      |
     | Connie | Active      |
     | Dan    | Deactivated |
-And I go to "Users"
+When I go to "Users"
 And I select user "Ben"
 And I select user "Alice"
-When I select "Edit" from "Permissions"
+And I select "Edit" from "Permissions"
 And I click "Apply to selected"
 Then I see "2 users changed"
 And I see "2 users selected"
