@@ -179,7 +179,11 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        scenario_name = destination_scenario['name']
+        breadcrumbs = [s['name'] for s in path_scenarios if not (s['prerequisites'] or s['assertions'])]
+        breadcrumbs_string = ''
+        if breadcrumbs:
+            breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
+        scenario_name = breadcrumbs_string + destination_scenario['name']
         file_handle.write("Scenario: {}\n".format(scenario_name))
 
     def flatten(self, file, mode='strict'):
