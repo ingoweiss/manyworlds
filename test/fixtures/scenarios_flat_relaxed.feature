@@ -1,4 +1,4 @@
-Scenario: Users > Select user > Deselect user
+Scenario: Deselect user
 When the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -16,7 +16,7 @@ Then I see "1 user selected"
 When I deselect user "Ben"
 Then I see "0 users selected"
 
-Scenario: Users > Select user > Select another user > Deselect all
+Scenario: Deselect all
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -30,7 +30,7 @@ Then I see "2 users selected"
 When I click "Deselect all"
 Then I see "0 users selected"
 
-Scenario: Users > Select user > Select another user > Bulk change permissions
+Scenario: Bulk change permissions
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |

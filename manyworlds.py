@@ -158,8 +158,8 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        path_name = ' > '.join([v['name'] for v in path_scenarios])
-        file_handle.write("Scenario: {}\n".format(path_name))
+        scenario_name = path_scenarios[-1]['name']
+        file_handle.write("Scenario: {}\n".format(scenario_name))
 
     def flatten(self, file, mode='strict'):
         """Write a flat (no indentation) feature file representing the scenario forest

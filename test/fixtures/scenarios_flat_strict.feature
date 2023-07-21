@@ -12,7 +12,7 @@ Then I see the following "Users":
     | Alice  | Active |
     | Connie | Active |
 
-Scenario: Users > Select user
+Scenario: Select user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -23,7 +23,7 @@ And I go to "Users"
 When I select user "Ben"
 Then I see "1 user selected"
 
-Scenario: Users > Select user > Deselect user
+Scenario: Deselect user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -35,7 +35,7 @@ And I select user "Ben"
 When I deselect user "Ben"
 Then I see "0 users selected"
 
-Scenario: Users > Select user > Select another user
+Scenario: Select another user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -47,7 +47,7 @@ And I select user "Ben"
 When I select user "Alice"
 Then I see "2 users selected"
 
-Scenario: Users > Select user > Select another user > Deselect all
+Scenario: Deselect all
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -60,7 +60,7 @@ And I select user "Alice"
 When I click "Deselect all"
 Then I see "0 users selected"
 
-Scenario: Users > Select user > Select another user > Bulk change permissions
+Scenario: Bulk change permissions
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
