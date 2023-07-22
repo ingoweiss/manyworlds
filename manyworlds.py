@@ -5,12 +5,13 @@ import pdb
 
 class Step:
 
-    def __init__(self, name, type, data=None):
+    def __init__(self, name, type, data=None, comment=None):
         """Constructor method
         """
-        self.name = name
+        self.name = name.strip()
         self.type = type
         self.data = data
+        self.comment = comment
 
     def conjunction(self):
         return {'prerequisite': 'Given', 'action': 'When', 'assertion': 'Then'}[self.type]
@@ -29,7 +30,7 @@ class ScenarioForest:
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
-    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>.*)'
+    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>[^#]+)(# (?P<comment>.+))?'
     table_pattern = r'| ([^|]* +|)+'
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
@@ -100,7 +101,7 @@ class ScenarioForest:
                     new_step_type = 'assertion'
                 elif step_match['step_type'] in ['And', 'But']:
                     new_step_type = current_step.type
-                new_step = Step(name=step_match['step_name'], type=new_step_type)
+                new_step = Step(name=step_match['step_name'], type=new_step_type, comment=step_match['comment'])
                 if new_step_type == 'prerequisite':
                     current_scenario['prerequisites'].append(new_step)
                 if new_step_type == 'action':
@@ -149,7 +150,7 @@ class ScenarioForest:
         return paths
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps):
+    def write_scenario_steps(cls, file_handle, steps, comments='off'):
         """Write formatted scenario steps to file
 
         :param file_handle: The file to which to write the steps
@@ -162,6 +163,8 @@ class ScenarioForest:
             first_of_type = (last_step == None or last_step.type != step.type)
             # pdb.set_trace()
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
+            if comments == 'on' and step.comment:
+                file_handle.write("# " + step.comment + "\n")
             if step.data:
                 col_widths = [max([len(cell) for cell in col]) for col in list(zip(*step.data))]
                 for row in step.data:
@@ -186,7 +189,7 @@ class ScenarioForest:
         scenario_name = breadcrumbs_string + destination_scenario['name']
         file_handle.write("Scenario: {}\n".format(scenario_name))
 
-    def flatten(self, file, mode='strict'):
+    def flatten(self, file, mode='strict', comments='off'):
         """Write a flat (no indentation) feature file representing the scenario forest
 
         :param file: Path to flat feature file to be written
@@ -195,11 +198,11 @@ class ScenarioForest:
         :type mode: str
         """
         if mode == 'strict':
-            self.flatten_strict(file)
+            self.flatten_strict(file, comments=comments)
         elif mode == 'relaxed':
-            self.flatten_relaxed(file)
+            self.flatten_relaxed(file, comments=comments)
 
-    def flatten_strict(self, file_path):
+    def flatten_strict(self, file_path, comments='off'):
         """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
         The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
@@ -216,24 +219,29 @@ class ScenarioForest:
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario['prerequisites'] or destination_scenario['assertions']):
+                    if not (destination_scenario['assertions']):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
 
                     steps=[]
-                    if path_scenarios:
-                        steps += [st
-                                  for sc in path_scenarios
-                                  for st in sc['prerequisites'] + sc['actions']]
-                    else:
-                        steps += destination_scenario['prerequisites']
-                    steps += destination_scenario['actions']
+                    # if path_scenarios:
+                    #     steps += [st
+                    #               for sc in path_scenarios
+                    #               for st in sc['prerequisites'] + sc['actions']]
+                    # else:
+                    #     steps += destination_scenario['prerequisites']
+                    steps += [st
+                              for sc in scenarios
+                              for st in sc['prerequisites']]
+                    steps += [st
+                              for sc in scenarios
+                              for st in sc['actions']]
                     steps += destination_scenario['assertions']
-                    ScenarioForest.write_scenario_steps(flat_file, steps)
+                    ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                     flat_file.write("\n")
 
-    def flatten_relaxed(self, file_path):
+    def flatten_relaxed(self, file_path, comments='off'):
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
         The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
@@ -253,7 +261,7 @@ class ScenarioForest:
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario['prerequisites'] or destination_scenario['assertions']):
+                    if not (destination_scenario['assertions']):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
@@ -266,7 +274,7 @@ class ScenarioForest:
                             steps += scenario['assertions']
                         tested_scenarios.append(scenario)
 
-                    ScenarioForest.write_scenario_steps(flat_file, steps)
+                    ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                     flat_file.write("\n")
 
     def graph_mermaid(self, file_path):
