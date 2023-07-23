@@ -13,7 +13,7 @@ tree = mw.ScenarioForest.from_file(args.input)
 
 # print tree:
 for v in tree.graph.vs():
-    level = len(tree.graph.neighborhood(v, mode="IN", order=100))
+    level = tree.graph.neighborhood_size(v, mode="IN", order=100)
     indentation_string = ''
     if level > 1:
         indentation_string = '   '*(level-2) + '└─ '
