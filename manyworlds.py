@@ -5,6 +5,20 @@ import pdb
 
 class Step:
 
+    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>[^#]+)(# (?P<comment>.+))?'
+    type_to_conjunction_mapping = {'prerequisite': 'Given', 'action': 'When', 'assertion': 'Then'}
+    conjunction_to_type_mapping = {v: k for k, v in type_to_conjunction_mapping.items()}
+
+    @classmethod
+    def parse(cls, string, previous_step=None):
+        match = re.compile(Step.step_pattern).match(string)
+        # pdb.set_trace()
+        if match['step_type'] in ['And', 'But']:
+            step_type = previous_step.type
+        else:
+            step_type = Step.conjunction_to_type_mapping[match['step_type']]
+        return Step(match['step_name'], step_type, comment=match['comment'])
+
     def __init__(self, name, type, data=None, comment=None):
         """Constructor method
         """
@@ -14,7 +28,7 @@ class Step:
         self.comment = comment
 
     def conjunction(self):
-        return {'prerequisite': 'Given', 'action': 'When', 'assertion': 'Then'}[self.type]
+        return Step.type_to_conjunction_mapping[self.type]
 
     def format(self, first_of_type=True):
         conjunction = (self.conjunction() if first_of_type else 'And')
@@ -30,10 +44,10 @@ class ScenarioForest:
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
-    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>[^#]+)(# (?P<comment>.+))?'
+
     table_pattern = r'| ([^|]* +|)+'
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
-    STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, step_pattern))
+    STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.step_pattern))
     TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, table_pattern))
 
     def __init__(self, graph):
@@ -93,20 +107,13 @@ class ScenarioForest:
 
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
-                if step_match['step_type'] == 'Given':
-                    new_step_type = 'prerequisite'
-                elif step_match['step_type'] == 'When':
-                    new_step_type = 'action'
-                elif step_match['step_type'] == 'Then':
-                    new_step_type = 'assertion'
-                elif step_match['step_type'] in ['And', 'But']:
-                    new_step_type = current_step.type
-                new_step = Step(name=step_match['step_name'], type=new_step_type, comment=step_match['comment'])
-                if new_step_type == 'prerequisite':
+                new_step = Step.parse(step_match[0].strip(), previous_step=current_step)
+
+                if new_step.type == 'prerequisite':
                     current_scenario['prerequisites'].append(new_step)
-                if new_step_type == 'action':
+                if new_step.type == 'action':
                     current_scenario['actions'].append(new_step)
-                elif new_step_type == 'assertion':
+                elif new_step.type == 'assertion':
                     current_scenario['assertions'].append(new_step)
                 current_step = new_step
 
