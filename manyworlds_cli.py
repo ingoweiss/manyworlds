@@ -1,5 +1,6 @@
 import argparse
 import manyworlds as mw
+from termcolor import colored
 
 parser = argparse.ArgumentParser(prog="manyworld.py")
 parser.add_argument('action', choices=['flatten', 'graph'], help="'flatten' to output flat scenario file, 'graph' to output mermaid file")
@@ -16,7 +17,7 @@ for v in tree.graph.vs():
     level = tree.graph.neighborhood_size(v, mode="IN", order=100)
     indentation_string = ''
     if level > 1:
-        indentation_string = '   '*(level-2) + '└─ '
+        indentation_string = '   '*(level-2) + colored('└─ ', 'blue')
     print(indentation_string + v['name'])
 
 if args.action == 'flatten':
