@@ -187,7 +187,7 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        breadcrumbs = [s['name'] for s in path_scenarios if not (s['prerequisites'] or s['assertions'])]
+        breadcrumbs = [s['name'] for s in path_scenarios if not s['assertions']]
         breadcrumbs_string = ''
         if breadcrumbs:
             breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
