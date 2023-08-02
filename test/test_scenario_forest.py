@@ -22,7 +22,7 @@ def test_parse():
     forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     assert len(forest.root_scenarios()) == 1
 
-    root_scenario = forest.find(['Users'])
+    root_scenario = forest.find('Users')
     assert root_scenario['name'] == 'Users'
     assert len(root_scenario['prerequisites']) == 1
     assert len(root_scenario['actions']) == 1
@@ -32,7 +32,7 @@ def test_parse():
     assert data[2]['Name'] == 'Connie'
     assert data[2]['Status'] == 'Active'
 
-    leaf_scenario = forest.find(['Users', 'Select user', 'Select another user', 'Bulk change permissions'])
+    leaf_scenario = forest.find('Users', 'Select user', 'Select another user', 'Bulk change permissions')
     assert leaf_scenario['name'] == 'Bulk change permissions'
     assert len(leaf_scenario['prerequisites']) == 0
     assert len(leaf_scenario['actions']) == 2
