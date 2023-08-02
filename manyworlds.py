@@ -56,6 +56,15 @@ class ScenarioForest:
         self.graph = graph
 
     @classmethod
+    def data_table_list_to_dict(cls, data_table):
+        header_row = data_table[0]
+        return [dict(zip(header_row, row)) for row in data_table[1:]]
+
+    @classmethod
+    def data_table_dict_to_list(cls, data_table):
+        return [list(data_table[0].keys())] + [list(row.values()) for row in data_table]
+
+    @classmethod
     def from_file(cls, file_path):
         """Create a scenario tree instance from an indented feature file
 
@@ -89,7 +98,7 @@ class ScenarioForest:
                 raise ValueError('Unable to parse line: ' + line.strip())
 
             if (scenario_match or step_match) and current_table:
-                current_step.data = current_table
+                current_step.data = ScenarioForest.data_table_list_to_dict(current_table)
                 current_table = None
 
             if scenario_match: # Line is scenario
@@ -171,8 +180,9 @@ class ScenarioForest:
             if comments == 'on' and step.comment:
                 file_handle.write("# " + step.comment + "\n")
             if step.data:
-                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*step.data))]
-                for row in step.data:
+                data = ScenarioForest.data_table_dict_to_list(step.data)
+                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
+                for row in data:
                     padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
                     file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
             last_step = step
