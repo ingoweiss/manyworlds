@@ -305,3 +305,11 @@ class ScenarioForest:
             for edge in self.graph.es:
                 mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index,
                                                         edge.target_vertex.index))
+
+    def find(self, scenario_names):
+
+        scenario = next(sc for sc in self.root_scenarios() if sc['name'] == scenario_names[0])
+        for scenario_name in scenario_names[1:]:
+            scenario = next(sc for sc in scenario.successors() if sc['name'] == scenario_name)
+
+        return scenario

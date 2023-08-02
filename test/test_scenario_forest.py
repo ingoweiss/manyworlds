@@ -21,10 +21,22 @@ def test_parse():
     """Test the structure of the forest graph after using the 'from_file' method"""
     forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     assert len(forest.root_scenarios()) == 1
-    scenario = forest.root_scenarios()[0].successors()[0].successors()[1].successors()[1]
-    assert scenario['name'] == 'Bulk change permissions'
-    assert len(scenario['actions']) == 2
-    assert len(scenario['assertions']) == 2
+
+    root_scenario = forest.find(['Users'])
+    assert root_scenario['name'] == 'Users'
+    assert len(root_scenario['prerequisites']) == 1
+    assert len(root_scenario['actions']) == 1
+    assert len(root_scenario['assertions']) == 1
+    data = root_scenario['prerequisites'][0].data
+    assert len(data) == 4
+    assert data[2]['Name'] == 'Connie'
+    assert data[2]['Status'] == 'Active'
+
+    leaf_scenario = forest.find(['Users', 'Select user', 'Select another user', 'Bulk change permissions'])
+    assert leaf_scenario['name'] == 'Bulk change permissions'
+    assert len(leaf_scenario['prerequisites']) == 0
+    assert len(leaf_scenario['actions']) == 2
+    assert len(leaf_scenario['assertions']) == 2
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
