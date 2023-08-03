@@ -31,6 +31,12 @@ class Scenario:
     def steps_of_class(self, step_class):
         return [st for st in self.steps if type(st) is step_class]
 
+    def __str__(self):
+        return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(self.name, len(self.prerequisites()), len(self.actions()), len(self.assertions()))
+
+    def __repr__(self):
+        return self.__str__()
+
 class Step:
 
     step_pattern = r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
@@ -65,7 +71,7 @@ class Step:
         return conjunction + ' ' + self.name
 
     def __str__(self):
-        return "<{}>".format(self.format())
+        return "<Step: {}>".format(self.format())
 
     def __repr__(self):
         return self.__str__()
