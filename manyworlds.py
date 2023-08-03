@@ -4,11 +4,18 @@ from igraph import Graph
 import pdb
 
 class Scenario:
+    """A BDD Scenario
+
+    :param name: The name of the scenario
+    :type name: string
+    :param vertex: The iGraph vertex associated with the scenario
+    :type name: class: igraph.Vertex
+    """
 
     def __init__(self, name, vertex):
         """Constructor method
         """
-        self.name = name
+        self.name = name.strip()
         self.vertex = vertex
         self.prerequisites = []
         self.actions = []
@@ -23,7 +30,6 @@ class Step:
     @classmethod
     def parse(cls, string, previous_step=None):
         match = re.compile(Step.step_pattern).match(string)
-        # pdb.set_trace()
         if match['step_type'] in ['And', 'But']:
             step_type = previous_step.type
         else:
