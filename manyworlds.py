@@ -147,13 +147,14 @@ class ScenarioForest:
         # Scan the file line by line
         for line in raw_lines:
 
-            # Determine whether line is scenario, actio or assertion
+            # Determine whether line is scenario, step or table row
             scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
             step_match = cls.STEP_LINE_PATTERN.match(line)
             table_match = cls.TABLE_LINE_PATTERN.match(line)
             if not (scenario_match or step_match or table_match):
                 raise ValueError('Unable to parse line: ' + line.strip())
 
+            # close and record any open data table
             if (scenario_match or step_match) and current_table:
                 current_step.data = ScenarioForest.data_table_list_to_dict(current_table)
                 current_table = None
@@ -166,6 +167,7 @@ class ScenarioForest:
                 current_scenario_vertex['scenario'] = current_scenario
                 current_scenarios[current_level] = current_scenario
                 if current_level > 0:
+                    # Connect to parent scenario
                     current_scenario_parent = current_scenarios[current_level-1]
                     graph.add_edge(current_scenario_parent.vertex, current_scenario.vertex)
 
@@ -175,7 +177,7 @@ class ScenarioForest:
                 current_scenario.steps.append(new_step)
                 current_step = new_step
 
-            elif table_match: # Line is table
+            elif table_match: # Line is table row
                 if current_table == None:
                     current_table = []
                 row = [s.strip() for s in line.split('|')[1:-1]]
@@ -183,7 +185,7 @@ class ScenarioForest:
 
         # In case the file ends with a data table:
         if current_table:
-            current_step.data = current_table
+            current_step.data = ScenarioForest.data_table_list_to_dict(current_table)
 
         return ScenarioForest(graph)
 
