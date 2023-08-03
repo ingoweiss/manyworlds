@@ -40,6 +40,7 @@ class Scenario:
 class Step:
 
     step_pattern = r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
+    table_pattern = r'| ([^|]* +|)+'
 
     @classmethod
     def parse(cls, string, previous_step=None):
@@ -102,10 +103,9 @@ class ScenarioForest:
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
 
-    table_pattern = r'| ([^|]* +|)+'
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.step_pattern))
-    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, table_pattern))
+    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.table_pattern))
 
     def __init__(self, graph):
         """Constructor method
