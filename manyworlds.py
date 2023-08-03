@@ -17,17 +17,19 @@ class Scenario:
         """
         self.name = name.strip()
         self.vertex = vertex
-        self.prerequisites = []
-        self.actions = []
-        self.assertions = []
+        self.steps = []
 
-    def add_step(self, step):
-        if type(step) is Prerequisite:
-            self.prerequisites.append(step)
-        elif type(step) is Action:
-            self.actions.append(step)
-        elif type(step) is Assertion:
-            self.assertions.append(step)
+    def prerequisites(self):
+        return self.steps_of_class(Prerequisite)
+
+    def actions(self):
+        return self.steps_of_class(Action)
+
+    def assertions(self):
+        return self.steps_of_class(Assertion)
+
+    def steps_of_class(self, step_class):
+        return [st for st in self.steps if type(st) is step_class]
 
 class Step:
 
@@ -158,7 +160,7 @@ class ScenarioForest:
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
                 new_step = Step.parse(step_match[0].strip(), previous_step=current_step)
-                current_scenario.add_step(new_step)
+                current_scenario.steps.append(new_step)
                 current_step = new_step
 
             elif table_match: # Line is table
@@ -234,7 +236,7 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        breadcrumbs = [sc.name for sc in path_scenarios if not sc.assertions]
+        breadcrumbs = [sc.name for sc in path_scenarios if not sc.assertions()]
         breadcrumbs_string = ''
         if breadcrumbs:
             breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
@@ -271,7 +273,7 @@ class ScenarioForest:
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario.assertions):
+                    if not (destination_scenario.assertions()):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
@@ -285,11 +287,11 @@ class ScenarioForest:
                     #     steps += destination_scenario['prerequisites']
                     steps += [st
                               for sc in scenarios
-                              for st in sc.prerequisites]
+                              for st in sc.prerequisites()]
                     steps += [st
                               for sc in scenarios
-                              for st in sc.actions]
-                    steps += destination_scenario.assertions
+                              for st in sc.actions()]
+                    steps += destination_scenario.assertions()
                     ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                     flat_file.write("\n")
 
@@ -313,17 +315,17 @@ class ScenarioForest:
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario.assertions):
+                    if not (destination_scenario.assertions()):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
 
                     steps=[]
                     for scenario in scenarios:
-                        steps += scenario.prerequisites
-                        steps += scenario.actions
+                        steps += scenario.prerequisites()
+                        steps += scenario.actions()
                         if scenario not in tested_scenarios:
-                            steps += scenario.assertions
+                            steps += scenario.assertions()
                         tested_scenarios.append(scenario)
 
                     ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
