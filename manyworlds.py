@@ -3,6 +3,17 @@ import re
 from igraph import Graph
 import pdb
 
+class Scenario:
+
+    def __init__(self, name, vertex):
+        """Constructor method
+        """
+        self.name = name
+        self.vertex = vertex
+        self.prerequisites = []
+        self.actions = []
+        self.assertions = []
+
 class Step:
 
     step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>[^#]+)(# (?P<comment>.+))?'
@@ -103,25 +114,25 @@ class ScenarioForest:
 
             if scenario_match: # Line is scenario
                 current_level = int(len((scenario_match)['indentation']) / cls.TAB_SIZE)
-                current_scenario = graph.add_vertex(name=scenario_match['scenario_name'],
-                                                    prerequisites=[],
-                                                    actions=[],
-                                                    assertions=[])
+
+                current_scenario_vertex = graph.add_vertex()
+                current_scenario = Scenario(scenario_match['scenario_name'], current_scenario_vertex)
+                current_scenario_vertex['scenario'] = current_scenario
                 current_scenarios[current_level] = current_scenario
                 if current_level > 0:
                     current_scenario_parent = current_scenarios[current_level-1]
-                    graph.add_edge(current_scenario_parent, current_scenario)
+                    graph.add_edge(current_scenario_parent.vertex, current_scenario.vertex)
 
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
                 new_step = Step.parse(step_match[0].strip(), previous_step=current_step)
 
                 if new_step.type == 'prerequisite':
-                    current_scenario['prerequisites'].append(new_step)
+                    current_scenario.prerequisites.append(new_step)
                 if new_step.type == 'action':
-                    current_scenario['actions'].append(new_step)
+                    current_scenario.actions.append(new_step)
                 elif new_step.type == 'assertion':
-                    current_scenario['assertions'].append(new_step)
+                    current_scenario.assertions.append(new_step)
                 current_step = new_step
 
             elif table_match: # Line is table
@@ -142,7 +153,7 @@ class ScenarioForest:
         :return: A list of igraph.Vertex
         :rtype: list
         """
-        return [v for v in self.graph.vs if v.indegree() == 0]
+        return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
 
     def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
         """Return paths from a source vertex to vertices that are reachable from the source vertex
@@ -152,14 +163,14 @@ class ScenarioForest:
         :param leaf_destinations_only: If True, return paths to leaf scenarios only
         :type leaf_destinations_only: bool, optionsl
         """
-        destinations = self.graph.neighborhood(source_scenario,
+        destination_vertices = self.graph.neighborhood(source_scenario.vertex,
                                                mode='OUT',
                                                order=100)
         if leaf_destinations_only:
-            destinations = [v for v in destinations
-                            if self.graph.vs[v].outdegree() == 0]
-        paths = self.graph.get_all_shortest_paths(source_scenario,
-                                                  to=destinations,
+            destination_vertices = [vx for vx in destination_vertices
+                            if self.graph.vs[vx].outdegree() == 0]
+        paths = self.graph.get_all_shortest_paths(source_scenario.vertex,
+                                                  to=destination_vertices,
                                                   mode='OUT')
         return paths
 
@@ -197,11 +208,11 @@ class ScenarioForest:
         :param path_scenarios: The scenarios/vertices on the path
         :type path_scenarios: list of class:'igraph.Vertex'
         """
-        breadcrumbs = [s['name'] for s in path_scenarios if not s['assertions']]
+        breadcrumbs = [sc.name for sc in path_scenarios if not sc.assertions]
         breadcrumbs_string = ''
         if breadcrumbs:
             breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
-        scenario_name = breadcrumbs_string + destination_scenario['name']
+        scenario_name = breadcrumbs_string + destination_scenario.name
         file_handle.write("Scenario: {}\n".format(scenario_name))
 
     def flatten(self, file, mode='strict', comments='off'):
@@ -230,11 +241,11 @@ class ScenarioForest:
             for root_scenario in self.root_scenarios():
                 possible_paths = self.possible_paths_from_source(root_scenario)
                 for path in possible_paths:
-                    scenarios = self.graph.vs[path]
+                    scenarios = [vx['scenario'] for vx in self.graph.vs[path]]
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario['assertions']):
+                    if not (destination_scenario.assertions):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
@@ -248,11 +259,11 @@ class ScenarioForest:
                     #     steps += destination_scenario['prerequisites']
                     steps += [st
                               for sc in scenarios
-                              for st in sc['prerequisites']]
+                              for st in sc.prerequisites]
                     steps += [st
                               for sc in scenarios
-                              for st in sc['actions']]
-                    steps += destination_scenario['assertions']
+                              for st in sc.actions]
+                    steps += destination_scenario.assertions
                     ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                     flat_file.write("\n")
 
@@ -272,21 +283,21 @@ class ScenarioForest:
                                                                  leaf_destinations_only=True)
                 for path in possible_paths:
 
-                    scenarios = self.graph.vs[path]
+                    scenarios = [vx['scenario'] for vx in self.graph.vs[path]]
                     path_scenarios = scenarios[:-1]
                     destination_scenario = scenarios[-1]
 
-                    if not (destination_scenario['assertions']):
+                    if not (destination_scenario.assertions):
                         continue # don't ouput scenario unless it has assertions
 
                     ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
 
                     steps=[]
                     for scenario in scenarios:
-                        steps += scenario['prerequisites']
-                        steps += scenario['actions']
+                        steps += scenario.prerequisites
+                        steps += scenario.actions
                         if scenario not in tested_scenarios:
-                            steps += scenario['assertions']
+                            steps += scenario.assertions
                         tested_scenarios.append(scenario)
 
                     ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
@@ -301,15 +312,15 @@ class ScenarioForest:
         with open(file_path, 'w') as mermaid_file:
             mermaid_file.write("graph TD\n")
             for scenario in self.graph.vs:
-                mermaid_file.write('{}({})\n'.format(scenario.index, scenario['name']))
+                mermaid_file.write('{}({})\n'.format(scenario.index, scenario['scenario'].name))
             for edge in self.graph.es:
                 mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index,
                                                         edge.target_vertex.index))
 
     def find(self, *scenario_names):
 
-        scenario = next(sc for sc in self.root_scenarios() if sc['name'] == scenario_names[0])
+        scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])
         for scenario_name in scenario_names[1:]:
-            scenario = next(sc for sc in scenario.successors() if sc['name'] == scenario_name)
+            scenario = next(vt['scenario'] for vt in scenario.vertex.successors() if vt['scenario'].name == scenario_name)
 
         return scenario
