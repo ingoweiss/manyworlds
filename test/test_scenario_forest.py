@@ -2,6 +2,7 @@
 
 import os
 import filecmp
+import pdb
 
 import pytest
 
@@ -23,20 +24,20 @@ def test_parse():
     assert len(forest.root_scenarios()) == 1
 
     root_scenario = forest.find('Users')
-    assert root_scenario['name'] == 'Users'
-    assert len(root_scenario['prerequisites']) == 1
-    assert len(root_scenario['actions']) == 1
-    assert len(root_scenario['assertions']) == 1
-    data = root_scenario['prerequisites'][0].data
+    assert root_scenario.name == 'Users'
+    assert len(root_scenario.prerequisites) == 1
+    assert len(root_scenario.actions) == 1
+    assert len(root_scenario.assertions) == 1
+    data = root_scenario.prerequisites[0].data
     assert len(data) == 4
     assert data[2]['Name'] == 'Connie'
     assert data[2]['Status'] == 'Active'
 
     leaf_scenario = forest.find('Users', 'Select user', 'Select another user', 'Bulk change permissions')
-    assert leaf_scenario['name'] == 'Bulk change permissions'
-    assert len(leaf_scenario['prerequisites']) == 0
-    assert len(leaf_scenario['actions']) == 2
-    assert len(leaf_scenario['assertions']) == 2
+    assert leaf_scenario.name == 'Bulk change permissions'
+    assert len(leaf_scenario.prerequisites) == 0
+    assert len(leaf_scenario.actions) == 2
+    assert len(leaf_scenario.assertions) == 2
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
