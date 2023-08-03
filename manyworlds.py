@@ -21,22 +21,33 @@ class Scenario:
         self.actions = []
         self.assertions = []
 
+    def add_step(self, step):
+        if type(step) is Prerequisite:
+            self.prerequisites.append(step)
+        elif type(step) is Action:
+            self.actions.append(step)
+        elif type(step) is Assertion:
+            self.assertions.append(step)
+
 class Step:
 
-    step_pattern = r'(?P<step_type>Given|When|Then|And|But) (?P<step_name>[^#]+)(# (?P<comment>.+))?'
-    type_to_conjunction_mapping = {'prerequisite': 'Given', 'action': 'When', 'assertion': 'Then'}
-    conjunction_to_type_mapping = {v: k for k, v in type_to_conjunction_mapping.items()}
+    step_pattern = r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
 
     @classmethod
     def parse(cls, string, previous_step=None):
         match = re.compile(Step.step_pattern).match(string)
-        if match['step_type'] in ['And', 'But']:
-            step_type = previous_step.type
-        else:
-            step_type = Step.conjunction_to_type_mapping[match['step_type']]
-        return Step(match['step_name'], step_type, comment=match['comment'])
+        conjunction = match['conjunction']
+        if conjunction in ['And', 'But']:
+            conjunction = previous_step.conjunction
 
-    def __init__(self, name, type, data=None, comment=None):
+        step_class = {
+            'Given': Prerequisite,
+            'When': Action,
+            'Then': Assertion
+        }[conjunction]
+        return step_class(match['name'], comment=match['comment'])
+
+    def __init__(self, name, data=None, comment=None):
         """Constructor method
         """
         self.name = name.strip()
@@ -48,8 +59,23 @@ class Step:
         return Step.type_to_conjunction_mapping[self.type]
 
     def format(self, first_of_type=True):
-        conjunction = (self.conjunction() if first_of_type else 'And')
+        conjunction = (self.conjunction if first_of_type else 'And')
         return conjunction + ' ' + self.name
+
+class Prerequisite(Step):
+    def __init__(self, name, data=None, comment=None):
+       self.conjunction = 'Given'
+       super().__init__(name, data=data, comment=comment)
+
+class Action(Step):
+    def __init__(self, name, data=None, comment=None):
+       self.conjunction = 'When'
+       super().__init__(name, data=data, comment=comment)
+
+class Assertion(Step):
+    def __init__(self, name, data=None, comment=None):
+       self.conjunction = 'Then'
+       super().__init__(name, data=data, comment=comment)
 
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios
@@ -132,13 +158,7 @@ class ScenarioForest:
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
                 new_step = Step.parse(step_match[0].strip(), previous_step=current_step)
-
-                if new_step.type == 'prerequisite':
-                    current_scenario.prerequisites.append(new_step)
-                if new_step.type == 'action':
-                    current_scenario.actions.append(new_step)
-                elif new_step.type == 'assertion':
-                    current_scenario.assertions.append(new_step)
+                current_scenario.add_step(new_step)
                 current_step = new_step
 
             elif table_match: # Line is table
@@ -191,7 +211,7 @@ class ScenarioForest:
         """
         last_step = None
         for step_num, step in enumerate(steps):
-            first_of_type = (last_step == None or last_step.type != step.type)
+            first_of_type = (last_step == None or last_step.conjunction != step.conjunction)
             # pdb.set_trace()
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments == 'on' and step.comment:
