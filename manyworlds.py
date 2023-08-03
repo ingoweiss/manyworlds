@@ -64,6 +64,12 @@ class Step:
         conjunction = (self.conjunction if first_of_type else 'And')
         return conjunction + ' ' + self.name
 
+    def __str__(self):
+        return "<{}>".format(self.format())
+
+    def __repr__(self):
+        return self.__str__()
+
 class Prerequisite(Step):
     def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Given'
