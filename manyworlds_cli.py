@@ -18,7 +18,7 @@ for v in tree.graph.vs():
     indentation_string = ''
     if level > 1:
         indentation_string = '   '*(level-2) + colored('└─ ', 'blue')
-    print(indentation_string + v['name'])
+    print(indentation_string + v['scenario'].name)
 
 if args.action == 'flatten':
     tree.flatten(args.output, mode=args.mode, comments=args.comments)
