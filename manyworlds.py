@@ -17,6 +17,7 @@ class Scenario:
         """
         self.name = name.strip()
         self.vertex = vertex
+        self.graph = vertex.graph
         self.steps = []
 
     def prerequisites(self):
@@ -36,6 +37,21 @@ class Scenario:
 
     def __repr__(self):
         return self.__str__()
+
+    def ancestors(self):
+        ancestors = self.graph.neighborhood(self.vertex, mode='IN', order=1000, mindist=1)
+        ancestors.reverse()
+        return [vx['scenario'] for vx in self.graph.vs(ancestors)]
+
+    def is_breadcrumb(self):
+        return len(self.assertions()) == 0
+
+    def format(self):
+        breadcrumbs = [sc.name for sc in self.ancestors() if sc.is_breadcrumb()]
+        breadcrumbs_string = ''
+        if breadcrumbs:
+            breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
+        return "Scenario: " + breadcrumbs_string + self.name
 
 class Step:
 
@@ -189,33 +205,6 @@ class ScenarioForest:
 
         return ScenarioForest(graph)
 
-    def root_scenarios(self):
-        """Return the root scenarios of the scenario forest (the vertices with no incoming edges)'
-
-        :return: A list of igraph.Vertex
-        :rtype: list
-        """
-        return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
-
-    def possible_paths_from_source(self, source_scenario, leaf_destinations_only=False):
-        """Return paths from a source vertex to vertices that are reachable from the source vertex
-
-        :param source_scenario: Source (root) vertex. First element of all paths returned
-        :type source_scenario: class:'igraph.Vertex'
-        :param leaf_destinations_only: If True, return paths to leaf scenarios only
-        :type leaf_destinations_only: bool, optionsl
-        """
-        destination_vertices = self.graph.neighborhood(source_scenario.vertex,
-                                               mode='OUT',
-                                               order=100)
-        if leaf_destinations_only:
-            destination_vertices = [vx for vx in destination_vertices
-                            if self.graph.vs[vx].outdegree() == 0]
-        paths = self.graph.get_all_shortest_paths(source_scenario.vertex,
-                                                  to=destination_vertices,
-                                                  mode='OUT')
-        return paths
-
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments='off'):
         """Write formatted scenario steps to file
@@ -243,22 +232,6 @@ class ScenarioForest:
             padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
             file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
-    @classmethod
-    def write_scenario_name(cls, file_handle, path_scenarios, destination_scenario):
-        """Write formatted scenario name to file
-
-        :param file_handle: The file to which to write the scenario name
-        :type file_handle: class:'io.TextIOWrapper'
-        :param path_scenarios: The scenarios/vertices on the path
-        :type path_scenarios: list of class:'igraph.Vertex'
-        """
-        breadcrumbs = [sc.name for sc in path_scenarios if not sc.assertions()]
-        breadcrumbs_string = ''
-        if breadcrumbs:
-            breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
-        scenario_name = breadcrumbs_string + destination_scenario.name
-        file_handle.write("Scenario: {}\n".format(scenario_name))
-
     def flatten(self, file, mode='strict', comments='off'):
         """Write a flat (no indentation) feature file representing the scenario forest
 
@@ -282,34 +255,23 @@ class ScenarioForest:
         :type file_path: str
         """
         with open(file_path, 'w') as flat_file:
-            for root_scenario in self.root_scenarios():
-                possible_paths = self.possible_paths_from_source(root_scenario)
-                for path in possible_paths:
-                    scenarios = [vx['scenario'] for vx in self.graph.vs[path]]
-                    path_scenarios = scenarios[:-1]
-                    destination_scenario = scenarios[-1]
+            for scenario in [sc for sc in self.scenarios() if not sc.is_breadcrumb()]:
+                flat_file.write(scenario.format() + "\n")
 
-                    if not (destination_scenario.assertions()):
-                        continue # don't ouput scenario unless it has assertions
-
-                    ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
-
-                    steps=[]
-                    # if path_scenarios:
-                    #     steps += [st
-                    #               for sc in path_scenarios
-                    #               for st in sc['prerequisites'] + sc['actions']]
-                    # else:
-                    #     steps += destination_scenario['prerequisites']
-                    steps += [st
-                              for sc in scenarios
-                              for st in sc.prerequisites()]
-                    steps += [st
-                              for sc in scenarios
-                              for st in sc.actions()]
-                    steps += destination_scenario.assertions()
-                    ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
-                    flat_file.write("\n")
+                ancestor_scenarios = scenario.ancestors()
+                steps=[]
+                # collect prerequisites from all scenarios along the path
+                steps += [st
+                            for sc in ancestor_scenarios
+                            for st in sc.prerequisites()]
+                # collect actions from all scenarios along the path
+                steps += [st
+                            for sc in ancestor_scenarios
+                            for st in sc.actions()]
+                # add all steps from the destination scenario only
+                steps += scenario.steps
+                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+                flat_file.write("\n")
 
     def flatten_relaxed(self, file_path, comments='off'):
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
@@ -322,30 +284,20 @@ class ScenarioForest:
         """
         with open(file_path, 'w') as flat_file:
             tested_scenarios = []
-            for root_scenario in self.root_scenarios():
-                possible_paths = self.possible_paths_from_source(root_scenario,
-                                                                 leaf_destinations_only=True)
-                for path in possible_paths:
+            for scenario in self.leaf_scenarios():
+                flat_file.write(scenario.format() + "\n")
 
-                    scenarios = [vx['scenario'] for vx in self.graph.vs[path]]
-                    path_scenarios = scenarios[:-1]
-                    destination_scenario = scenarios[-1]
+                path_scenarios = scenario.ancestors() + [scenario]
+                steps=[]
+                for path_scenario in path_scenarios:
+                    steps += path_scenario.prerequisites()
+                    steps += path_scenario.actions()
+                    if path_scenario not in tested_scenarios:
+                        steps += path_scenario.assertions()
+                        tested_scenarios.append(path_scenario)
 
-                    if not (destination_scenario.assertions()):
-                        continue # don't ouput scenario unless it has assertions
-
-                    ScenarioForest.write_scenario_name(flat_file, path_scenarios, destination_scenario)
-
-                    steps=[]
-                    for scenario in scenarios:
-                        steps += scenario.prerequisites()
-                        steps += scenario.actions()
-                        if scenario not in tested_scenarios:
-                            steps += scenario.assertions()
-                        tested_scenarios.append(scenario)
-
-                    ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
-                    flat_file.write("\n")
+                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+                flat_file.write("\n")
 
     def graph_mermaid(self, file_path):
         """Write a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
@@ -368,3 +320,27 @@ class ScenarioForest:
             scenario = next(vt['scenario'] for vt in scenario.vertex.successors() if vt['scenario'].name == scenario_name)
 
         return scenario
+
+    def scenarios(self):
+        """Return the scenarios of the scenario forest
+
+        :return: A list of manyworlds.Scenario
+        :rtype: list
+        """
+        return [vx['scenario'] for vx in self.graph.vs]
+
+    def root_scenarios(self):
+        """Return the root scenarios of the scenario forest (the vertices with no incoming edges)
+
+        :return: A list of manyworlds.Scenario
+        :rtype: list
+        """
+        return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
+
+    def leaf_scenarios(self):
+        """Return the leaf scenarios of the scenario forest (the vertices with no outgoing edges)
+
+        :return: A list of manyworlds.Scenario
+        :rtype: list
+        """
+        return [vx['scenario'] for vx in self.graph.vs if vx.outdegree() == 0]
