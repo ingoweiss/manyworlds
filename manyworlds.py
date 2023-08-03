@@ -220,18 +220,20 @@ class ScenarioForest:
         last_step = None
         for step_num, step in enumerate(steps):
             first_of_type = (last_step == None or last_step.conjunction != step.conjunction)
-            # pdb.set_trace()
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments == 'on' and step.comment:
                 file_handle.write("# " + step.comment + "\n")
             if step.data:
-                data = ScenarioForest.data_table_dict_to_list(step.data)
-                col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
-                for row in data:
-                    padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
-                    file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
+                ScenarioForest.write_data_table(file_handle, step.data)
             last_step = step
 
+    @classmethod
+    def write_data_table(cls, file_handle, data_table):
+        data = ScenarioForest.data_table_dict_to_list(data_table)
+        col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
+        for row in data:
+            padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
+            file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
     @classmethod
     def write_scenario_name(cls, file_handle, path_scenarios, destination_scenario):
