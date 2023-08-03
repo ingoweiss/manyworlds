@@ -80,9 +80,6 @@ class Step:
         self.data = data
         self.comment = comment
 
-    def conjunction(self):
-        return Step.type_to_conjunction_mapping[self.type]
-
     def format(self, first_of_type=True):
         conjunction = (self.conjunction if first_of_type else 'And')
         return conjunction + ' ' + self.name
