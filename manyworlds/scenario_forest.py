@@ -197,20 +197,6 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def graph_mermaid(self, file_path):
-        """Write a description of a graph visualizing the scenario tree using the 'Mermaid' syntax
-
-        :parmam file_path: Path to Mermaid file to be written
-        :type file_path: strex
-        """
-        with open(file_path, 'w') as mermaid_file:
-            mermaid_file.write("graph TD\n")
-            for scenario in self.graph.vs:
-                mermaid_file.write('{}({})\n'.format(scenario.index, scenario['scenario'].name))
-            for edge in self.graph.es:
-                mermaid_file.write('{} --> {}\n'.format(edge.source_vertex.index,
-                                                        edge.target_vertex.index))
-
     def find(self, *scenario_names):
 
         scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])

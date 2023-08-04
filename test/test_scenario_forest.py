@@ -54,9 +54,3 @@ def test_flatten_relaxed():
     assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature',
                        'test/fixtures/scenarios_flat_relaxed.feature')
 
-def test_graph_mermaid():
-    """Test the 'graph_mermaid' method"""
-    forest = ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    forest.graph_mermaid('test/out/scenarios_graph.mermaid.txt')
-    assert filecmp.cmp('test/out/scenarios_graph.mermaid.txt',
-                       'test/fixtures/scenarios_graph.mermaid.txt')

@@ -3,7 +3,7 @@ from manyworlds.scenario_forest import ScenarioForest
 from termcolor import colored
 
 parser = argparse.ArgumentParser(prog="manyworld.py")
-parser.add_argument('action', choices=['flatten', 'graph'], help="'flatten' to output flat scenario file, 'graph' to output mermaid file")
+parser.add_argument('action', choices=['flatten'], help="'flatten' to output flat scenario file")
 parser.add_argument('--input', help="input scenario file")
 parser.add_argument('--output', help="output file (either flat scenario file or mermaid file)")
 parser.add_argument('--mode', choices=['strict', 'relaxed'], default='strict')
@@ -23,5 +23,3 @@ for sc in tree.scenarios():
 
 if args.action == 'flatten':
     tree.flatten(args.output, mode=args.mode, comments=args.comments)
-elif args.action == 'graph':
-    tree.graph_mermaid(args.output)
