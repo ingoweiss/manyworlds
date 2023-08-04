@@ -104,7 +104,7 @@ class ScenarioForest:
         return ScenarioForest(graph)
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps, comments='off'):
+    def write_scenario_steps(cls, file_handle, steps, comments=False):
         """Write formatted scenario steps to file
 
         :param file_handle: The file to which to write the steps
@@ -116,7 +116,7 @@ class ScenarioForest:
         for step_num, step in enumerate(steps):
             first_of_type = (last_step == None or last_step.conjunction != step.conjunction)
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
-            if comments == 'on' and step.comment:
+            if comments and step.comment:
                 file_handle.write("# " + step.comment + "\n")
             if step.data:
                 ScenarioForest.write_data_table(file_handle, step.data)
@@ -130,7 +130,7 @@ class ScenarioForest:
             padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
             file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
-    def flatten(self, file, mode='strict', comments='off'):
+    def flatten(self, file, mode='strict', comments=False):
         """Write a flat (no indentation) feature file representing the scenario forest
 
         :param file: Path to flat feature file to be written
@@ -143,7 +143,7 @@ class ScenarioForest:
         elif mode == 'relaxed':
             self.flatten_relaxed(file, comments=comments)
 
-    def flatten_strict(self, file_path, comments='off'):
+    def flatten_strict(self, file_path, comments=False):
         """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
         The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
@@ -171,7 +171,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def flatten_relaxed(self, file_path, comments='off'):
+    def flatten_relaxed(self, file_path, comments=False):
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
         The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in

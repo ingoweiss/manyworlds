@@ -4,12 +4,11 @@ from .scenario_forest import ScenarioForest
 from termcolor import colored
 
 def main():
-    parser = argparse.ArgumentParser(prog="manyworld.py")
-    parser.add_argument('action', choices=['flatten'], help="'flatten' to output flat scenario file")
+    parser = argparse.ArgumentParser(prog="manyworlds")
     parser.add_argument('--input', help="input scenario file")
     parser.add_argument('--output', help="output file (either flat scenario file or mermaid file)")
-    parser.add_argument('--mode', choices=['strict', 'relaxed'], default='strict')
-    parser.add_argument('--comments', choices=['on', 'off'], default='off')
+    parser.add_argument('--mode', choices=['strict', 'relaxed'], default='strict', help='strict: one scenario per node, relaxed: one scenario per leaf node')
+    parser.add_argument('--comments', default=False, action='store_true', help='output comments')
     args = parser.parse_args()
 
     tree = ScenarioForest.from_file(args.input)
@@ -23,8 +22,7 @@ def main():
             indentation_string = ''
         print(indentation_string + sc.name)
 
-    if args.action == 'flatten':
-        tree.flatten(args.output, mode=args.mode, comments=args.comments)
+    tree.flatten(args.output, mode=args.mode, comments=args.comments)
 
 if __name__ == "__main__":
     main()
