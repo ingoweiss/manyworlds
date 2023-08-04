@@ -1,5 +1,5 @@
 import argparse
-import manyworlds as mw
+from src.manyworlds.scenario_forest import ScenarioForest
 from termcolor import colored
 
 parser = argparse.ArgumentParser(prog="manyworld.py")
@@ -10,7 +10,7 @@ parser.add_argument('--mode', choices=['strict', 'relaxed'], default='strict')
 parser.add_argument('--comments', choices=['on', 'off'], default='off')
 args = parser.parse_args()
 
-tree = mw.ScenarioForest.from_file(args.input)
+tree = ScenarioForest.from_file(args.input)
 
 # print tree:
 for sc in tree.scenarios():
