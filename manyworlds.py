@@ -85,7 +85,7 @@ class Step:
         return conjunction + ' ' + self.name
 
     def __str__(self):
-        return "<Step: {}>".format(self.format())
+        return "<{}: {}>".format(self.__class__.__name__, (self.name[0].upper() + self.name[1:]))
 
     def __repr__(self):
         return self.__str__()
