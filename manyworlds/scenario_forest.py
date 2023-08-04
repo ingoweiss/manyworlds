@@ -3,8 +3,8 @@ import re
 from igraph import Graph
 import pdb
 
-from src.manyworlds.scenario import Scenario
-from src.manyworlds.step import Step, Prerequisite, Action, Assertion
+from .scenario import Scenario
+from .step import Step, Prerequisite, Action, Assertion
 
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios

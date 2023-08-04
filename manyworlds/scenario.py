@@ -3,7 +3,7 @@ import re
 from igraph import Graph
 import pdb
 
-from src.manyworlds.step import Step, Prerequisite, Action, Assertion
+from .step import Step, Prerequisite, Action, Assertion
 
 class Scenario:
     """A BDD Scenario

@@ -6,7 +6,7 @@ import pdb
 
 import pytest
 
-from src.manyworlds.scenario_forest import ScenarioForest
+from manyworlds.scenario_forest import ScenarioForest
 
 @pytest.fixture(scope='session', autouse=True)
 def clear_out_directory():

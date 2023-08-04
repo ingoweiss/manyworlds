@@ -1,5 +1,5 @@
 import argparse
-from src.manyworlds.scenario_forest import ScenarioForest
+from manyworlds.scenario_forest import ScenarioForest
 from termcolor import colored
 
 parser = argparse.ArgumentParser(prog="manyworld.py")
