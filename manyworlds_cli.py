@@ -13,12 +13,13 @@ args = parser.parse_args()
 tree = mw.ScenarioForest.from_file(args.input)
 
 # print tree:
-for v in tree.graph.vs():
-    level = tree.graph.neighborhood_size(v, mode="IN", order=100)
-    indentation_string = ''
+for sc in tree.scenarios():
+    level = sc.level()
     if level > 1:
         indentation_string = '   '*(level-2) + colored('└─ ', 'blue')
-    print(indentation_string + v['scenario'].name)
+    else:
+        indentation_string = ''
+    print(indentation_string + sc.name)
 
 if args.action == 'flatten':
     tree.flatten(args.output, mode=args.mode, comments=args.comments)

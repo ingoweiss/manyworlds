@@ -43,6 +43,9 @@ class Scenario:
         ancestors.reverse()
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
+    def level(self):
+        return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
+
     def is_breadcrumb(self):
         return len(self.assertions()) == 0
 
