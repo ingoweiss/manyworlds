@@ -1,6 +1,6 @@
 # __main__.py
 import argparse
-from .scenario_forest import ScenarioForest
+from manyworlds import ScenarioForest
 from termcolor import colored
 
 def main():
