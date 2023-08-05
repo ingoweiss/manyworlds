@@ -6,7 +6,7 @@ import pdb
 
 import pytest
 
-from manyworlds import ScenarioForest
+import manyworlds as mw
 
 @pytest.fixture(scope='session', autouse=True)
 def clear_out_directory():
@@ -20,7 +20,7 @@ def clear_out_directory():
 
 def test_parse():
     """Test the structure of the forest graph after using the 'from_file' method"""
-    forest = ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     assert len(forest.root_scenarios()) == 1
 
     root_scenario = forest.find('Users')
@@ -42,14 +42,14 @@ def test_parse():
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
-    forest = ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     forest.flatten('test/out/scenarios_flat_strict.feature')
     assert filecmp.cmp('test/out/scenarios_flat_strict.feature',
                        'test/fixtures/scenarios_flat_strict.feature')
 
 def test_flatten_relaxed():
     """Test the 'flatten' method in 'relaxed' mode"""
-    forest = ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
     forest.flatten('test/out/scenarios_flat_relaxed.feature', mode='relaxed')
     assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature',
                        'test/fixtures/scenarios_flat_relaxed.feature')
