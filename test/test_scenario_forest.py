@@ -46,6 +46,12 @@ def test_flatten_strict():
     assert filecmp.cmp('test/out/scenarios_flat_strict.feature',
                        'test/fixtures/scenarios_flat_strict.feature')
 
+def test_flatten_strict_with_comments():
+    """Test the 'flatten' method in 'strict' mode with comments turned on"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest.flatten('test/out/scenarios_flat_strict_with_comments.feature', comments=True)
+    assert filecmp.cmp('test/out/scenarios_flat_strict_with_comments.feature',
+                       'test/fixtures/scenarios_flat_strict_with_comments.feature')
 def test_flatten_relaxed():
     """Test the 'flatten' method in 'relaxed' mode"""
     forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
@@ -53,3 +59,9 @@ def test_flatten_relaxed():
     assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature',
                        'test/fixtures/scenarios_flat_relaxed.feature')
 
+def test_flatten_relaxed_with_comments():
+    """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest.flatten('test/out/scenarios_flat_relaxed_with_comments.feature', comments=True)
+    assert filecmp.cmp('test/out/scenarios_flat_relaxed_with_comments.feature',
+                       'test/fixtures/scenarios_flat_relaxed_with_comments.feature')
