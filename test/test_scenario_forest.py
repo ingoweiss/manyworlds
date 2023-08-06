@@ -25,6 +25,8 @@ def test_parse():
 
     root_scenario = forest.find('View users')
     assert root_scenario.name == 'View users'
+    assert root_scenario.level() == 1
+    assert len(root_scenario.ancestors()) == 0
     assert len(root_scenario.prerequisites()) == 1
     assert len(root_scenario.actions()) == 1
     assert len(root_scenario.assertions()) == 1
@@ -35,6 +37,8 @@ def test_parse():
 
     leaf_scenario = forest.find('View users', 'Bulk operations', 'Select user', 'Select multiple users', 'Bulk deactivate users', 'Confirm bulk deactivation of users')
     assert leaf_scenario.name == 'Confirm bulk deactivation of users'
+    assert leaf_scenario.level() == 6
+    assert len(leaf_scenario.ancestors()) == 5
     assert len(leaf_scenario.prerequisites()) == 0
     assert len(leaf_scenario.actions()) == 1
     assert len(leaf_scenario.assertions()) == 2
