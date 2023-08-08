@@ -1,38 +1,41 @@
+# Manyworlds
+
+Organize BDD scenarios as hierarchical trees for more concise and expressive feature files.
+
 [![Build Status](https://travis-ci.com/ingoweiss/manyworlds.svg?branch=master)](https://travis-ci.com/ingoweiss/manyworlds)
 
 BDD scenarios tend to be verbose and repetitive. Consider the following abstract representation of four quite typical scenarios:
 
 ```text
-
 G1 → W1 → W2: T1
 G1 → W1 → W2 → W3: T2
 G1 → W1 → W2 → W4: T3
 G1 → W1 → W2 → W4 → W5: T4
-
 ```
+All four scenarios share the only "givens" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetetive and makes it hard to undertand how the scenarios are organized.
 
-All four scenarios share the same prerequisite or "Given" step (G1) and one action or "When" step (W1). Scenario 3 and 4 share all prerequisites (G1) and three actions (W1, W2, W4). This is very repetetive and it is hard to see how the scenarios are organized. The same scenarios can be represented much more consisely as a tree:
+Now consider the same scenarios represented as a tree:
 
 ```text
-
 G1 → W1 → W2: T1
-           ⮑ W3: T2
-           ⮑ W4: T3
-              ⮑ W5: T4
+           ↳ W3: T2
+           ↳ W4: T3
+              ↳ W5: T4
 ```
+This representation has a few advantages:
+1. Many "givens" and "whens" are now implied by their scenario's position in the tree and no longer need to be written which eliminates repetition and noise.
+2. We can now see how scenarios relate to each other. Specifically we can start thinking in terms of parent and child scenarios.
+3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice gaps in the scenarios.
 
-The purpose of this project is to explore whether there is value in this concept. Currently, it does little more than parse a file describing a hierarchy of scenarios (using indentation) and flatten it so that it can be run with currently available tools, like so:
+ With Manyworlds you can:
+ 1. Use indentation in feature files to organize your feature files as hierarchical scenario trees.
+ 2. Use the Manyworlds cli to expand the hierarchical feature file into a flat feature file that can be run with any Gherkin based testing tool.
 
-```bash
+## Usage
 
-python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature
-
-```
-
-The above reads a file that looks like this ...
+Here is an example of an indented, hierarchical feature file:
 
 ```Cucumber
-
 Scenario: View users
 Given the following users:
     | Name   | Status      |
@@ -94,10 +97,28 @@ Then I see the following users:
                         | Connie | Active |
 ```
 
-... and writes a file that looks like this:
+Now let's use Manyworlds to expand it:
+
+```bash
+python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature
+```
+This will print the structure of the feature file's scenario trees to the terminal:
+
+```text
+View users
+└─ Deactivate user
+└─ Bulk operations
+   └─ Select user
+      └─ Deselect user
+      └─ Select multiple users
+         └─ Deselect all users
+         └─ Bulk deactivate users
+            └─ Confirm bulk deactivation of users
+            └─ Cancel out of bulk deactivation of users
+```
+and write the following flat feature file:
 
 ```Cucumber
-
 Scenario: View users
 Given the following users:
     | Name   | Status      |
@@ -223,43 +244,18 @@ And I see the following users:
     | Ben    | Active |
     | Alice  | Active |
     | Connie | Active |
-
 ```
-
-… in additionn to printing the structure of the scenaro forest:
-
-```bash
-
-View users
-└─ Deactivate user
-└─ Bulk operations
-   └─ Select user
-      └─ Deselect user
-      └─ Select multiple users
-         └─ Deselect all users
-         └─ Bulk deactivate users
-            └─ Confirm bulk deactivation of users
-            └─ Cancel out of bulk deactivation of users
-
-```
-
-The nested version is significantly shorter by eliminating repetition. I also find it more structured and readable. 
-
-In order to reap the full benefits of scenario trees, however, the test runner would need to be able to walk the scenario tree. Ultimately, instead of each scenario having to re-run all the actions of it's ancestor scenarios to re-create the necessary given state (which is what the generated flat scenario file does), I would like the tested application to be cloned, state and all, at each decision fork in the scenario tree (which reminds me of the 'many worlds interpretation' of quantum mechanics - hence the working title).
-
 ### Flattening Modes
 
-By default, MW creates one scenario per node in the scenario tree, resulting in Gherkin with one set of 'When' actions followed by one set of 'Then' assertions which is generally considered best practice. This is the 'strict' mode.
+By default, Manyworlds creates one scenario per node in the scenario tree, resulting in scenarios with one set of "whens" followed by one set of "thens" which is generally considered best practice. This is the "strict" mode.
 
-MW also supports a 'relaxed' mode that creates one scenrio per _leaf node_ in the scenario tree, resulting in Gherkin that may have multipe consecutive 'When/Then' pairs in one scenario which is widely considered an anti-pattern. For once, it makes it hard to name the scenarios well. However, it does reduce repetition and is therefore shorter:
+Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in scenarios that may have multipe consecutive "when/then" pairs which is widely considered an anti-pattern. For once, it makes it hard to name scenarios well. However, it does reduce repetition and is therefore shorter and will run faster:
 
 ```bash
-
 python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature --mode relaxed
-
 ```
 
-This will write:
+This will write the following "relaxed" flat feature file:
 
 ```Cucumber
 
@@ -348,22 +344,21 @@ And I see the following users:
     | Connie | Active |
 
 ```
+### Organizational Scenarios
 
-### Using the ScenarioForest class directly
+Scenarios which do not have any "thens" are considered "organizational" and are used to group scenarios into related scenarios only. Organizational scenarios will not appear as scenarios in the output feature file. However their name is used as a "breadcrumb" element in the names of their child scenarios (see "Bulk operations" in the example file)
 
-If you want to use manyworlds in your code rather than using the cli here's how to to do that:
+### Using the ScenarioForest Class Directly
+
+If you want to use Manyworlds in your code rather than using the cli here's how to to do that:
 
 ```python
-
 import manyworlds as mw
 mw.ScenarioForest.from_file('tree.feature').flatten('flat.feature')
-
 ```
 
 ### Installation
 
 ```bash
-
 pip install manyworlds
-
 ```
