@@ -12,7 +12,7 @@ G1 → W1 → W2 → W3: T2
 G1 → W1 → W2 → W4: T3
 G1 → W1 → W2 → W4 → W5: T4
 ```
-All four scenarios share the only "givens" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetetive and makes it hard to undertand how the scenarios are organized.
+All four scenarios share the only "givens" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetitive and makes it hard to undertand how the scenarios are organized.
 
 Now consider the same scenarios represented as a tree:
 
@@ -249,7 +249,7 @@ And I see the following users:
 
 By default, Manyworlds creates one scenario per node in the scenario tree, resulting in scenarios with one set of "whens" followed by one set of "thens" which is generally considered best practice. This is the "strict" mode.
 
-Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in scenarios that may have multipe consecutive "when/then" pairs which is widely considered an anti-pattern. For once, it makes it hard to name scenarios well. However, it does reduce repetition and is therefore shorter and will run faster:
+Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For once, it makes it hard to name scenarios well. However, it does reduce repetition and is therefore shorter and will run faster:
 
 ```bash
 python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature --mode relaxed
@@ -346,7 +346,7 @@ And I see the following users:
 ```
 ### Organizational Scenarios
 
-Scenarios which do not have any "thens" are considered "organizational" and are used to group scenarios into related scenarios only. Organizational scenarios will not appear as scenarios in the output feature file. However their name is used as a "breadcrumb" element in the names of their child scenarios (see "Bulk operations" in the example file)
+Scenarios which do not have any "thens" are considered "organizational" and are used only to group related scenarios. They will not appear as scenarios in the output feature file. However their name is used as a "breadcrumb" element in the names of their child scenarios (see "Bulk operations" in the example file).
 
 ### Using the ScenarioForest Class Directly
 
