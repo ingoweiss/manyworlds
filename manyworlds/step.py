@@ -31,7 +31,7 @@ class Step:
         self.comment = comment
 
     def format(self, first_of_type=True):
-        conjunction = (self.conjunction if first_of_type else 'And')
+        conjunction = (self.conjunction if first_of_type else ' And')
         return conjunction + ' ' + self.name
 
     def __str__(self):
