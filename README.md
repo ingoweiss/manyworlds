@@ -12,7 +12,7 @@ G1 → W1 → W2 → W3: T2
 G1 → W1 → W2 → W4: T3
 G1 → W1 → W2 → W4 → W5: T4
 ```
-All four scenarios share the only "givens" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetitive and makes it hard to undertand how the scenarios are organized.
+All four scenarios share the only "given" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetitive and makes it hard to understand how the scenarios are organized.
 
 Now consider the same scenarios represented as a tree:
 
@@ -24,12 +24,12 @@ G1 → W1 → W2: T1
 ```
 This representation has a few advantages:
 1. Many "givens" and "whens" are now implied by their scenario's position in the tree and no longer need to be written which eliminates repetition and noise.
-2. We can now see how scenarios relate to each other. Specifically we can start thinking in terms of parent and child scenarios.
+2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice gaps in the scenarios.
 
  With Manyworlds you can:
- 1. Use indentation in feature files to organize your feature files as hierarchical scenario trees.
- 2. Expand the hierarchical feature file into a flat feature file that can be run with any Gherkin based testing tool.
+ 1. Use indentation in feature files to organize your scenarios in a hierarchical tree structure.
+ 2. Expand the hierarchical feature file into a standard flat feature file that can be run with any Gherkin based testing tool.
 
 ## Usage
 
