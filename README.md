@@ -29,7 +29,7 @@ This representation has a few advantages:
 
  With Manyworlds you can:
  1. Use indentation in feature files to organize your feature files as hierarchical scenario trees.
- 2. Use the Manyworlds cli to expand the hierarchical feature file into a flat feature file that can be run with any Gherkin based testing tool.
+ 2. Expand the hierarchical feature file into a flat feature file that can be run with any Gherkin based testing tool.
 
 ## Usage
 
