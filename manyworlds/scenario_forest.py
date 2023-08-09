@@ -8,9 +8,6 @@ from .step import Step, Prerequisite, Action, Assertion
 
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios
-
-    :param graph: A graph
-    :type graph: class:`igraph.Graph`
     """
 
     TAB_SIZE = 4
@@ -23,33 +20,67 @@ class ScenarioForest:
 
     def __init__(self, graph=ig.Graph) -> None:
         """Constructor method
+
+        Parameters
+        ----------
+        graph : ig.Graph
+            the graph representing the set of scenario trees
         """
         self.graph = graph
 
     @classmethod
-    def data_table_list_to_dict(cls, data_table:list) -> dict:
+    def data_table_list_to_dict(cls, data_table:list[list]) -> list[dict]:
+        """Converts a data table from list of list to list of dict
+
+        Parameters
+        ----------
+        data_table : list
+            list of (equal-length) list of str. The first list is used as headers
+
+        Returns
+        -------
+        list
+            list of dict
+        """
         header_row = data_table[0]
         return [dict(zip(header_row, row)) for row in data_table[1:]]
 
     @classmethod
-    def data_table_dict_to_list(cls, data_table:dict) -> list:
+    def data_table_dict_to_list(cls, data_table:list[dict]) -> list[list]:
+        """Converts a data table from list of dict to list of list
+
+        Parameters
+        ----------
+        data_table : list
+            list of dict
+
+        Returns
+        -------
+        list
+            list of (equal-length) list of str. The first list is used as headers
+        """
         return [list(data_table[0].keys())] + [list(row.values()) for row in data_table]
 
     @classmethod
     def from_file(cls, file_path:str) -> None:
         """Create a scenario tree instance from an indented feature file
 
-        Scan the indented file line by line and:
-        1. Keep track of the last scenario encountered at each indentation level
+        Scans the indented file line by line and:
+        1. Keeps track of the last scenario encountered at each indentation level
         2. Any scenario encountered is added as a child to the last scenario encounterd
            at the parent level
-        3. Any action or assertion encountered is added to the last scenarion encountered
+        3. Any prerequisite, action or assertion encountered is added to the last scenarion encountered
            at that level
 
-        :param file_path: Fath to indented feature file
-        :type file_path: str
-        :return: A new instance of manyworlds.ScenarioForest
-        :rtype: class:'manyworlds.ScenarioForest'
+        Parameters
+        ----------
+        file_path : str
+            path to the indented feature file
+
+        Returns
+        -------
+        ScenarioForest
+            instance of ScenarioForest
         """
         graph = ig.Graph(directed=True)
         with open(file_path) as indented_file:
@@ -104,13 +135,23 @@ class ScenarioForest:
         return ScenarioForest(graph)
 
     @classmethod
-    def write_scenario_steps(cls, file_handle:io.TextIOWrapper, steps:list, comments:bool=False):
-        """Write formatted scenario steps to file
+    def write_scenario_steps(cls, file_handle:io.TextIOWrapper, steps:list, comments:bool=False) -> None:
+        """Write formatted scenario steps to the end of the flat feature file
 
-        :param file_handle: The file to which to write the steps
-        :type file_handle: class:'io.TextIOWrapper'
-        :param steps: The steps to write
-        :type steps: list of Step
+        Parameters
+        ----------
+        file_handle : io.TextIOWrapper
+            the file to which to write the steps
+
+        steps : list
+            list of Step. Steps to write to file_handle
+
+        comments: bool
+            whether or not to write comments
+
+        Returns
+        -------
+        None
         """
         last_step = None
         for step_num, step in enumerate(steps):
@@ -123,34 +164,63 @@ class ScenarioForest:
             last_step = step
 
     @classmethod
-    def write_data_table(cls, file_handle:io.TextIOWrapper, data_table:dict):
+    def write_data_table(cls, file_handle:io.TextIOWrapper, data_table:list[dict]) -> None:
+        """Write formatted data table to the end of the flat feature file
+
+        Parameters
+        ----------
+        file_handle : io.TextIOWrapper
+            the file to which to write the data table
+
+        data_table : list
+            list of dict
+
+        Returns
+        -------
+        None
+        """
         data = ScenarioForest.data_table_dict_to_list(data_table)
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
             padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
             file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
-    def flatten(self, file_path:str, mode:str='strict', comments:bool=False):
+    def flatten(self, file_path:str, mode:str='strict', comments:bool=False) -> None:
         """Write a flat (no indentation) feature file representing the scenario forest
 
-        :param file: Path to flat feature file to be written
-        :type file_path: str
-        :param mode: Flattening mode. Either 'strict' or 'relaxed'
-        :type mode: str
+        Parameters
+        ----------
+        file_path : str
+            Path to flat feature file to be written
+
+        mode : {'strict', 'relaxed'}, default='strict'
+            flattening mode. Either 'strict' or 'relaxed'
+
+        comments : str, default = False
+            whether or not to write comments
+
+        Returns
+        -------
+        None
         """
         if mode == 'strict':
             self.flatten_strict(file_path, comments=comments)
         elif mode == 'relaxed':
             self.flatten_relaxed(file_path, comments=comments)
 
-    def flatten_strict(self, file_path:str, comments:bool=False):
+    def flatten_strict(self, file_path:str, comments:bool=False) -> None:
         """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
         The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
         a feature file with one set of 'When' steps followed by one set of 'Then' steps (generally recommended)
 
-        :param file_path: Path to flat feature file
-        :type file_path: str
+        Parameters
+        ----------
+        file_path : str
+            path to flat feature file
+
+        comments : bool
+            whether or not to write comments
         """
         with open(file_path, 'w') as flat_file:
             for scenario in [sc for sc in self.scenarios() if not sc.is_breadcrumb()]:
@@ -171,14 +241,23 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def flatten_relaxed(self, file_path:str, comments:bool=False):
+    def flatten_relaxed(self, file_path:str, comments:bool=False) -> None:
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
         The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
         a feature file with multiple alternating sets of "When" and "Then" steps per (generally considered an anti-pattern)
 
-        :param file_path: Path to flat feature file
-        :type file_path: str
+        Parameters
+        ----------
+        file_path : str
+            path to flat feature file
+
+        comments : bool
+            whether or not to write comments
+
+        Returns
+        -------
+        None
         """
         with open(file_path, 'w') as flat_file:
             tested_scenarios = []
@@ -197,7 +276,19 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def find(self, *scenario_names:str) -> Scenario:
+    def find(self, *scenario_names:list[str]) -> Scenario:
+        """Find a scenario by the names of all scenarios along the path from a root scenario to the destination scenario
+
+        Parameters
+        ----------
+        scenario_names : list[str]
+            list of scenario names
+
+        Returns
+        -------
+        Scenario
+            the found scenario
+        """
 
         scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])
         for scenario_name in scenario_names[1:]:
@@ -205,26 +296,32 @@ class ScenarioForest:
 
         return scenario
 
-    def scenarios(self) -> list:
-        """Return the scenarios of the scenario forest
+    def scenarios(self) -> list[Scenario]:
+        """Return all scenarios
 
-        :return: A list of manyworlds.Scenario
-        :rtype: list
+        Returns
+        -------
+        list[Scenario]
+            the scenario forest's scenarios
         """
         return [vx['scenario'] for vx in self.graph.vs]
 
-    def root_scenarios(self) -> list:
-        """Return the root scenarios of the scenario forest (the vertices with no incoming edges)
+    def root_scenarios(self) -> list[Scenario]:
+        """Return the root scenarios (with vertices without incoming edges)
 
-        :return: A list of manyworlds.Scenario
-        :rtype: list
+        Returns
+        -------
+        list[Scenario]
+            the scenario forest's root scenarios
         """
         return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
 
-    def leaf_scenarios(self) -> list:
-        """Return the leaf scenarios of the scenario forest (the vertices with no outgoing edges)
+    def leaf_scenarios(self) -> list[Scenario]:
+        """Return the leaf scenarios (with vertices without outgoing edges)
 
-        :return: A list of manyworlds.Scenario
-        :rtype: list
+        Returns
+        -------
+        list[Scenario]
+            the scenario forest's leaf scenarios
         """
         return [vx['scenario'] for vx in self.graph.vs if vx.outdegree() == 0]
