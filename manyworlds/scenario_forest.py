@@ -1,7 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
-from igraph import Graph
-import pdb
+import igraph as ig
+import io
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -21,22 +21,22 @@ class ScenarioForest:
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.step_pattern))
     TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.table_pattern))
 
-    def __init__(self, graph):
+    def __init__(self, graph=ig.Graph) -> None:
         """Constructor method
         """
         self.graph = graph
 
     @classmethod
-    def data_table_list_to_dict(cls, data_table):
+    def data_table_list_to_dict(cls, data_table:list) -> dict:
         header_row = data_table[0]
         return [dict(zip(header_row, row)) for row in data_table[1:]]
 
     @classmethod
-    def data_table_dict_to_list(cls, data_table):
+    def data_table_dict_to_list(cls, data_table:dict) -> list:
         return [list(data_table[0].keys())] + [list(row.values()) for row in data_table]
 
     @classmethod
-    def from_file(cls, file_path):
+    def from_file(cls, file_path:str) -> None:
         """Create a scenario tree instance from an indented feature file
 
         Scan the indented file line by line and:
@@ -51,7 +51,7 @@ class ScenarioForest:
         :return: A new instance of manyworlds.ScenarioForest
         :rtype: class:'manyworlds.ScenarioForest'
         """
-        graph = Graph(directed=True)
+        graph = ig.Graph(directed=True)
         with open(file_path) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
         current_scenarios = {} # used to keep track of last scenario encountered at each level
@@ -104,7 +104,7 @@ class ScenarioForest:
         return ScenarioForest(graph)
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps, comments=False):
+    def write_scenario_steps(cls, file_handle:io.TextIOWrapper, steps:list, comments:bool=False):
         """Write formatted scenario steps to file
 
         :param file_handle: The file to which to write the steps
@@ -123,27 +123,27 @@ class ScenarioForest:
             last_step = step
 
     @classmethod
-    def write_data_table(cls, file_handle, data_table):
+    def write_data_table(cls, file_handle:io.TextIOWrapper, data_table:dict):
         data = ScenarioForest.data_table_dict_to_list(data_table)
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
             padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
             file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
-    def flatten(self, file, mode='strict', comments=False):
+    def flatten(self, file_path:str, mode:str='strict', comments:bool=False):
         """Write a flat (no indentation) feature file representing the scenario forest
 
         :param file: Path to flat feature file to be written
-        :type file: str
+        :type file_path: str
         :param mode: Flattening mode. Either 'strict' or 'relaxed'
         :type mode: str
         """
         if mode == 'strict':
-            self.flatten_strict(file, comments=comments)
+            self.flatten_strict(file_path, comments=comments)
         elif mode == 'relaxed':
-            self.flatten_relaxed(file, comments=comments)
+            self.flatten_relaxed(file_path, comments=comments)
 
-    def flatten_strict(self, file_path, comments=False):
+    def flatten_strict(self, file_path:str, comments:bool=False):
         """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
 
         The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
@@ -171,7 +171,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def flatten_relaxed(self, file_path, comments=False):
+    def flatten_relaxed(self, file_path:str, comments:bool=False):
         """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
 
         The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
@@ -197,7 +197,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
-    def find(self, *scenario_names):
+    def find(self, *scenario_names:str) -> Scenario:
 
         scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])
         for scenario_name in scenario_names[1:]:
@@ -205,7 +205,7 @@ class ScenarioForest:
 
         return scenario
 
-    def scenarios(self):
+    def scenarios(self) -> list:
         """Return the scenarios of the scenario forest
 
         :return: A list of manyworlds.Scenario
@@ -213,7 +213,7 @@ class ScenarioForest:
         """
         return [vx['scenario'] for vx in self.graph.vs]
 
-    def root_scenarios(self):
+    def root_scenarios(self) -> list:
         """Return the root scenarios of the scenario forest (the vertices with no incoming edges)
 
         :return: A list of manyworlds.Scenario
@@ -221,7 +221,7 @@ class ScenarioForest:
         """
         return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
 
-    def leaf_scenarios(self):
+    def leaf_scenarios(self) -> list:
         """Return the leaf scenarios of the scenario forest (the vertices with no outgoing edges)
 
         :return: A list of manyworlds.Scenario
