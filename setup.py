@@ -17,7 +17,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.9',
     py_modules=["manyworlds"],
     package_dir={'Package':'manyworlds'},
     entry_points={ 'console_scripts': ['Package = manyworlds.__main__:main' ] },
