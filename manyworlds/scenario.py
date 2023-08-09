@@ -5,13 +5,7 @@ import igraph as ig
 from .step import Step, Prerequisite, Action, Assertion
 
 class Scenario:
-    """A BDD Scenario
-
-    :param name: The name of the scenario
-    :type name: string
-    :param vertex: The iGraph vertex associated with the scenario
-    :type vertex: class: igraph.Vertex
-    """
+    """A BDD Scenario"""
 
     def __init__(self, name:str, vertex:ig.Vertex) -> None:
         """Constructor method
