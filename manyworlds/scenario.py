@@ -23,6 +23,17 @@ class Scenario:
         self.vertex = vertex
         self.graph = vertex.graph
         self.steps = []
+        self._validated = False
+    
+    @property
+    def validated(self):
+        """The validated property"""
+        return self._validated
+
+    @validated.setter
+    def validated(self, value):
+        """The validated property setter"""
+        self._validated = value
 
     def prerequisites(self):
         """Return all steps of type Prerequisite

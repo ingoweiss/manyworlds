@@ -273,7 +273,6 @@ class ScenarioForest:
         """
 
         with open(file_path, 'w') as flat_file:
-            tested_scenarios = []
             for scenario in self.leaf_scenarios():
                 flat_file.write(scenario.format() + "\n")
 
@@ -282,9 +281,9 @@ class ScenarioForest:
                 for path_scenario in path_scenarios:
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
-                    if path_scenario not in tested_scenarios:
+                    if not path_scenario.validated:
                         steps += path_scenario.assertions()
-                        tested_scenarios.append(path_scenario)
+                        path_scenario.validated = True
 
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
