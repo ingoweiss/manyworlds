@@ -235,7 +235,7 @@ class ScenarioForest:
         """
 
         with open(file_path, 'w') as flat_file:
-            for scenario in [sc for sc in self.scenarios() if not sc.is_breadcrumb()]:
+            for scenario in [sc for sc in self.scenarios() if not sc.organizational_only()]:
                 flat_file.write(scenario.format() + "\n")
 
                 ancestor_scenarios = scenario.ancestors()

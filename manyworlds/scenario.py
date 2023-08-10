@@ -121,7 +121,7 @@ class Scenario:
 
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
-    def is_breadcrumb(self):
+    def organizational_only(self):
         """Return whether the scenario is an 'organizational' scenario used for grouping only
 
         Returns
@@ -140,7 +140,7 @@ class Scenario:
             String representation of the Scenario instance
         """
 
-        breadcrumbs = [sc.name for sc in self.ancestors() if sc.is_breadcrumb()]
+        breadcrumbs = [sc.name for sc in self.ancestors() if sc.organizational_only()]
         breadcrumbs_string = ''
         if breadcrumbs:
             breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
