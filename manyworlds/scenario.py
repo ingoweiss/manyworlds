@@ -33,7 +33,7 @@ class Scenario:
             list[Prerequisite]. List of steps of type Prerequisite
         """
 
-        return self.steps_of_class(Prerequisite)
+        return self.steps_of_type(Prerequisite)
 
     def actions(self):
         """Return all steps of type Action
@@ -44,7 +44,7 @@ class Scenario:
             list[Action]. List of steps of type Action
         """
 
-        return self.steps_of_class(Action)
+        return self.steps_of_type(Action)
 
     def assertions(self):
         """Return all steps of type Assertion
@@ -55,9 +55,9 @@ class Scenario:
             list[Assertion]. List of steps of type Assertion
         """
 
-        return self.steps_of_class(Assertion)
+        return self.steps_of_type(Assertion)
 
-    def steps_of_class(self, step_class):
+    def steps_of_type(self, step_type):
         """Return all steps of the supplied type
 
         Parameters
@@ -71,7 +71,7 @@ class Scenario:
             list[Step]. List of steps of type Assertion
         """
 
-        return [st for st in self.steps if type(st) is step_class]
+        return [st for st in self.steps if type(st) is step_type]
 
     def __str__(self):
         """Return a string representation of the Scenario instance for terminal output
