@@ -100,7 +100,7 @@ Then I see the following users:
 Now let's use Manyworlds to expand it:
 
 ```bash
-python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature
+python -m manyworlds --input hierarchical.feature --output flat.feature
 ```
 This will print the structure of the feature file's scenario trees to the terminal:
 
@@ -252,7 +252,7 @@ By default, Manyworlds creates one scenario per node in the scenario tree, resul
 Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For once, it makes it hard to name scenarios well. However, it does reduce repetition and is therefore shorter and will run faster:
 
 ```bash
-python -m manyworlds --input ./scenarios.feature --output ./scenarios_flat.feature --mode relaxed
+python -m manyworlds --input hierarchical.feature --output flat.feature --mode relaxed
 ```
 
 This will write the following "relaxed" flat feature file:
@@ -354,7 +354,7 @@ If you want to use Manyworlds in your code rather than using the cli here's how 
 
 ```python
 import manyworlds as mw
-mw.ScenarioForest.from_file('tree.feature').flatten('flat.feature')
+mw.ScenarioForest.from_file('hierarchical.feature').flatten('flat.feature')
 ```
 
 ### Installation
