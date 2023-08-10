@@ -7,7 +7,7 @@ from .step import Step, Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    def __init__(self, name:str, vertex:ig.Vertex) -> None:
+    def __init__(self, name, vertex):
         """Constructor method
 
         Parameters
@@ -23,7 +23,7 @@ class Scenario:
         self.graph = vertex.graph
         self.steps = []
 
-    def prerequisites(self) -> list[Prerequisite]:
+    def prerequisites(self):
         """Return all steps of type Prerequisite
 
         Returns
@@ -33,7 +33,7 @@ class Scenario:
         """
         return self.steps_of_class(Prerequisite)
 
-    def actions(self) -> list[Action]:
+    def actions(self):
         """Return all steps of type Action
 
         Returns
@@ -43,7 +43,7 @@ class Scenario:
         """
         return self.steps_of_class(Action)
 
-    def assertions(self) -> list[Assertion]:
+    def assertions(self):
         """Return all steps of type Assertion
 
         Returns
@@ -53,7 +53,7 @@ class Scenario:
         """
         return self.steps_of_class(Assertion)
 
-    def steps_of_class(self, step_class:Step) -> list[Step]:
+    def steps_of_class(self, step_class):
         """Return all steps of the supplied type
 
         Parameters
@@ -68,7 +68,7 @@ class Scenario:
         """
         return [st for st in self.steps if type(st) is step_class]
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Return a string representation of the Scenario instance for terminal output
 
         Returns
@@ -78,7 +78,7 @@ class Scenario:
         """
         return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(self.name, len(self.prerequisites()), len(self.actions()), len(self.assertions()))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """Return a string representation of the Scenario instance for terminal output
 
         Returns
@@ -88,7 +88,7 @@ class Scenario:
         """
         return self.__str__()
 
-    def ancestors(self) -> list:
+    def ancestors(self):
         """Return the scenario's ancestors, starting with a root scenario
 
         Returns
@@ -100,7 +100,7 @@ class Scenario:
         ancestors.reverse()
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
-    def level(self) -> int:
+    def level(self):
         """Return the scenario's level in the scenario tree, with 1 meaning root
 
         Returns
@@ -110,7 +110,7 @@ class Scenario:
         """
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
-    def is_breadcrumb(self) -> bool:
+    def is_breadcrumb(self):
         """Return whether the scenario is an 'organizational' scenario used for grouping only
 
         Returns
@@ -119,7 +119,7 @@ class Scenario:
         """
         return len(self.assertions()) == 0
 
-    def format(self) -> str:
+    def format(self):
         """Return a string representation of the Scenario instance for feature file output
 
         Returns

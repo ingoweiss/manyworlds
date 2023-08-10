@@ -8,7 +8,7 @@ class Step:
     table_pattern = r'| ([^|]* +|)+'
 
     @classmethod
-    def parse(cls, string:str, previous_step=None) -> None:
+    def parse(cls, string, previous_step=None):
         match = re.compile(Step.step_pattern).match(string)
         conjunction = match['conjunction']
         if conjunction in ['And', 'But']:
@@ -21,7 +21,7 @@ class Step:
         }[conjunction]
         return step_class(match['name'], comment=match['comment'])
 
-    def __init__(self, name:str, data:list[dict]=None, comment:str=None) -> None:
+    def __init__(self, name, data=None, comment=None):
         """Constructor method
 
         Parameters
@@ -40,7 +40,7 @@ class Step:
         self.data = data
         self.comment = comment
 
-    def format(self, first_of_type:bool=True) -> str:
+    def format(self, first_of_type=True):
         """Return a string representation of the Scenario instance for feature file output
 
         Returns
@@ -51,7 +51,7 @@ class Step:
         conjunction = (self.conjunction if first_of_type else ' And')
         return conjunction + ' ' + self.name
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Return a string representation of the Scenario instance for terminal output
 
         Returns
@@ -61,7 +61,7 @@ class Step:
         """
         return "<{}: {}>".format(self.__class__.__name__, (self.name[0].upper() + self.name[1:]))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """Return a string representation of the Scenario instance for terminal output
 
         Returns
@@ -73,18 +73,18 @@ class Step:
 
 class Prerequisite(Step):
     """A BDD scenario prerequisite ("Given") step"""
-    def __init__(self, name:str, data:dict=None, comment:str=None) -> None:
+    def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Given'
        super().__init__(name, data=data, comment=comment)
 
 class Action(Step):
     """A BDD scenario action ("When") step"""
-    def __init__(self, name:str, data:dict=None, comment:str=None) -> None:
+    def __init__(self, name, data=None, comment=None):
        self.conjunction = 'When'
        super().__init__(name, data=data, comment=comment)
 
 class Assertion(Step):
     """A BDD scenario assertion ("Then") step"""
-    def __init__(self, name:str, data:dict=None, comment:str=None) -> None:
+    def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Then'
        super().__init__(name, data=data, comment=comment)
