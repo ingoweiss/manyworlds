@@ -5,7 +5,7 @@ class Step:
     """A BDD scenario step"""
 
     step_pattern = r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
-    table_pattern = r'| ([^|]* +|)+'
+    table_pattern = r'\| ([^|]* +\|)+'
 
     @classmethod
     def parse(cls, string, previous_step=None):

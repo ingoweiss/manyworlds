@@ -69,3 +69,10 @@ def test_flatten_relaxed_with_comments():
     forest.flatten('test/out/scenarios_flat_relaxed_with_comments.feature', comments=True)
     assert filecmp.cmp('test/out/scenarios_flat_relaxed_with_comments.feature',
                        'test/fixtures/scenarios_flat_relaxed_with_comments.feature')
+
+def test_invalid_file():
+    """Test that the correct error is raised when attempting to parse invalid files"""
+    with pytest.raises(ValueError) as error_info:
+        forest = mw.ScenarioForest.from_file('test/fixtures/invalid/invalid_line.feature')
+    assert str(error_info.value) == 'Unable to parse line: Givven the following users: # invalid line'
+    
