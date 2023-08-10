@@ -27,14 +27,19 @@ class Step:
         Parameters
         ----------
         name : str
-            the name of the step
+            The name of the step
 
-        data : list[dict], optional
-            list of dict representing a data table
+        data : list, optional
+            list[dict]. List of dict representing a data table
 
         comment : str, optional
-            a comment
-       """
+            A comment
+
+        Returns
+        ----------
+        None
+        """
+
         self.name = name.strip()
         self.type = type
         self.data = data
@@ -46,8 +51,9 @@ class Step:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         conjunction = (self.conjunction if first_of_type else ' And')
         return conjunction + ' ' + self.name
 
@@ -57,8 +63,9 @@ class Step:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         return "<{}: {}>".format(self.__class__.__name__, (self.name[0].upper() + self.name[1:]))
 
     def __repr__(self):
@@ -67,24 +74,28 @@ class Step:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         return self.__str__()
 
 class Prerequisite(Step):
     """A BDD scenario prerequisite ("Given") step"""
+
     def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Given'
        super().__init__(name, data=data, comment=comment)
 
 class Action(Step):
     """A BDD scenario action ("When") step"""
+
     def __init__(self, name, data=None, comment=None):
        self.conjunction = 'When'
        super().__init__(name, data=data, comment=comment)
 
 class Assertion(Step):
     """A BDD scenario assertion ("Then") step"""
+
     def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Then'
        super().__init__(name, data=data, comment=comment)

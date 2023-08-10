@@ -13,11 +13,12 @@ class Scenario:
         Parameters
         ----------
         name : str
-            the name of the scenario
+            The name of the scenario
 
         vertex : igraph.Vertex
-            the vertex representing the scenario's position in a scenario tree
+            The vertex representing the scenario's position in a scenario tree
        """
+
         self.name = name.strip()
         self.vertex = vertex
         self.graph = vertex.graph
@@ -28,9 +29,10 @@ class Scenario:
 
         Returns
         ----------
-        list[Prerequisite]
-            list of steps of type Prerequisite
+        list
+            list[Prerequisite]. List of steps of type Prerequisite
         """
+
         return self.steps_of_class(Prerequisite)
 
     def actions(self):
@@ -38,9 +40,10 @@ class Scenario:
 
         Returns
         ----------
-        list[Action]
-            list of steps of type Action
+        list
+            list[Action]. List of steps of type Action
         """
+
         return self.steps_of_class(Action)
 
     def assertions(self):
@@ -48,9 +51,10 @@ class Scenario:
 
         Returns
         ----------
-        list[Assertion]
-            list of steps of type Assertion
+        list
+            list[Assertion]. List of steps of type Assertion
         """
+
         return self.steps_of_class(Assertion)
 
     def steps_of_class(self, step_class):
@@ -59,13 +63,14 @@ class Scenario:
         Parameters
         ----------
         step_class : {Prerequisite, Action, Assertion}
-            a step subclass
+            A step subclass
 
         Returns
         ----------
-        list[Step]
-            list of steps of type Assertion
+        list
+            list[Step]. List of steps of type Assertion
         """
+
         return [st for st in self.steps if type(st) is step_class]
 
     def __str__(self):
@@ -74,8 +79,9 @@ class Scenario:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(self.name, len(self.prerequisites()), len(self.actions()), len(self.assertions()))
 
     def __repr__(self):
@@ -84,30 +90,35 @@ class Scenario:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         return self.__str__()
 
     def ancestors(self):
-        """Return the scenario's ancestors, starting with a root scenario
+        """Return the scenario's ancestors, starting with the root scenario
 
         Returns
         ----------
-        list[Scenario]
-            list of scenarios
+        list
+            list[Scenario]. List of scenarios
         """
+
         ancestors = self.graph.neighborhood(self.vertex, mode='IN', order=1000, mindist=1)
         ancestors.reverse()
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
     def level(self):
-        """Return the scenario's level in the scenario tree, with 1 meaning root
+        """Return the scenario's level in the scenario tree.
+
+        Level 1 = root scenario
 
         Returns
         ----------
         int
-            the scenario's level
+            The scenario's level
         """
+
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
     def is_breadcrumb(self):
@@ -117,6 +128,7 @@ class Scenario:
         ----------
         bool
         """
+
         return len(self.assertions()) == 0
 
     def format(self):
@@ -125,8 +137,9 @@ class Scenario:
         Returns
         ----------
         str
-            string representation of the Scenario instance
+            String representation of the Scenario instance
         """
+
         breadcrumbs = [sc.name for sc in self.ancestors() if sc.is_breadcrumb()]
         breadcrumbs_string = ''
         if breadcrumbs:

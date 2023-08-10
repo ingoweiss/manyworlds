@@ -7,8 +7,7 @@ from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
 
 class ScenarioForest:
-    """A collection of one or more directed trees the vertices of which represent BDD scenarios
-    """
+    """A collection of one or more directed trees the vertices of which represent BDD scenarios"""
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
@@ -24,41 +23,44 @@ class ScenarioForest:
         Parameters
         ----------
         graph : igraph.Graph
-            the graph representing the set of scenario trees
+            The graph representing the set of scenario trees
         """
+
         self.graph = graph
 
     @classmethod
     def data_table_list_to_dict(cls, data_table):
-        """Converts a data table from list of list to list of dict
+        """Convert a data table from list of list to list of dict
 
         Parameters
         ----------
         data_table : list
-            list of (equal-length) list of str. The first list is used as headers
+            List of (equal-length) list of str. The first list is used as headers
 
         Returns
         -------
         list
-            list of dict
+            List of dict
         """
+
         header_row = data_table[0]
         return [dict(zip(header_row, row)) for row in data_table[1:]]
 
     @classmethod
     def data_table_dict_to_list(cls, data_table):
-        """Converts a data table from list of dict to list of list
+        """Convert a data table from list of dict to list of list
 
         Parameters
         ----------
         data_table : list
-            list of dict
+            List of dict
 
         Returns
         -------
         list
-            list of (equal-length) list of str. The first list is used as headers
+            List of (equal-length) list of str. The first list is used for headers
         """
+
         return [list(data_table[0].keys())] + [list(row.values()) for row in data_table]
 
     @classmethod
@@ -69,19 +71,21 @@ class ScenarioForest:
         1. Keeps track of the last scenario encountered at each indentation level
         2. Any scenario encountered is added as a child to the last scenario encounterd
            at the parent level
-        3. Any prerequisite, action or assertion encountered is added to the last scenarion encountered
-           at that level
+        3. Any prerequisite, action or assertion encountered is added to the last scenario
+           encountered at that level
+        4. Any data table encountered is added the the current step
 
         Parameters
         ----------
         file_path : str
-            path to the indented feature file
+            Path to the indented feature file
 
         Returns
         -------
         ScenarioForest
-            instance of ScenarioForest
+            Instance of ScenarioForest
         """
+
         graph = ig.Graph(directed=True)
         with open(file_path) as indented_file:
             raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
@@ -141,18 +145,19 @@ class ScenarioForest:
         Parameters
         ----------
         file_handle : io.TextIOWrapper
-            the file to which to write the steps
+            The file to which to append the steps
 
         steps : list
-            list of Step. Steps to write to file_handle
+            List of Step. Steps to append to file_handle
 
         comments: bool
-            whether or not to write comments
+            Whether or not to write comments
 
         Returns
         -------
         None
         """
+
         last_step = None
         for step_num, step in enumerate(steps):
             first_of_type = (last_step == None or last_step.conjunction != step.conjunction)
@@ -170,15 +175,16 @@ class ScenarioForest:
         Parameters
         ----------
         file_handle : io.TextIOWrapper
-            the file to which to write the data table
+            The file to which to append the data table
 
         data_table : list
-            list of dict
+            List of dict
 
         Returns
         -------
         None
         """
+
         data = ScenarioForest.data_table_dict_to_list(data_table)
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
@@ -194,15 +200,16 @@ class ScenarioForest:
             Path to flat feature file to be written
 
         mode : {'strict', 'relaxed'}, default='strict'
-            flattening mode. Either 'strict' or 'relaxed'
+            Flattening mode. Either 'strict' or 'relaxed'
 
         comments : str, default = False
-            whether or not to write comments
+            Whether or not to write comments
 
         Returns
         -------
         None
         """
+
         if mode == 'strict':
             self.flatten_strict(file_path, comments=comments)
         elif mode == 'relaxed':
@@ -217,11 +224,16 @@ class ScenarioForest:
         Parameters
         ----------
         file_path : str
-            path to flat feature file
+            Path to flat feature file
 
         comments : bool
-            whether or not to write comments
+            Whether or not to write comments
+
+        Returns
+        -------
+        None
         """
+
         with open(file_path, 'w') as flat_file:
             for scenario in [sc for sc in self.scenarios() if not sc.is_breadcrumb()]:
                 flat_file.write(scenario.format() + "\n")
@@ -250,15 +262,16 @@ class ScenarioForest:
         Parameters
         ----------
         file_path : str
-            path to flat feature file
+            Path to flat feature file
 
         comments : bool
-            whether or not to write comments
+            Whether or not to write comments
 
         Returns
         -------
         None
         """
+
         with open(file_path, 'w') as flat_file:
             tested_scenarios = []
             for scenario in self.leaf_scenarios():
@@ -282,12 +295,12 @@ class ScenarioForest:
         Parameters
         ----------
         scenario_names : list[str]
-            list of scenario names
+            List of scenario names
 
         Returns
         -------
         Scenario
-            the found scenario
+            The found scenario
         """
 
         scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])
@@ -301,27 +314,28 @@ class ScenarioForest:
 
         Returns
         -------
-        list[Scenario]
-            the scenario forest's scenarios
+        list
+            list[Scenario]. All scenarios
         """
+
         return [vx['scenario'] for vx in self.graph.vs]
 
     def root_scenarios(self):
-        """Return the root scenarios (with vertices without incoming edges)
+        """Return the root scenarios (scenarios with vertices without incoming edges)
 
         Returns
         -------
-        list[Scenario]
-            the scenario forest's root scenarios
+        list
+            list[Scenario]. All root scenarios
         """
         return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
 
     def leaf_scenarios(self):
-        """Return the leaf scenarios (with vertices without outgoing edges)
+        """Return the leaf scenarios (scenarios with vertices without outgoing edges)
 
         Returns
         -------
-        list[Scenario]
-            the scenario forest's leaf scenarios
+        list
+            list[Scenario]. All leaf scenarios
         """
         return [vx['scenario'] for vx in self.graph.vs if vx.outdegree() == 0]
