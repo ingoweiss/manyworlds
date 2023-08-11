@@ -368,12 +368,11 @@ class ScenarioForest:
                 # organizational and validated scenarios used for naming:
                 scenarios_for_naming = []
                 for path_scenario in scenario.path_scenarios():
-                    if path_scenario.organizational_only():
-                        scenarios_for_naming.append(path_scenario)
-                        continue
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
-                    if not path_scenario.validated:
+                    if path_scenario.organizational_only():
+                        scenarios_for_naming.append(path_scenario)
+                    elif not path_scenario.validated:
                         steps += path_scenario.assertions()
                         path_scenario.validated = True
                         scenarios_for_naming.append(path_scenario)
