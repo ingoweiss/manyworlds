@@ -142,13 +142,15 @@ class ScenarioForest:
     def write_scenario_name_strict(cls, file_handle, scenario):
         """Write formatted scenario name to the end of a 'strict' flat feature file
 
+        Uses both any organizatinal scenarios and the validated scenario
+
         Parameters
         ----------
         file_handle : io.TextIOWrapper
             The file to which to append the scenario
 
-        scenario : list
-            List of Scenario. Scenario to append to file_handle
+        scenario : Scenario
+            Scenario to append to file_handle
 
         Returns
         -------
@@ -156,6 +158,28 @@ class ScenarioForest:
         """
 
         file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
+
+    @classmethod
+    def write_scenario_name_relaxed(cls, file_handle, scenarios):
+        """Write formatted scenario name to the end of a 'relaxed' flat feature file
+
+        Uses both any organizatinal scenarios and all validated scenarios
+
+        Parameters
+        ----------
+        file_handle : io.TextIOWrapper
+            The file to which to append the scenario
+
+        scenarios : list
+            List of Scenario. Scenario to append to file_handle
+
+        Returns
+        -------
+        None
+        """
+
+        scenario_name = ''.join([sc.name + (' > ' if sc.organizational_only() else ' / ') for sc in scenarios[:-1]]) + scenarios[-1].name
+        file_handle.write("Scenario: " + scenario_name + "\n")
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):
@@ -293,16 +317,21 @@ class ScenarioForest:
 
         with open(file_path, 'w') as flat_file:
             for scenario in self.leaf_scenarios():
-                flat_file.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
 
                 steps=[]
+                scenarios_for_naming = [] # organizational scenarios and validated scenarios
                 for path_scenario in scenario.path_scenarios():
+                    if path_scenario.organizational_only():
+                        scenarios_for_naming.append(path_scenario)
+                        continue
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
                     if not path_scenario.validated:
                         steps += path_scenario.assertions()
                         path_scenario.validated = True
+                        scenarios_for_naming.append(path_scenario)
 
+                ScenarioForest.write_scenario_name_relaxed(flat_file, scenarios_for_naming)
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")
 
