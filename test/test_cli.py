@@ -20,9 +20,10 @@ def test_cli():
     assert exit_status == 0
 
 def test_cli_hierarchy_output():
-    os.system(
-        'python -m manyworlds --input test/fixtures/scenarios_forest.feature '\
+    exit_status = os.system(
+        'python -m manyworlds --input test/fixtures/in/scenario_forest.feature '\
         '--output test/out/scenarios_flat_strict_cli.feature '\
-        '> test/out/scenarios_hierarchy.txt')
-    assert filecmp.cmp('test/out/scenarios_hierarchy.txt',
-                       'test/fixtures/scenarios_hierarchy.txt')
+        '> test/out/scenario_hierarchy.txt')
+    assert exit_status == 0
+    assert filecmp.cmp('test/out/scenario_hierarchy.txt',
+                       'test/fixtures/out/scenario_hierarchy.txt')

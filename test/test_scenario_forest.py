@@ -19,7 +19,7 @@ def clear_out_directory():
 
 def test_parse():
     """Test the structure of the forest graph after using the 'from_file' method"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
     assert len(forest.root_scenarios()) == 1
 
     root_scenario = forest.find('View users')
@@ -61,41 +61,41 @@ def test_parse():
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
     forest.flatten('test/out/scenarios_flat_strict.feature')
     assert filecmp.cmp('test/out/scenarios_flat_strict.feature',
-                       'test/fixtures/scenarios_flat_strict.feature')
+                       'test/fixtures/out/scenarios_flat_strict.feature')
 
 def test_flatten_strict_with_comments():
     """Test the 'flatten' method in 'strict' mode with comments turned on"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
     forest.flatten(
         'test/out/scenarios_flat_strict_with_comments.feature',
         comments=True
     )
     assert filecmp.cmp('test/out/scenarios_flat_strict_with_comments.feature',
-                       'test/fixtures/scenarios_flat_strict_with_comments.feature')
+                       'test/fixtures/out/scenarios_flat_strict_with_comments.feature')
 def test_flatten_relaxed():
     """Test the 'flatten' method in 'relaxed' mode"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
     forest.flatten('test/out/scenarios_flat_relaxed.feature', mode='relaxed')
     assert filecmp.cmp('test/out/scenarios_flat_relaxed.feature',
-                       'test/fixtures/scenarios_flat_relaxed.feature')
+                       'test/fixtures/out/scenarios_flat_relaxed.feature')
 
 def test_flatten_relaxed_with_comments():
     """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
     forest.flatten(
         'test/out/scenarios_flat_relaxed_with_comments.feature',
         mode='relaxed',
         comments=True
     )
     assert filecmp.cmp('test/out/scenarios_flat_relaxed_with_comments.feature',
-                       'test/fixtures/scenarios_flat_relaxed_with_comments.feature')
+                       'test/fixtures/out/scenarios_flat_relaxed_with_comments.feature')
 
 def test_invalid_file():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(ValueError) as error_info:
-        mw.ScenarioForest.from_file('test/fixtures/invalid/invalid_line.feature')
+        mw.ScenarioForest.from_file('test/fixtures/in/invalid/invalid_line.feature')
     assert str(error_info.value) \
         == 'Unable to parse line: Givven the following users: # invalid line'
