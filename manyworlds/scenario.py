@@ -119,6 +119,28 @@ class Scenario:
         ancestors.reverse()
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
+    def path_scenarios(self):
+        """Return the complete scenario path from the root scenario to self
+
+        Returns
+        ----------
+        list
+            list[Scenario]. List of scenarios
+        """
+
+        return self.ancestors() + [self]
+
+    def organizational_only_ancestors(self):
+        """Return the scenario's ancestors that are organizational only
+
+        Returns
+        ----------
+        list
+            list[Scenario]. List of scenarios
+        """
+
+        return [sc for sc in self.ancestors() if sc.organizational_only()]
+
     def level(self):
         """Return the scenario's level in the scenario tree.
 
@@ -142,8 +164,10 @@ class Scenario:
 
         return len(self.assertions()) == 0
 
-    def format(self):
-        """Return a string representation of the Scenario instance for feature file output
+    def name_with_breadcrumbs(self):
+        """Return a name of the Scenario prepended with 'breadcrumbs'
+
+        Breadcrumbs are the scenario's organizational ancestor names joined by ' > '
 
         Returns
         ----------
@@ -151,8 +175,5 @@ class Scenario:
             String representation of the Scenario instance
         """
 
-        breadcrumbs = [sc.name for sc in self.ancestors() if sc.organizational_only()]
-        breadcrumbs_string = ''
-        if breadcrumbs:
-            breadcrumbs_string = ' > '.join(breadcrumbs) + ' > '
-        return "Scenario: " + breadcrumbs_string + self.name
+        breadcrumbs = ''.join([sc.name + ' > ' for sc in self.organizational_only_ancestors()])
+        return breadcrumbs + self.name

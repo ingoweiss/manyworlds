@@ -139,6 +139,25 @@ class ScenarioForest:
         return ScenarioForest(graph)
 
     @classmethod
+    def write_scenario_name_strict(cls, file_handle, scenario):
+        """Write formatted scenario name to the end of a 'strict' flat feature file
+
+        Parameters
+        ----------
+        file_handle : io.TextIOWrapper
+            The file to which to append the scenario
+
+        scenario : list
+            List of Scenario. Scenario to append to file_handle
+
+        Returns
+        -------
+        None
+        """
+
+        file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
+
+    @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):
         """Write formatted scenario steps to the end of the flat feature file
 
@@ -236,7 +255,7 @@ class ScenarioForest:
 
         with open(file_path, 'w') as flat_file:
             for scenario in [sc for sc in self.scenarios() if not sc.organizational_only()]:
-                flat_file.write(scenario.format() + "\n")
+                ScenarioForest.write_scenario_name_strict(flat_file, scenario)
 
                 ancestor_scenarios = scenario.ancestors()
                 steps=[]
@@ -274,11 +293,10 @@ class ScenarioForest:
 
         with open(file_path, 'w') as flat_file:
             for scenario in self.leaf_scenarios():
-                flat_file.write(scenario.format() + "\n")
+                flat_file.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
 
-                path_scenarios = scenario.ancestors() + [scenario]
                 steps=[]
-                for path_scenario in path_scenarios:
+                for path_scenario in scenario.path_scenarios():
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
                     if not path_scenario.validated:
