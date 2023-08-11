@@ -8,7 +8,8 @@ setuptools.setup(
     name="manyworlds",
     version="0.0.1",
     author="Ingo Weiss",
-    description="Organize BDD scenarios as hierarchical trees for more concise and expressive feature files",
+    description="Organize BDD scenarios as hierarchical trees"\
+                "for more concise and expressive feature files",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
