@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="manyworlds",
-    version="0.0.1",
+    version="0.0.2",
     author="Ingo Weiss",
     description="Organize BDD scenarios as hierarchical trees"\
                 "for more concise and expressive feature files",
@@ -22,5 +22,8 @@ setuptools.setup(
     py_modules=["manyworlds"],
     package_dir={'Package':'manyworlds'},
     entry_points={ 'console_scripts': ['Package = manyworlds.__main__:main' ] },
-    install_requires=[]
+    install_requires=[
+        'python-igraph',
+        'termcolor'
+    ]
 )
