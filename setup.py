@@ -23,7 +23,7 @@ setuptools.setup(
     package_dir={'Package':'manyworlds'},
     entry_points={ 'console_scripts': ['Package = manyworlds.__main__:main' ] },
     install_requires=[
-        'python-igraph',
+        'igraph',
         'termcolor'
     ]
 )
