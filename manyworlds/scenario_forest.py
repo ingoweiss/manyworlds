@@ -6,15 +6,25 @@ from .scenario import Scenario
 from .step import Step
 
 class ScenarioForest:
-    """A collection of one or more directed trees the vertices of which represent BDD scenarios"""
+    """A collection of one or more directed trees
+    the vertices of which represent BDD scenarios"""
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
 
-    SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, scenario_pattern))
-    STEP_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.step_pattern))
-    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(indentation_pattern, Step.table_pattern))
+    SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(
+        indentation_pattern,
+        scenario_pattern
+    ))
+    STEP_LINE_PATTERN = re.compile("^{}{}$".format(
+        indentation_pattern,
+        Step.step_pattern
+    ))
+    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(
+        indentation_pattern,
+        Step.table_pattern
+    ))
 
     def __init__(self, graph):
         """Constructor method
@@ -60,7 +70,8 @@ class ScenarioForest:
             List of (equal-length) list of str. The first list is used for headers
         """
 
-        return [list(data_table[0].keys())] + [list(row.values()) for row in data_table]
+        return [list(data_table[0].keys())]\
+             + [list(row.values()) for row in data_table]
 
     @classmethod
     def from_file(cls, file_path):
@@ -70,9 +81,9 @@ class ScenarioForest:
         1. Keeps track of the last scenario encountered at each indentation level
         2. Any scenario encountered is added as a child to the last scenario encounterd
            at the parent level
-        3. Any prerequisite, action or assertion encountered is added to the last scenario
-           encountered at that level
-        4. Any data table encountered is added the the current step
+        3. Any prerequisite, action or assertion encountered is added to the last
+           scenario encountered at that level
+        4. Any data table encountered is added to the current step
 
         Parameters
         ----------
@@ -87,13 +98,17 @@ class ScenarioForest:
 
         graph = ig.Graph(directed=True)
         with open(file_path) as indented_file:
-            raw_lines = [ln.rstrip('\n') for ln in indented_file.readlines() if not ln.strip() == ""]
-        current_scenarios = {} # used to keep track of last scenario encountered at each level
+            non_empty_lines = [
+                ln.rstrip('\n') for ln in indented_file.readlines()\
+                if not ln.strip() == ""
+            ]
+        # used to keep track of last scenario encountered at each level:
+        current_scenarios = {}
         current_table = None
         current_step = None
 
         # Scan the file line by line
-        for line in raw_lines:
+        for line in non_empty_lines:
 
             # Determine whether line is scenario, step or table row
             scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
@@ -104,24 +119,36 @@ class ScenarioForest:
 
             # close and record any open data table
             if (scenario_match or step_match) and current_table:
-                current_step.data = ScenarioForest.data_table_list_to_dict(current_table)
+                current_step.data = ScenarioForest\
+                                    .data_table_list_to_dict(current_table)
                 current_table = None
 
             if scenario_match: # Line is scenario
-                current_level = int(len((scenario_match)['indentation']) / cls.TAB_SIZE)
+                current_level = int(
+                    len((scenario_match)['indentation']) / cls.TAB_SIZE
+                )
 
                 current_scenario_vertex = graph.add_vertex()
-                current_scenario = Scenario(scenario_match['scenario_name'], current_scenario_vertex)
+                current_scenario = Scenario(
+                    scenario_match['scenario_name'],
+                    current_scenario_vertex
+                )
                 current_scenario_vertex['scenario'] = current_scenario
                 current_scenarios[current_level] = current_scenario
                 if current_level > 0:
                     # Connect to parent scenario
                     current_scenario_parent = current_scenarios[current_level-1]
-                    graph.add_edge(current_scenario_parent.vertex, current_scenario.vertex)
+                    graph.add_edge(
+                        current_scenario_parent.vertex,
+                        current_scenario.vertex
+                    )
 
             elif step_match: # Line is action or assertion
                 current_scenario = current_scenarios[current_level]
-                new_step = Step.parse(step_match[0].strip(), previous_step=current_step)
+                new_step = Step.parse(
+                    step_match[0].strip(),
+                    previous_step=current_step
+                )
                 current_scenario.steps.append(new_step)
                 current_step = new_step
 
@@ -177,7 +204,10 @@ class ScenarioForest:
         None
         """
 
-        scenario_name = ''.join([sc.name + (' > ' if sc.organizational_only() else ' / ') for sc in scenarios[:-1]]) + scenarios[-1].name
+        scenario_name = ''.join([
+            sc.name + (' > ' if sc.organizational_only() else ' / ')
+            for sc in scenarios[:-1]
+        ]) + scenarios[-1].name
         file_handle.write("Scenario: " + scenario_name + "\n")
 
     @classmethod
@@ -202,7 +232,10 @@ class ScenarioForest:
 
         last_step = None
         for step_num, step in enumerate(steps):
-            first_of_type = (last_step is None or last_step.conjunction != step.conjunction)
+            first_of_type = (
+                last_step is None
+                or last_step.conjunction != step.conjunction
+            )
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments and step.comment:
                 file_handle.write("# " + step.comment + "\n")
@@ -230,7 +263,10 @@ class ScenarioForest:
         data = ScenarioForest.data_table_dict_to_list(data_table)
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
-            padded_row = [row[col_num].ljust(col_width) for col_num, col_width in enumerate(col_widths)]
+            padded_row = [
+                row[col_num].ljust(col_width)
+                for col_num, col_width in enumerate(col_widths)
+            ]
             file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
 
     def flatten(self, file_path, mode='strict', comments=False):
@@ -258,10 +294,12 @@ class ScenarioForest:
             self.flatten_relaxed(file_path, comments=comments)
 
     def flatten_strict(self, file_path, comments=False):
-        """Write a flat (no indentation) feature file representing the forest using the 'strict' flattening mode
+        """Write a flat (no indentation) feature file representing the forest
+        using the 'strict' flattening mode
 
-        The 'strict' flattening mode writes one scenario per vertex in the tree, resulting in
-        a feature file with one set of 'When' steps followed by one set of 'Then' steps (generally recommended)
+        The 'strict' flattening mode writes one scenario per vertex in the tree,
+        resulting in a feature file with one set of 'When' steps followed by one
+        set of 'Then' steps (generally recommended)
 
         Parameters
         ----------
@@ -277,7 +315,10 @@ class ScenarioForest:
         """
 
         with open(file_path, 'w') as flat_file:
-            for scenario in [sc for sc in self.scenarios() if not sc.organizational_only()]:
+            for scenario in [
+                sc for sc in self.scenarios()
+                if not sc.organizational_only()
+            ]:
                 ScenarioForest.write_scenario_name_strict(flat_file, scenario)
 
                 ancestor_scenarios = scenario.ancestors()
@@ -292,14 +333,20 @@ class ScenarioForest:
                             for st in sc.actions()]
                 # add all steps from the destination scenario only
                 steps += scenario.steps
-                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+                ScenarioForest.write_scenario_steps(
+                    flat_file,
+                    steps,
+                    comments=comments
+                )
                 flat_file.write("\n")
 
     def flatten_relaxed(self, file_path, comments=False):
-        """Write a flat (no indentation) feature file representing the tree using the 'relaxed' flattening mode
+        """Write a flat (no indentation) feature file representing the forest
+        using the 'relaxed' flattening mode
 
-        The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree, resulting in
-        a feature file with multiple alternating sets of "When" and "Then" steps per (generally considered an anti-pattern)
+        The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree,
+        resulting in a feature file with multiple alternating sets of "When" and "Then"
+        steps per (generally considered an anti-pattern)
 
         Parameters
         ----------
@@ -318,7 +365,8 @@ class ScenarioForest:
             for scenario in self.leaf_scenarios():
 
                 steps=[]
-                scenarios_for_naming = [] # organizational scenarios and validated scenarios
+                # organizational and validated scenarios used for naming:
+                scenarios_for_naming = []
                 for path_scenario in scenario.path_scenarios():
                     if path_scenario.organizational_only():
                         scenarios_for_naming.append(path_scenario)
@@ -330,12 +378,20 @@ class ScenarioForest:
                         path_scenario.validated = True
                         scenarios_for_naming.append(path_scenario)
 
-                ScenarioForest.write_scenario_name_relaxed(flat_file, scenarios_for_naming)
-                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+                ScenarioForest.write_scenario_name_relaxed(
+                    flat_file,
+                    scenarios_for_naming
+                )
+                ScenarioForest.write_scenario_steps(
+                    flat_file,
+                    steps,
+                    comments=comments
+                )
                 flat_file.write("\n")
 
     def find(self, *scenario_names):
-        """Find a scenario by the names of all scenarios along the path from a root scenario to the destination scenario
+        """Find a scenario by the names of all scenarios along the path
+        from a root scenario to the destination scenario
 
         Parameters
         ----------
@@ -348,9 +404,15 @@ class ScenarioForest:
             The found scenario
         """
 
-        scenario = next(sc for sc in self.root_scenarios() if sc.name == scenario_names[0])
+        scenario = next(
+            sc for sc in self.root_scenarios()
+            if sc.name == scenario_names[0]
+        )
         for scenario_name in scenario_names[1:]:
-            scenario = next(vt['scenario'] for vt in scenario.vertex.successors() if vt['scenario'].name == scenario_name)
+            scenario = next(
+                vt['scenario'] for vt in scenario.vertex.successors()
+                if vt['scenario'].name == scenario_name
+            )
 
         return scenario
 
