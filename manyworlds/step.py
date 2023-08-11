@@ -4,7 +4,8 @@ import re
 class Step:
     """A BDD scenario step"""
 
-    step_pattern = r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
+    step_pattern = \
+        r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
     table_pattern = r'\| ([^|]* +\|)+'
 
     @classmethod
@@ -46,35 +47,40 @@ class Step:
         self.comment = comment
 
     def format(self, first_of_type=True):
-        """Return a string representation of the Scenario instance for feature file output
+        """Return a string representation of the Step instance
+        for feature file output
 
         Returns
         ----------
         str
-            String representation of the Scenario instance
+            String representation of the Step instance
         """
 
         conjunction = (self.conjunction if first_of_type else ' And')
         return conjunction + ' ' + self.name
 
     def __str__(self):
-        """Return a string representation of the Scenario instance for terminal output
+        """Return a string representation of the Step instance
+        for terminal output
 
         Returns
         ----------
         str
-            String representation of the Scenario instance
+            String representation of the Step instance
         """
 
-        return "<{}: {}>".format(self.__class__.__name__, (self.name[0].upper() + self.name[1:]))
+        return "<{}: {}>".format(
+            self.__class__.__name__,
+            (self.name[0].upper() + self.name[1:])
+        )
 
     def __repr__(self):
-        """Return a string representation of the Scenario instance for terminal output
+        """Return a string representation of the Step instance for terminal output
 
         Returns
         ----------
         str
-            String representation of the Scenario instance
+            String representation of the Step instance
         """
 
         return self.__str__()
