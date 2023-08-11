@@ -1,8 +1,6 @@
 """Defines the Scenario Class"""
-import re
-import igraph as ig
 
-from .step import Step, Prerequisite, Action, Assertion
+from .step import Prerequisite, Action, Assertion
 
 class Scenario:
     """A BDD Scenario"""
@@ -93,7 +91,12 @@ class Scenario:
             String representation of the Scenario instance
         """
 
-        return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(self.name, len(self.prerequisites()), len(self.actions()), len(self.assertions()))
+        return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(
+            self.name,
+            len(self.prerequisites()),
+            len(self.actions()),
+            len(self.assertions())
+        )
 
     def __repr__(self):
         """Return a string representation of the Scenario instance for terminal output
@@ -115,7 +118,12 @@ class Scenario:
             list[Scenario]. List of scenarios
         """
 
-        ancestors = self.graph.neighborhood(self.vertex, mode='IN', order=1000, mindist=1)
+        ancestors = self.graph.neighborhood(
+            self.vertex,
+            mode='IN',
+            order=1000,
+            mindist=1
+        )
         ancestors.reverse()
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
@@ -155,7 +163,10 @@ class Scenario:
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
     def organizational_only(self):
-        """Return whether the scenario is an 'organizational' scenario used for grouping only
+        """Return whether the scenario is an 'organizational' scenario
+
+        'Organizational' scenarios are used for grouping only.
+        They do not have any assertions
 
         Returns
         ----------
@@ -175,5 +186,7 @@ class Scenario:
             String representation of the Scenario instance
         """
 
-        breadcrumbs = ''.join([sc.name + ' > ' for sc in self.organizational_only_ancestors()])
+        breadcrumbs = ''.join(
+            [sc.name + ' > ' for sc in self.organizational_only_ancestors()]
+        )
         return breadcrumbs + self.name
