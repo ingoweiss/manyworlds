@@ -5,10 +5,18 @@ from termcolor import colored
 
 def main():
     parser = argparse.ArgumentParser(prog="manyworlds")
-    parser.add_argument('--input', '-i', help="input scenario file")
-    parser.add_argument('--output', '-o', help="output scenario file")
-    parser.add_argument('--mode', '-m', choices=['strict', 'relaxed'], default='strict', help='flattening mode. strict: one scenario per node, relaxed: one scenario per leaf node')
-    parser.add_argument('--comments', '-c', default=False, action='store_true', help='output comments')
+    parser.add_argument('--input', '-i',
+                        help="input scenario file")
+    parser.add_argument('--output', '-o',
+                        help="output scenario file")
+    parser.add_argument('--mode', '-m',
+                        choices=['strict', 'relaxed'],
+                        default='strict',
+                        help='flattening mode')
+    parser.add_argument('--comments', '-c',
+                        default=False,
+                        action='store_true',
+                        help='output comments')
     args = parser.parse_args()
 
     tree = mw.ScenarioForest.from_file(args.input)
