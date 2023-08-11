@@ -1,10 +1,9 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig
-import io
 
 from .scenario import Scenario
-from .step import Step, Prerequisite, Action, Assertion
+from .step import Step
 
 class ScenarioForest:
     """A collection of one or more directed trees the vertices of which represent BDD scenarios"""
@@ -88,7 +87,7 @@ class ScenarioForest:
 
         graph = ig.Graph(directed=True)
         with open(file_path) as indented_file:
-            raw_lines = [l.rstrip('\n') for l in indented_file.readlines() if not l.strip() == ""]
+            raw_lines = [ln.rstrip('\n') for ln in indented_file.readlines() if not ln.strip() == ""]
         current_scenarios = {} # used to keep track of last scenario encountered at each level
         current_table = None
         current_step = None
@@ -127,7 +126,7 @@ class ScenarioForest:
                 current_step = new_step
 
             elif table_match: # Line is table row
-                if current_table == None:
+                if current_table is None:
                     current_table = []
                 row = [s.strip() for s in line.split('|')[1:-1]]
                 current_table.append(row)
@@ -203,7 +202,7 @@ class ScenarioForest:
 
         last_step = None
         for step_num, step in enumerate(steps):
-            first_of_type = (last_step == None or last_step.conjunction != step.conjunction)
+            first_of_type = (last_step is None or last_step.conjunction != step.conjunction)
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments and step.comment:
                 file_handle.write("# " + step.comment + "\n")
