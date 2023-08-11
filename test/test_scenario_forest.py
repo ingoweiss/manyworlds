@@ -72,7 +72,7 @@ def test_flatten_relaxed():
 def test_flatten_relaxed_with_comments():
     """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
     forest = mw.ScenarioForest.from_file('test/fixtures/scenarios_forest.feature')
-    forest.flatten('test/out/scenarios_flat_relaxed_with_comments.feature', comments=True)
+    forest.flatten('test/out/scenarios_flat_relaxed_with_comments.feature', mode='relaxed', comments=True)
     assert filecmp.cmp('test/out/scenarios_flat_relaxed_with_comments.feature',
                        'test/fixtures/scenarios_flat_relaxed_with_comments.feature')
 
