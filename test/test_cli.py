@@ -2,7 +2,6 @@
 
 import os
 import filecmp
-import pdb
 
 import pytest
 
@@ -21,6 +20,9 @@ def test_cli():
     assert exit_status == 0
 
 def test_cli_hierarchy_output():
-    os.system('python -m manyworlds --input test/fixtures/scenarios_forest.feature --output test/out/scenarios_flat_strict_cli.feature > test/out/scenarios_hierarchy.txt')
+    os.system(
+        'python -m manyworlds --input test/fixtures/scenarios_forest.feature '\
+        '--output test/out/scenarios_flat_strict_cli.feature '\
+        '> test/out/scenarios_hierarchy.txt')
     assert filecmp.cmp('test/out/scenarios_hierarchy.txt',
                        'test/fixtures/scenarios_hierarchy.txt')
