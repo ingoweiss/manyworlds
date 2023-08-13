@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "manyworlds"
-version = "0.0.2"
+dynamic = ["version"]
 authors = [
   { name="Ingo Weiss", email="ingo@ingoweiss.com" },
 ]
@@ -25,3 +25,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/ingoweiss/manyworlds"
 "Bug Tracker" = "https://github.com/ingoweiss/manyworlds/issues"
+
+[tool.hatch.version]
+path = "manyworlds/__init__.py"
