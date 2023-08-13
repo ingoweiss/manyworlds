@@ -4,25 +4,25 @@ Organize BDD scenarios as hierarchical trees for more concise and expressive fea
 
 [![Build Status](https://travis-ci.com/ingoweiss/manyworlds.svg?branch=master)](https://travis-ci.com/ingoweiss/manyworlds)
 
-BDD scenarios tend to be verbose and repetitive. Consider the following abstract representation of four quite typical scenarios:
+BDD scenarios tend to be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
 
 ```text
-G1 → W1 → W2: T1
-G1 → W1 → W2 → W3: T2
-G1 → W1 → W2 → W4: T3
-G1 → W1 → W2 → W4 → W5: T4
+A1 → A2 → A3: O1
+A1 → A2 → A3 → A4: O2
+A1 → A2 → A3 → A5: O3
+A1 → A2 → A3 → A5 → A6: O4
 ```
-All four scenarios share the only "given" (G1) and the first two "whens" (W1, W2). Scenario 3 and 4 share G1 and the first three "whens" (W1, W2, W4). This is very repetitive and makes it hard to understand how the scenarios are organized.
+All four scenarios share the first three actions (A1, A2, A3). Scenario 3 and 4 share one additional action (A5). This is very repetitive and makes it hard to understand how the scenarios are organized.
 
 Now consider the same scenarios represented as a tree:
 
 ```text
-G1 → W1 → W2: T1
-           ↳ W3: T2
-           ↳ W4: T3
-              ↳ W5: T4
+A1 → A2 → A3: O1
+           ↳ A4: O2
+           ↳ A5: O3
+              ↳ A6: O4
 ```
-This representation has a few advantages:
+The tree structure has a few advantages:
 1. Many "givens" and "whens" are now implied by their scenario's position in the tree and no longer need to be written which eliminates repetition and noise.
 2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice gaps in the scenarios.
