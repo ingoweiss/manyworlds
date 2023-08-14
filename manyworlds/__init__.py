@@ -3,4 +3,4 @@ from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
 
 __all__ = ['ScenarioForest', 'Scenario', 'Step', 'Prerequisite', 'Action', 'Assertion']
-__version__ = "0.0.2"
+__version__ = "0.1.0"
