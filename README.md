@@ -102,7 +102,7 @@ Now let's use Manyworlds to expand it:
 ```bash
 python -m manyworlds --input hierarchical.feature --output flat.feature
 ```
-This will print the structure of the feature file's scenario trees to the terminal:
+This will print the structure of the scenario tree(s) to the terminal:
 
 ```text
 View users
@@ -348,7 +348,7 @@ Scenarios which do not have any "thens" are considered "organizational" and are 
 
 ### Using the ScenarioForest Class Directly
 
-If you want to use Manyworlds in your code rather than using the cli here's how to to do that:
+If you want to use Manyworlds in your code rather than using the cli, here's how to to do that:
 
 ```python
 import manyworlds as mw
