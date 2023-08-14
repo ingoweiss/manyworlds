@@ -99,3 +99,13 @@ def test_invalid_file():
         mw.ScenarioForest.from_file('test/fixtures/in/invalid/invalid_line.feature')
     assert str(error_info.value) \
         == 'Unable to parse line: Givven the following users: # invalid line'
+
+def test_organizational_scenarios():
+    """Test the correct output of organizational scenarios"""
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest_with_organizational_scenarios.feature')
+    forest.flatten(
+        'test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
+        mode='strict'
+    )
+    assert filecmp.cmp('test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
+                       'test/fixtures/out/scenarios_flat_strict_with_organizational_scenarios.feature')
