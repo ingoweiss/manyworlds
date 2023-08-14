@@ -102,10 +102,14 @@ def test_invalid_file():
 
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
-    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest_with_organizational_scenarios.feature')
+    forest = mw.ScenarioForest.from_file(
+        'test/fixtures/in/scenario_forest_with_organizational_scenarios.feature'
+    )
     forest.flatten(
         'test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
         mode='strict'
     )
-    assert filecmp.cmp('test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
-                       'test/fixtures/out/scenarios_flat_strict_with_organizational_scenarios.feature')
+    assert filecmp.cmp(
+        'test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
+        'test/fixtures/out/scenarios_flat_strict_with_organizational_scenarios.feature'
+    )
