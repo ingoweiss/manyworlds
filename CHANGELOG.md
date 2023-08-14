@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Change naming scheme for 'relaxed' output scenarios: All path scenario names are now joined using ' > ' rather than using ' > ' for organizational scenarios and ' / ' for validated scenarios.
+
 ## [0.0.2] - 2023-08-11
 
 ### Changed

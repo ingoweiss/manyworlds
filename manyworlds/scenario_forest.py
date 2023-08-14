@@ -186,28 +186,23 @@ class ScenarioForest:
         file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
 
     @classmethod
-    def write_scenario_name_relaxed(cls, file_handle, scenarios):
+    def write_scenario_name_relaxed(cls, file_handle, path_scenarios):
         """Write formatted scenario name to the end of a 'relaxed' flat feature file
-
-        Uses both any organizatinal scenarios and all validated scenarios
 
         Parameters
         ----------
         file_handle : io.TextIOWrapper
-            The file to which to append the scenario
+            The file to which to append the scenario name
 
-        scenarios : list
-            List of Scenario. Scenario to append to file_handle
+        path_scenarios : list
+            List of Scenario. Organizational and validated scenarios along the path
 
         Returns
         -------
         None
         """
 
-        scenario_name = ''.join([
-            sc.name + (' > ' if sc.organizational_only() else ' / ')
-            for sc in scenarios[:-1]
-        ]) + scenarios[-1].name
+        scenario_name = ' > '.join([sc.name for sc in path_scenarios])
         file_handle.write("Scenario: " + scenario_name + "\n")
 
     @classmethod

@@ -1,4 +1,4 @@
-Scenario: View users / Deactivate user
+Scenario: View users > Deactivate user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -19,7 +19,7 @@ Then I see the following users:
     | Alice  | Active |
     | Connie | Active |
 
-Scenario: Bulk operations > Select user / Deselect user
+Scenario: Bulk operations > Select user > Deselect user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -32,7 +32,7 @@ Then I see "1 user selected"
 When I deselect user "Ben"
 Then I see "0 users selected"
 
-Scenario: Bulk operations > Select multiple users / Deselect all users
+Scenario: Bulk operations > Select multiple users > Deselect all users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -46,7 +46,7 @@ Then I see "2 users selected"
 When I click "Deselect all"
 Then I see "0 users selected"
 
-Scenario: Bulk operations > Bulk deactivate users / Confirm bulk deactivation of users
+Scenario: Bulk operations > Bulk deactivate users > Confirm bulk deactivation of users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
