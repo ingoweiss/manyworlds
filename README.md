@@ -345,7 +345,7 @@ Then I see "2 users selected"
 ```
 ### Organizational Scenarios
 
-Scenarios which do not have any "thens" are considered "organizational" and are used only to group related scenarios. They will not appear as scenarios in the output feature file. However their name is used as a "breadcrumb" element in the names of their child scenarios. The "Bulk operations" scenario in the above example is organizational.
+Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk operations" scenario in the above example is organizational.
 
 ### Using the ScenarioForest Class Directly
 
