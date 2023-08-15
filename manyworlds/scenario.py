@@ -5,6 +5,8 @@ from .step import Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
+    scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
+
     def __init__(self, name, vertex):
         """Constructor method
 

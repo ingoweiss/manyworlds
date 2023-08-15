@@ -12,11 +12,10 @@ class ScenarioForest:
 
     TAB_SIZE = 4
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
-    scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
 
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(
         indentation_pattern,
-        scenario_pattern
+        Scenario.scenario_pattern
     ))
     STEP_LINE_PATTERN = re.compile("^{}{}$".format(
         indentation_pattern,
