@@ -4,6 +4,7 @@ import igraph as ig
 
 from .scenario import Scenario
 from .step import Step
+from .exceptions import InvalidFeatureLineError
 
 class ScenarioForest:
     """A collection of one or more directed trees
@@ -115,7 +116,7 @@ class ScenarioForest:
             step_match = cls.STEP_LINE_PATTERN.match(line)
             table_match = cls.TABLE_LINE_PATTERN.match(line)
             if not (scenario_match or step_match or table_match):
-                raise ValueError('Unable to parse line: ' + line.strip())
+                raise InvalidFeatureLineError('Unable to parse line: ' + line.strip())
 
             # close and record any open data table
             if (scenario_match or step_match) and current_table:
