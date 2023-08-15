@@ -105,3 +105,4 @@ class Assertion(Step):
     def __init__(self, name, data=None, comment=None):
        self.conjunction = 'Then'
        super().__init__(name, data=data, comment=comment)
+

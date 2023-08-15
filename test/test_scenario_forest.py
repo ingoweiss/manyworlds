@@ -95,10 +95,10 @@ def test_flatten_relaxed_with_comments():
 
 def test_invalid_file():
     """Test that the correct error is raised when attempting to parse invalid files"""
-    with pytest.raises(mw.exceptions.InvalidFeatureLineError) as error_info:
+    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
         mw.ScenarioForest.from_file('test/fixtures/in/invalid/invalid_line.feature')
     assert str(error_info.value) \
-        == 'Unable to parse line: Givven the following users: # invalid line'
+        == 'Unable to parse line: Givven the following users: # mis-spelled conjunction'
 
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""

@@ -1,5 +1,5 @@
 Scenario: View users
-Givven the following users: # invalid line
+Givven the following users: # mis-spelled conjunction
     | Name   | Status      |
     | Ben    | Active      |
     | Alice  | Active      |
