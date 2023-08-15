@@ -2,8 +2,8 @@
 
 Organize BDD scenarios as hierarchical trees for more concise and expressive feature files.
 
-(https://github.com/ingoweiss/manyworlds/actions/workflows/pytest/badge.svg)
-(https://github.com/ingoweiss/manyworlds/actions/workflows/ruff/badge.svg)
+[![Pytest](https://github.com/ingoweiss/manyworlds/actions/workflows/pytest.yml/badge.svg)](https://github.com/ingoweiss/manyworlds/actions/workflows/pytest.yml)
+[![Ruff](https://github.com/ingoweiss/manyworlds/actions/workflows/ruff.yml/badge.svg)](https://github.com/ingoweiss/manyworlds/actions/workflows/ruff.yml)
 
 BDD scenarios tend to be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
 
