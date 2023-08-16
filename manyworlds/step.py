@@ -8,20 +8,6 @@ class Step:
         r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
     table_pattern = r'\| ([^|]* +\|)+'
 
-    @classmethod
-    def parse(cls, string, previous_step=None):
-        match = re.compile(Step.step_pattern).match(string)
-        conjunction = match['conjunction']
-        if conjunction in ['And', 'But']:
-            conjunction = previous_step.conjunction
-
-        step_class = {
-            'Given': Prerequisite,
-            'When': Action,
-            'Then': Assertion
-        }[conjunction]
-        return step_class(match['name'], comment=match['comment'])
-
     def __init__(self, name, data=None, comment=None):
         """Constructor method
 

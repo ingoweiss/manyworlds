@@ -40,42 +40,6 @@ class ScenarioForest:
         self.graph = ig.Graph(directed=True)
 
     @classmethod
-    def data_table_list_to_dict(cls, data_table):
-        """Convert a data table from list of list to list of dict
-
-        Parameters
-        ----------
-        data_table : list
-            List of (equal-length) list of str. The first list is used as headers
-
-        Returns
-        -------
-        list
-            List of dict
-        """
-
-        header_row = data_table[0]
-        return [dict(zip(header_row, row)) for row in data_table[1:]]
-
-    @classmethod
-    def data_table_dict_to_list(cls, data_table):
-        """Convert a data table from list of dict to list of list
-
-        Parameters
-        ----------
-        data_table : list
-            List of dict
-
-        Returns
-        -------
-        list
-            List of (equal-length) list of str. The first list is used for headers
-        """
-
-        return [list(data_table[0].keys())]\
-             + [list(row.values()) for row in data_table]
-
-    @classmethod
     def split_line(cls, line):
         match = cls.LINE_PATTERN.match(line)
         return (match['indentation'], match['line'])
@@ -117,7 +81,7 @@ class ScenarioForest:
                     level = int(len(indentation) / cls.TAB_SIZE) + 1
                 else:
                     raise InvalidFeatureFileError(
-                        "Invalid indentation at line {}".format(line_no)
+                        "Invalid indentation at line {}: {}".format(line_no+1, line)
                     )
 
                 # determine what kind of line this is:
@@ -173,97 +137,6 @@ class ScenarioForest:
             last_step.data.rows.append(data_row)
         else:
             last_step.data = DataTable(data_row)
-
-    @classmethod
-    def from_file_old(cls, file_path):
-        """Create a scenario tree instance from an indented feature file
-
-        Scans the indented file line by line and:
-        1. Keeps track of the last scenario encountered at each indentation level
-        2. Any scenario encountered is added as a child to the last scenario encounterd
-           at the parent level
-        3. Any prerequisite, action or assertion encountered is added to the last
-           scenario encountered at that level
-        4. Any data table encountered is added to the current step
-
-        Parameters
-        ----------
-        file_path : str
-            Path to the indented feature file
-
-        Returns
-        -------
-        ScenarioForest
-            Instance of ScenarioForest
-        """
-
-        graph = ig.Graph(directed=True)
-        with open(file_path) as indented_file:
-            non_empty_lines = [
-                ln.rstrip('\n') for ln in indented_file.readlines()\
-                if not ln.strip() == ""
-            ]
-        # used to keep track of last scenario encountered at each level:
-        current_scenarios = {}
-        current_table = None
-        current_step = None
-
-        # Scan the file line by line
-        for line in non_empty_lines:
-
-            # Determine whether line is scenario, step or table row
-            scenario_match = cls.SCENARIO_LINE_PATTERN.match(line)
-            step_match = cls.STEP_LINE_PATTERN.match(line)
-            table_match = cls.TABLE_LINE_PATTERN.match(line)
-            if not (scenario_match or step_match or table_match):
-                raise InvalidFeatureFileError('Unable to parse line: ' + line.strip())
-
-            # close and record any open data table
-            if (scenario_match or step_match) and current_table:
-                current_step.data = ScenarioForest\
-                                    .data_table_list_to_dict(current_table)
-                current_table = None
-
-            if scenario_match: # Line is scenario
-                current_level = int(
-                    len((scenario_match)['indentation']) / cls.TAB_SIZE
-                )
-
-                current_scenario_vertex = graph.add_vertex()
-                current_scenario = Scenario(
-                    scenario_match['scenario_name'],
-                    current_scenario_vertex
-                )
-                current_scenario_vertex['scenario'] = current_scenario
-                current_scenarios[current_level] = current_scenario
-                if current_level > 0:
-                    # Connect to parent scenario
-                    current_scenario_parent = current_scenarios[current_level-1]
-                    graph.add_edge(
-                        current_scenario_parent.vertex,
-                        current_scenario.vertex
-                    )
-
-            elif step_match: # Line is action or assertion
-                current_scenario = current_scenarios[current_level]
-                new_step = Step.parse(
-                    step_match[0].strip(),
-                    previous_step=current_step
-                )
-                current_scenario.steps.append(new_step)
-                current_step = new_step
-
-            elif table_match: # Line is table row
-                if current_table is None:
-                    current_table = []
-                row = [s.strip() for s in line.split('|')[1:-1]]
-                current_table.append(row)
-
-        # In case the file ends with a data table:
-        if current_table:
-            current_step.data = ScenarioForest.data_table_list_to_dict(current_table)
-
-        return ScenarioForest(graph)
 
     @classmethod
     def write_scenario_name_strict(cls, file_handle, scenario):
