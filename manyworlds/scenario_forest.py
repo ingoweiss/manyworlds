@@ -157,10 +157,16 @@ class ScenarioForest:
 
             # Find the parent to connect scenario to:
             parent_level = at_level-1
-            last_scenario_at_parent_level = [
+            scenarios_at_parent_level = [
                 sc for sc in self.scenarios()
                 if sc.level() == parent_level
-            ][-1]
+            ]
+            if not scenarios_at_parent_level:
+                raise InvalidFeatureFileError(
+                    "Excessive indentation at line: Scenario: {}".format(scenario.name)
+                )
+            else:
+                last_scenario_at_parent_level = scenarios_at_parent_level[-1]
 
             # add vertex to scenario:
             vertex = self.graph.add_vertex()
