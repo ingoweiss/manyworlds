@@ -1,9 +1,11 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig
+import pdb
 
 from .scenario import Scenario
-from .step import Step
+from .step import Step, Prerequisite, Action, Assertion
+from .data_table import DataTable
 from .exceptions import InvalidFeatureFileError
 
 class ScenarioForest:
@@ -11,6 +13,7 @@ class ScenarioForest:
     the vertices of which represent BDD scenarios"""
 
     TAB_SIZE = 4
+    LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
     indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
 
     SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(
@@ -26,7 +29,7 @@ class ScenarioForest:
         Step.table_pattern
     ))
 
-    def __init__(self, graph):
+    def __init__(self):
         """Constructor method
 
         Parameters
@@ -35,7 +38,7 @@ class ScenarioForest:
             The graph representing the set of scenario trees
         """
 
-        self.graph = graph
+        self.graph = ig.Graph(directed=True)
 
     @classmethod
     def data_table_list_to_dict(cls, data_table):
@@ -74,7 +77,96 @@ class ScenarioForest:
              + [list(row.values()) for row in data_table]
 
     @classmethod
+    def split_line(cls, line):
+        match = cls.LINE_PATTERN.match(line)
+        return (match['indentation'], match['line'])
+
+    def parse_line(self, line):
+        if re.compile(Scenario.scenario_pattern).match(line):
+            return Scenario.parse_line(line)
+        elif re.compile(Step.step_pattern).match(line):
+            return self.parse_step(line)
+        elif re.compile(DataTable.data_table_row_pattern).match(line):
+            return DataTable.parse_line(line)
+
+    def parse_step(self, line):
+        match = re.compile(Step.step_pattern).match(line)
+        conjunction = match['conjunction']
+        if conjunction in ['And', 'But']:
+            previous_step = self.scenarios()[-1].steps[-1]
+            step_type = type(previous_step)
+        else:
+            step_type = {
+                'Given': Prerequisite,
+                'When' : Action,
+                'Then' : Assertion
+            }[conjunction]
+        return step_type(match['name'], comment=match['comment'])
+        
+
+
+    @classmethod
     def from_file(cls, file_path):
+        forest = ScenarioForest()
+        with open(file_path) as indented_file:
+            for line_no, raw_line in enumerate(indented_file.readlines()):
+                if raw_line.strip() == '':
+                    continue #skip empty lines
+
+                indentation, line = cls.split_line(raw_line)
+
+                # validate indentation:
+                if len(indentation) % cls.TAB_SIZE == 0:
+                    level = int(len(indentation) / cls.TAB_SIZE) + 1
+                else:
+                    raise InvalidFeatureFileError("Invalid indentation at line {}".format(line_no))
+
+                parsed_line = forest.parse_line(line)
+                if isinstance(parsed_line, Scenario):
+                    forest.append_scenario(parsed_line, at_level=level)
+                elif isinstance(parsed_line, Step):
+                    forest.append_step(parsed_line, at_level=level)
+                elif isinstance(parsed_line, list):
+                    forest.append_data_row(parsed_line, at_level=level)
+                else:
+                    raise InvalidFeatureFileError("Unable to parse line {}: {}".format(line_no+1, line))
+        return forest
+
+    
+    def append_scenario(self, scenario, at_level):
+        if at_level > 1:
+            parent_level = at_level-1
+            last_scenario_at_parent_level = [sc for sc in self.scenarios() if sc.level() == parent_level][-1]
+            vertex = self.graph.add_vertex()
+            vertex['scenario'] = scenario
+            scenario.vertex = vertex
+            scenario.graph = vertex.graph
+            self.graph.add_edge(
+                last_scenario_at_parent_level.vertex,
+                scenario.vertex
+            )
+        else:
+            vertex = self.graph.add_vertex()
+            vertex['scenario'] = scenario
+            scenario.vertex = vertex
+            scenario.graph = vertex.graph
+
+        return scenario
+    
+    def append_step(self, step, at_level):
+        last_scenario = self.scenarios()[-1]
+        last_scenario.steps.append(step)
+        return True
+         
+    def append_data_row(self, data_row, at_level):
+        last_step = self.scenarios()[-1].steps[-1]
+        if last_step.data:
+            last_step.data.rows.append(data_row)
+        else:
+            last_step.data = DataTable(data_row)
+
+    @classmethod
+    def from_file_old(cls, file_path):
         """Create a scenario tree instance from an indented feature file
 
         Scans the indented file line by line and:
@@ -255,7 +347,7 @@ class ScenarioForest:
         None
         """
 
-        data = ScenarioForest.data_table_dict_to_list(data_table)
+        data = data_table.to_list_of_list()
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
             padded_row = [

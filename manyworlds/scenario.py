@@ -1,5 +1,7 @@
 """Defines the Scenario Class"""
 
+import re
+
 from .step import Prerequisite, Action, Assertion
 
 class Scenario:
@@ -7,7 +9,7 @@ class Scenario:
 
     scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
 
-    def __init__(self, name, vertex):
+    def __init__(self, name):
         """Constructor method
 
         Parameters
@@ -20,8 +22,8 @@ class Scenario:
        """
 
         self.name = name.strip()
-        self.vertex = vertex
-        self.graph = vertex.graph
+        self.vertex = None #vertex
+        self.graph = None #vertex.graph
         self.steps = []
         self._validated = False
     
@@ -34,6 +36,11 @@ class Scenario:
     def validated(self, value):
         """The validated property setter"""
         self._validated = value
+
+    @classmethod
+    def parse_line(cls, line):
+        match = re.compile(cls.scenario_pattern).match(line)
+        return Scenario(match['scenario_name'])
 
     def prerequisites(self):
         """Return all steps of type Prerequisite
