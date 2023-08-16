@@ -1,5 +1,4 @@
 """Defines the DataTable class"""
-import re
 
 class DataTable:
     """A Gherkin data table"""

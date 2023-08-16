@@ -1,7 +1,6 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig
-import pdb
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -117,7 +116,9 @@ class ScenarioForest:
                 if len(indentation) % cls.TAB_SIZE == 0:
                     level = int(len(indentation) / cls.TAB_SIZE) + 1
                 else:
-                    raise InvalidFeatureFileError("Invalid indentation at line {}".format(line_no))
+                    raise InvalidFeatureFileError(
+                        "Invalid indentation at line {}".format(line_no)
+                    )
 
                 # determine what kind of line this is:
                 parsed_line = forest.parse_line(line)
@@ -132,14 +133,19 @@ class ScenarioForest:
                     forest.append_data_row(parsed_line, at_level=level)
                 # Not a valid line:
                 else:
-                    raise InvalidFeatureFileError("Unable to parse line {}: {}".format(line_no+1, line))
+                    raise InvalidFeatureFileError(
+                        "Unable to parse line {}: {}".format(line_no+1, line)
+                    )
 
         return forest
 
     def append_scenario(self, scenario, at_level):
         if at_level > 1:
             parent_level = at_level-1
-            last_scenario_at_parent_level = [sc for sc in self.scenarios() if sc.level() == parent_level][-1]
+            last_scenario_at_parent_level = [
+                sc for sc in self.scenarios()
+                if sc.level() == parent_level
+            ][-1]
             vertex = self.graph.add_vertex()
             vertex['scenario'] = scenario
             scenario.vertex = vertex
