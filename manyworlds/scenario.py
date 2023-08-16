@@ -21,10 +21,10 @@ class Scenario:
             The vertex representing the scenario's position in a scenario tree
        """
 
-        self.name = name.strip()
-        self.vertex = None #vertex
-        self.graph = None #vertex.graph
-        self.steps = []
+        self.name       = name.strip()
+        self.vertex     = None
+        self.graph      = None
+        self.steps      = []
         self._validated = False
 
     @property
@@ -212,3 +212,36 @@ class Scenario:
             [sc.name + ' > ' for sc in self.organizational_only_ancestors()]
         )
         return breadcrumbs + self.name
+
+    def index(self):
+        """Returns the 'index' of the scenario
+
+        The scenario's vertical position in the feature file
+
+        Returns
+        ----------
+        int
+            Index of self
+        """
+
+        return self.vertex.index
+
+    def is_closed(self):
+        """Returns whether or not the scenario is 'closed'
+
+        A scenario is 'closed' if additional child scenarios cannot
+        be added. That is the case if there is a 'later' (higher index)
+        scenario with a lower indentation level in the feature file.
+
+        Returns
+        ----------
+        bool
+            Whether or not the scenario is 'closed'
+        """
+
+        later_scenario_at_lower_indentation_level = next((
+            vx for vx in self.graph.vs()
+            if vx.index > self.index()
+            and self.graph.neighborhood_size(vx, mode="IN", order=1000) < self.level()
+        ), None)
+        return later_scenario_at_lower_indentation_level is not None
