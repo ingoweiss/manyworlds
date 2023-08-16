@@ -10,28 +10,47 @@ class DataTable:
 
         Parameters
         ----------
-        name : str
-            The name of the step
-
-        data : list, optional
-            list[dict]. List of dict representing a data table
-
-        comment : str, optional
-            A comment
-
-        Returns
-        ----------
-        None
+        header_row : list of str
+            The header row
         """
+
         self.header_row = header_row
         self.rows = []
 
     def to_list_of_list(self):
+        """Return a list of list of str representation of itself
+
+        Returns
+        -------
+        list of list of str
+            The list of list of str representation of itself
+        """
+
         return [self.header_row] + self.rows
 
     def to_list_of_dict(self):
+        """Return a list of dict representation of itself
+
+        Returns
+        -------
+        list of dict
+            The list of dict representation of itself
+        """
+
         return [dict(zip(self.header_row, row)) for row in self.rows]
 
     @classmethod
     def parse_line(cls, line):
+        """Parse a pipe delimited data table line into a list of str
+
+        Parameters
+        ----------
+        line : str
+            A pipe delimited data table line
+
+        Returns
+        -------
+        list of str
+        """
+
         return [s.strip() for s in line.split('|')[1:-1]]
