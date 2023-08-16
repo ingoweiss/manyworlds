@@ -102,8 +102,6 @@ class ScenarioForest:
                 'Then' : Assertion
             }[conjunction]
         return step_type(match['name'], comment=match['comment'])
-        
-
 
     @classmethod
     def from_file(cls, file_path):
@@ -121,18 +119,23 @@ class ScenarioForest:
                 else:
                     raise InvalidFeatureFileError("Invalid indentation at line {}".format(line_no))
 
+                # determine what kind of line this is:
                 parsed_line = forest.parse_line(line)
+                # Scenario line:
                 if isinstance(parsed_line, Scenario):
                     forest.append_scenario(parsed_line, at_level=level)
+                # Step:
                 elif isinstance(parsed_line, Step):
                     forest.append_step(parsed_line, at_level=level)
+                # Data table line:
                 elif isinstance(parsed_line, list):
                     forest.append_data_row(parsed_line, at_level=level)
+                # Not a valid line:
                 else:
                     raise InvalidFeatureFileError("Unable to parse line {}: {}".format(line_no+1, line))
+
         return forest
 
-    
     def append_scenario(self, scenario, at_level):
         if at_level > 1:
             parent_level = at_level-1
@@ -152,12 +155,12 @@ class ScenarioForest:
             scenario.graph = vertex.graph
 
         return scenario
-    
+
     def append_step(self, step, at_level):
         last_scenario = self.scenarios()[-1]
         last_scenario.steps.append(step)
         return True
-         
+
     def append_data_row(self, data_row, at_level):
         last_step = self.scenarios()[-1].steps[-1]
         if last_step.data:

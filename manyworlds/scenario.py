@@ -26,7 +26,7 @@ class Scenario:
         self.graph = None #vertex.graph
         self.steps = []
         self._validated = False
-    
+
     @property
     def validated(self):
         """The validated property"""
