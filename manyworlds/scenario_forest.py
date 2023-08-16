@@ -102,7 +102,7 @@ class ScenarioForest:
         Returns
         -------
         ScenarioForest
-            An instance of a ScenarioForest class
+            A new ScenarioForest instance
         """
 
         forest = ScenarioForest()
@@ -126,7 +126,7 @@ class ScenarioForest:
                 # Scenario line:
                 if isinstance(parsed_line, Scenario):
                     forest.append_scenario(parsed_line, at_level=level)
-                # Step:
+                # Step line:
                 elif isinstance(parsed_line, Step):
                     forest.append_step(parsed_line, at_level=level)
                 # Data table line:
@@ -153,21 +153,29 @@ class ScenarioForest:
             Provided for indentation validaiton purposes
         """
 
-        if at_level > 1:
+        if at_level > 1: # Non-root scenario:
+
+            # Find the parent to connect scenario to:
             parent_level = at_level-1
             last_scenario_at_parent_level = [
                 sc for sc in self.scenarios()
                 if sc.level() == parent_level
             ][-1]
+
+            # add vertex to scenario:
             vertex = self.graph.add_vertex()
             vertex['scenario'] = scenario
             scenario.vertex = vertex
             scenario.graph = vertex.graph
+
+            # connect scenario to parent:
             self.graph.add_edge(
                 last_scenario_at_parent_level.vertex,
                 scenario.vertex
             )
-        else:
+        else: # root scenario:
+
+            # add vertex to scenario:
             vertex = self.graph.add_vertex()
             vertex['scenario'] = scenario
             scenario.vertex = vertex
@@ -188,7 +196,6 @@ class ScenarioForest:
 
         last_scenario = self.scenarios()[-1]
         last_scenario.steps.append(step)
-        return True
 
     def append_data_row(self, data_row, at_level):
         """Append a data row to the scenario forest
@@ -208,8 +215,10 @@ class ScenarioForest:
 
         last_step = self.scenarios()[-1].steps[-1]
         if last_step.data:
+            # row is an additional row for an existing table
             last_step.data.rows.append(data_row)
         else:
+            # row is the header row of a new table
             last_step.data = DataTable(data_row)
 
     @classmethod
