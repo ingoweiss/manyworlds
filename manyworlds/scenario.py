@@ -39,6 +39,19 @@ class Scenario:
 
     @classmethod
     def parse_line(cls, line):
+        """Parse a scenario line into a Scenario instance
+
+        Parameters
+        ----------
+        line : str
+            The scenario line
+
+        Returns
+        -------
+        Scenario
+            A Scenario instance
+        """
+
         match = re.compile(cls.scenario_pattern).match(line)
         return Scenario(match['scenario_name'])
 

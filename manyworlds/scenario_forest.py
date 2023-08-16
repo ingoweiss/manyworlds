@@ -2,8 +2,8 @@
 import re
 import igraph as ig
 
-from .scenario import Scenario
-from .step import Step, Prerequisite, Action, Assertion
+from .scenario   import Scenario
+from .step       import Step, Prerequisite, Action, Assertion
 from .data_table import DataTable
 from .exceptions import InvalidFeatureFileError
 
@@ -13,46 +13,70 @@ class ScenarioForest:
 
     TAB_SIZE = 4
     LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
-    indentation_pattern = rf'(?P<indentation>( {{{TAB_SIZE}}})*)'
-
-    SCENARIO_LINE_PATTERN = re.compile("^{}{}$".format(
-        indentation_pattern,
-        Scenario.scenario_pattern
-    ))
-    STEP_LINE_PATTERN = re.compile("^{}{}$".format(
-        indentation_pattern,
-        Step.step_pattern
-    ))
-    TABLE_LINE_PATTERN = re.compile("^{}{}$".format(
-        indentation_pattern,
-        Step.table_pattern
-    ))
 
     def __init__(self):
-        """Constructor method
-
-        Parameters
-        ----------
-        graph : igraph.Graph
-            The graph representing the set of scenario trees
-        """
+        """Constructor method"""
 
         self.graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, line):
-        match = cls.LINE_PATTERN.match(line)
+    def split_line(cls, raw_line):
+        """Split a raw feature file line into the indentation part and the line part
+
+        Parameters
+        ----------
+        raw_line : str
+            The raw feature file line including indentation and newline
+
+        Returns
+        -------
+        tuple(str, str)
+            The indentation part and the line part (without newline) as a tuple
+        """
+
+        match = cls.LINE_PATTERN.match(raw_line)
         return (match['indentation'], match['line'])
 
     def parse_line(self, line):
+        """Parse a feature file line into an appropriate instance
+
+        Parameters
+        ----------
+        line : str
+            The feature file line (without indentation and newline)
+
+        Returns
+        -------
+        Scenario or Prerequisite or Action or Assertion or list
+            An instance representing the line
+        """
+
         if re.compile(Scenario.scenario_pattern).match(line):
             return Scenario.parse_line(line)
         elif re.compile(Step.step_pattern).match(line):
-            return self.parse_step(line)
+            return self.parse_step_line(line)
         elif re.compile(DataTable.data_table_row_pattern).match(line):
             return DataTable.parse_line(line)
+        else:
+            return None
 
-    def parse_step(self, line):
+    def parse_step_line(self, line):
+        """Parse a feature file step line into an appropriate instance
+
+        if the line begins with "And" then the step type is determined
+        by the type of the last step
+
+        Parameters
+        ----------
+        line : str
+            The step line (without indentation and newline)
+
+        Returns
+        -------
+        Prerequisite or Action or Assertion
+            An instance of a Step subclass
+        """
+
         match = re.compile(Step.step_pattern).match(line)
         conjunction = match['conjunction']
         if conjunction in ['And', 'But']:
@@ -68,6 +92,19 @@ class ScenarioForest:
 
     @classmethod
     def from_file(cls, file_path):
+        """Parse an indented feature file into a ScenarioForest instance
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the feature file
+
+        Returns
+        -------
+        ScenarioForest
+            An instance of a ScenarioForest class
+        """
+
         forest = ScenarioForest()
         with open(file_path) as indented_file:
             for line_no, raw_line in enumerate(indented_file.readlines()):
@@ -104,6 +141,18 @@ class ScenarioForest:
         return forest
 
     def append_scenario(self, scenario, at_level):
+        """Append a scenario to the scenario forest
+
+        Parameters
+        ----------
+        scenario : Scenario
+            The scenario to append
+
+        at_level : int
+            The level at which to add the scenario
+            Provided for indentation validaiton purposes
+        """
+
         if at_level > 1:
             parent_level = at_level-1
             last_scenario_at_parent_level = [
@@ -124,14 +173,39 @@ class ScenarioForest:
             scenario.vertex = vertex
             scenario.graph = vertex.graph
 
-        return scenario
-
     def append_step(self, step, at_level):
+        """Append a step to the scenario forest
+
+        Parameters
+        ----------
+        step : Prerequisite or Action or Assertion
+            The Step subclass to append
+
+        at_level : int
+            The level at which to add the step
+            Provided for indentation validaiton purposes
+        """
+
         last_scenario = self.scenarios()[-1]
         last_scenario.steps.append(step)
         return True
 
     def append_data_row(self, data_row, at_level):
+        """Append a data row to the scenario forest
+
+        Adds a data table to the last step if necessary
+        Otherwise adds row to data table
+
+        Parameters
+        ----------
+        data_row : list of list of str
+            The data row to append
+
+        at_level : int
+            The level at which to add the data row
+            Provided for indentation validaiton purposes
+        """
+
         last_step = self.scenarios()[-1].steps[-1]
         if last_step.data:
             last_step.data.rows.append(data_row)
@@ -151,10 +225,6 @@ class ScenarioForest:
 
         scenario : Scenario
             Scenario to append to file_handle
-
-        Returns
-        -------
-        None
         """
 
         file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
@@ -170,10 +240,6 @@ class ScenarioForest:
 
         path_scenarios : list
             List of Scenario. Organizational and validated scenarios along the path
-
-        Returns
-        -------
-        None
         """
 
         scenario_name = ' > '.join([sc.name for sc in path_scenarios])
