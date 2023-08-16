@@ -96,16 +96,21 @@ def test_flatten_relaxed_with_comments():
 def test_invalid_file_mis_spelled_conjunction():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file('test/fixtures/in/invalid/mis-spelled_conjunction.feature')
+        mw.ScenarioForest.from_file(
+            'test/fixtures/in/invalid/mis-spelled_conjunction.feature'
+        )
     assert str(error_info.value) \
         == 'Unable to parse line 2: Whenx I go to "Users" # mis-spelled conjunction'
 
 def test_invalid_file_invalid_indentation():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file('test/fixtures/in/invalid/invalid_indentation.feature')
+        mw.ScenarioForest.from_file(
+            'test/fixtures/in/invalid/invalid_indentation.feature'
+        )
     assert str(error_info.value) \
-        == 'Invalid indentation at line 5: Scenario: Indented using 3 spaces instead of 4'
+        == 'Invalid indentation at line 5: Scenario: '\
+           'Indented using 3 spaces instead of 4'
 
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
@@ -120,12 +125,3 @@ def test_organizational_scenarios():
         'test/out/scenarios_flat_strict_with_organizational_scenarios.feature',
         'test/fixtures/out/scenarios_flat_strict_with_organizational_scenarios.feature'
     )
-
-# def test_from_file_new():
-#     forest = mw.ScenarioForest.from_file_new(
-#         'test/fixtures/in/scenario_forest.feature'
-#     )
-#     forest.flatten(
-#         'test/out/scenario_forest_new.feature',
-#         mode='strict'
-#     )

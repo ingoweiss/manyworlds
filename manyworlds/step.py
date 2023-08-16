@@ -1,5 +1,4 @@
 """Defines the Step Class and subclasses"""
-import re
 
 class Step:
     """A BDD scenario step"""
