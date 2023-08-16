@@ -160,6 +160,7 @@ class ScenarioForest:
             scenarios_at_parent_level = [
                 sc for sc in self.scenarios()
                 if sc.level() == parent_level
+                and not sc.is_closed()
             ]
             if not scenarios_at_parent_level:
                 raise InvalidFeatureFileError(
