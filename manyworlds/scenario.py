@@ -256,9 +256,9 @@ class Scenario:
             Whether or not the scenario is 'closed'
         """
 
-        later_scenario_at_lower_indentation_level = next((
+        later_scenario_at_same_or_lower_indentation_level = next((
             vx for vx in self.graph.vs()
             if vx.index > self.index()
-            and self.graph.neighborhood_size(vx, mode="IN", order=1000) < self.level()
+            and self.graph.neighborhood_size(vx, mode="IN", order=1000) <= self.level()
         ), None)
-        return later_scenario_at_lower_indentation_level is not None
+        return later_scenario_at_same_or_lower_indentation_level is not None
