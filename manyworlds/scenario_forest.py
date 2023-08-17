@@ -301,11 +301,10 @@ class ScenarioForest:
         file_handle : io.TextIOWrapper
             The file to which to append the data table
 
-        data_table : list[dict]
-            List of dict representation of the data table
+        data_table : DataTable
+            A data table
         """
 
-        # TODO: Use the DataTable instance as parameter instead
         data = data_table.to_list_of_list()
         col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
         for row in data:
