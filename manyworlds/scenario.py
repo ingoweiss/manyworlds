@@ -16,10 +16,7 @@ class Scenario:
         ----------
         name : str
             The name of the scenario
-
-        vertex : igraph.Vertex
-            The vertex representing the scenario's position in a scenario tree
-       """
+        """
 
         self.name       = name.strip()
         self.vertex     = None
@@ -29,17 +26,34 @@ class Scenario:
 
     @property
     def validated(self):
-        """The validated property"""
+        """The 'validated' property
+        
+        Used to keep track of which scenarios had their assertions written
+        to an output scenario already so that assertions are not run multiple
+        times.
+        
+        Returns
+        -------
+        bool
+            Whether or not this scenario has been validated
+        """
         return self._validated
 
     @validated.setter
     def validated(self, value):
-        """The validated property setter"""
+        """The validated property setter
+        
+        Parameters
+        ----------
+        value : bool
+            Whether or not this scenario has been validated
+        
+        """
         self._validated = value
 
     @classmethod
     def parse_line(cls, line):
-        """Parse a scenario line into a Scenario instance
+        """Parses a scenario line into a Scenario instance
 
         Parameters
         ----------
@@ -56,40 +70,41 @@ class Scenario:
         return Scenario(match['scenario_name'])
 
     def prerequisites(self):
-        """Return all steps of type Prerequisite
+        """Returns all steps of type Prerequisite
 
         Returns
-        ----------
-        list
-            list[Prerequisite]. List of steps of type Prerequisite
+        -------
+        list[Prerequisite]
+            List of steps of type Prerequisite
         """
 
         return self.steps_of_type(Prerequisite)
 
     def actions(self):
-        """Return all steps of type Action
+        """Returns all steps of type Action
 
         Returns
-        ----------
-        list
-            list[Action]. List of steps of type Action
+        -------
+        list[Action]
+            List of steps of type Action
         """
 
         return self.steps_of_type(Action)
 
     def assertions(self):
-        """Return all steps of type Assertion
+        """Returns all steps of type Assertion
 
         Returns
         ----------
         list
-            list[Assertion]. List of steps of type Assertion
+            list[Assertion]
+                List of steps of type Assertion
         """
 
         return self.steps_of_type(Assertion)
 
     def steps_of_type(self, step_type):
-        """Return all steps of the supplied type
+        """Returns all steps of the passed in type
 
         Parameters
         ----------
@@ -97,18 +112,18 @@ class Scenario:
             A step subclass
 
         Returns
-        ----------
-        list
-            list[Step]. List of steps of type Assertion
+        -------
+        list[Step]
+            All steps of the passed in type
         """
 
         return [st for st in self.steps if type(st) is step_type]
 
     def __str__(self):
-        """Return a string representation of the Scenario instance for terminal output
+        """Returns a string representation of the Scenario instance for terminal output.
 
         Returns
-        ----------
+        -------
         str
             String representation of the Scenario instance
         """
@@ -121,10 +136,10 @@ class Scenario:
         )
 
     def __repr__(self):
-        """Return a string representation of the Scenario instance for terminal output
+        """Returns a string representation of the Scenario instance for terminal output.
 
         Returns
-        ----------
+        -------
         str
             String representation of the Scenario instance
         """
@@ -132,12 +147,12 @@ class Scenario:
         return self.__str__()
 
     def ancestors(self):
-        """Return the scenario's ancestors, starting with the root scenario
+        """Returns the scenario's ancestors, starting with a root scenario
 
         Returns
-        ----------
-        list
-            list[Scenario]. List of scenarios
+        -------
+        list[Scenario]
+            List of scenarios
         """
 
         ancestors = self.graph.neighborhood(
@@ -150,34 +165,35 @@ class Scenario:
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
     def path_scenarios(self):
-        """Return the complete scenario path from the root scenario to self
+        """Returns the complete scenario path from the root scenario to 
+        (and including) self.
 
         Returns
-        ----------
-        list
-            list[Scenario]. List of scenarios
+        -------
+        list[Scenario]
+            List of scenarios. The last scenario is self
         """
 
         return self.ancestors() + [self]
 
     def organizational_only_ancestors(self):
-        """Return the scenario's ancestors that are organizational only
+        """Returns the scenario's ancestors that are organizational only.
 
         Returns
-        ----------
-        list
-            list[Scenario]. List of scenarios
+        -------
+        list[Scenario]
+            List of organizational scenarios
         """
 
         return [sc for sc in self.ancestors() if sc.organizational_only()]
 
     def level(self):
-        """Return the scenario's level in the scenario tree.
+        """Returns the scenario's level in the scenario tree.
 
-        Level 1 = root scenario
+        Root scenario =  Level 1
 
         Returns
-        ----------
+        -------
         int
             The scenario's level
         """
@@ -185,27 +201,28 @@ class Scenario:
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
     def organizational_only(self):
-        """Return whether the scenario is an 'organizational' scenario
+        """Returns whether the scenario is an 'organizational' scenario.
 
         'Organizational' scenarios are used for grouping only.
-        They do not have any assertions
+        They do not have any assertions.
 
         Returns
         ----------
         bool
+            Whether the scenario is an 'organizational' scenario
         """
 
         return len(self.assertions()) == 0
 
     def name_with_breadcrumbs(self):
-        """Return a name of the Scenario prepended with 'breadcrumbs'
+        """Returns the name of the Scenario prepended with 'breadcrumbs'.
 
-        Breadcrumbs are the scenario's organizational ancestor names joined by ' > '
+        Breadcrumbs are the scenario's organizational ancestor names joined by ' > '.
 
         Returns
         ----------
         str
-            String representation of the Scenario instance
+            The name of the Scenario prepended with 'breadcrumbs'
         """
 
         breadcrumbs = ''.join(
@@ -214,9 +231,9 @@ class Scenario:
         return breadcrumbs + self.name
 
     def index(self):
-        """Returns the 'index' of the scenario
+        """Returns the 'index' of the scenario.
 
-        The scenario's vertical position in the feature file
+        The scenario's vertical position in the feature file.
 
         Returns
         ----------
@@ -227,10 +244,10 @@ class Scenario:
         return self.vertex.index
 
     def is_closed(self):
-        """Returns whether or not the scenario is 'closed'
+        """Returns whether or not the scenario is 'closed'.
 
         A scenario is 'closed' if additional child scenarios cannot
-        be added. That is the case if there is a 'later' (higher index)
+        be added which is the case when there is a 'later' (higher index)
         scenario with a lower indentation level in the feature file.
 
         Returns
