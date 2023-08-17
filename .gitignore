@@ -5,3 +5,4 @@ build/
 dist/
 manyworlds.egg-info/
 manyworlds/manyworlds.egg-info/
+docs/_build/
