@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- When using the cli, the --output parameter is now optional so that one can use the cli to print the scenario hierarchy only
+
+### Fixed
+
+- The ScenarioForest#from_file method used to parse a scenario with excess indentation without error as long as there is a scenario at the parent level somewhere in the tree to connect to. This now raises an "InvalidFeatureFileError" (fixes #12)
+- Fixed link to CHANGELOG.md in pyproject.toml (fixes #8)
+
 ## [0.1.0] - 2023-08-14
 
 ### Changed
