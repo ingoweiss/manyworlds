@@ -10,7 +10,7 @@ class DataTable:
 
         Parameters
         ----------
-        header_row : list of str
+        header_row : list[str]
             The header row
         """
 
@@ -18,22 +18,24 @@ class DataTable:
         self.rows = []
 
     def to_list_of_list(self):
-        """Return a list of list of str representation of itself
+        """Returns a list of list of str representation of itself
+
+        First row is header row
 
         Returns
         -------
-        list of list of str
+        list[list[str]]
             The list of list of str representation of itself
         """
 
         return [self.header_row] + self.rows
 
     def to_list_of_dict(self):
-        """Return a list of dict representation of itself
+        """Returns a list of dict representation of itself
 
         Returns
         -------
-        list of dict
+        list[dict]
             The list of dict representation of itself
         """
 
@@ -41,7 +43,7 @@ class DataTable:
 
     @classmethod
     def parse_line(cls, line):
-        """Parse a pipe delimited data table line into a list of str
+        """Parses a pipe delimited data table line into a list of str
 
         Parameters
         ----------
@@ -50,7 +52,7 @@ class DataTable:
 
         Returns
         -------
-        list of str
+        list[str]
         """
 
         return [s.strip() for s in line.split('|')[1:-1]]
