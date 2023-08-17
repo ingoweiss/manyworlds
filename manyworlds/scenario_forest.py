@@ -432,8 +432,8 @@ class ScenarioForest:
 
         Returns
         -------
-        Scenario
-            The found scenario
+        Scenario or None
+            The found scenario, or None if none found
         """
 
         scenario = next(
@@ -441,10 +441,10 @@ class ScenarioForest:
             if sc.name == scenario_names[0]
         )
         for scenario_name in scenario_names[1:]:
-            scenario = next(
+            scenario = next((
                 vt['scenario'] for vt in scenario.vertex.successors()
                 if vt['scenario'].name == scenario_name
-            )
+            ), None)
 
         return scenario # TODO: Return None if none found
 
