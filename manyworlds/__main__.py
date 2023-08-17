@@ -30,7 +30,8 @@ def main():
             indentation_string = ''
         print(indentation_string + sc.name)
 
-    tree.flatten(args.output, mode=args.mode, comments=args.comments)
+    if args.output:
+        tree.flatten(args.output, mode=args.mode, comments=args.comments)
 
 if __name__ == "__main__":
     main()
