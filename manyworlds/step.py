@@ -15,15 +15,11 @@ class Step:
         name : str
             The name of the step
 
-        data : list, optional
-            list[dict]. List of dict representing a data table
+        data : DataTable, optional
+            A data table
 
         comment : str, optional
             A comment
-
-        Returns
-        ----------
-        None
         """
 
         self.name = name.strip()
@@ -32,11 +28,19 @@ class Step:
         self.comment = comment
 
     def format(self, first_of_type=True):
-        """Return a string representation of the Step instance
-        for feature file output
+        """Returns a string representation of the Step instance
+        for feature file output.
+
+        Uses "And" as a conjunction if the step is not the first
+        of its type.
+
+        Parameters
+        ----------
+        first_of_type : bool
+            Whether or not the step is the first of it's type
 
         Returns
-        ----------
+        -------
         str
             String representation of the Step instance
         """
@@ -45,11 +49,11 @@ class Step:
         return conjunction + ' ' + self.name
 
     def __str__(self):
-        """Return a string representation of the Step instance
-        for terminal output
+        """Return. a string representation of the Step instance
+        for terminal output.
 
         Returns
-        ----------
+        -------
         str
             String representation of the Step instance
         """
@@ -60,10 +64,11 @@ class Step:
         )
 
     def __repr__(self):
-        """Return a string representation of the Step instance for terminal output
+        """Return a string representation of the Step instance
+        for terminal output.
 
         Returns
-        ----------
+        -------
         str
             String representation of the Step instance
         """
