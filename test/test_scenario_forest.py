@@ -122,6 +122,16 @@ def test_invalid_file_excessive_indentation():
         == 'Excessive indentation at line: Scenario: '\
            'Indented 2 instead of 1 levels'
 
+def test_invalid_file_excessive_step_indentation():
+    """Test that the correct error is raised when attempting to parse invalid files"""
+    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
+        mw.ScenarioForest.from_file(
+            'test/fixtures/in/invalid/excessive_step_indentation.feature'
+        )
+    assert str(error_info.value) \
+        == 'Invalid indentation at line: '\
+           'I see users'
+
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
     forest = mw.ScenarioForest.from_file(

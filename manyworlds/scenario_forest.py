@@ -203,7 +203,12 @@ class ScenarioForest:
         """
 
         last_scenario = self.scenarios()[-1]
-        last_scenario.steps.append(step)
+        if at_level == last_scenario.level():
+            last_scenario.steps.append(step)
+        else:
+            raise InvalidFeatureFileError(
+                "Invalid indentation at line: {}".format(step.name)
+            )
 
     def append_data_row(self, data_row, at_level):
         """Appends a data row to the scenario forest.
