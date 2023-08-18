@@ -1,20 +1,38 @@
-.. Manyworlds documentation master file, created by
-   sphinx-quickstart on Mon Aug 14 22:40:08 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Manyworlds's documentation!
-======================================
+Manyworlds Documentation
+========================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
    :caption: Contents:
 
-modules
+manyworlds.scenario\_forest module
+----------------------------------
 
-Indices and tables
-==================
+.. automodule:: manyworlds.scenario_forest
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+manyworlds.scenario module
+--------------------------
+
+.. automodule:: manyworlds.scenario
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+manyworlds.step module
+----------------------
+
+.. automodule:: manyworlds.step
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+manyworlds.data\_table module
+-----------------------------
+
+.. automodule:: manyworlds.data_table
+   :members:
+   :undoc-members:
+   :show-inheritance:
