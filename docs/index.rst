@@ -1,5 +1,5 @@
-Manyworlds Documentation
-========================
+Manyworlds
+==========
 
 .. toctree::
    :maxdepth: 5
