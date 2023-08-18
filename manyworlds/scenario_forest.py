@@ -248,11 +248,11 @@ class ScenarioForest:
 
         # Group consecutive regular or organizational scenarios:
 
-        # Lambda for determining whether a scenario can be added to a current group:
-        group_available_for_scenario = lambda gr, sc : \
-            len(gr) > 0 and \
-            len(gr[-1]) > 0 and \
-            gr[-1][-1].organizational_only() == sc.organizational_only()
+        # Function for determining whether a scenario can be added to a current group:
+        def group_available_for_scenario(gr, sc):
+            return len(gr) > 0 and \
+                   len(gr[-1]) > 0 and \
+                   gr[-1][-1].organizational_only() == sc.organizational_only()
 
         for sc in scenarios:
             if group_available_for_scenario(groups, sc):
