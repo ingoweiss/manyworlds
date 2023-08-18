@@ -28,7 +28,7 @@ Then I see the following users:
     | Alice  | Active |
     | Connie | Active |
 
-Scenario: Bulk operations > Select user
+Scenario: [Bulk operations] Select user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -39,7 +39,7 @@ When I go to "Users"
  And I select user "Ben"
 Then I see "1 user selected"
 
-Scenario: Bulk operations > Deselect user
+Scenario: [Bulk operations] Deselect user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -51,7 +51,7 @@ When I go to "Users"
  And I deselect user "Ben"
 Then I see "0 users selected"
 
-Scenario: Bulk operations > Select multiple users
+Scenario: [Bulk operations] Select multiple users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -63,7 +63,7 @@ When I go to "Users"
  And I select user "Alice"
 Then I see "2 users selected"
 
-Scenario: Bulk operations > Deselect all users
+Scenario: [Bulk operations] Deselect all users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -76,7 +76,7 @@ When I go to "Users"
  And I click "Deselect all"
 Then I see "0 users selected"
 
-Scenario: Bulk operations > Bulk deactivate users
+Scenario: [Bulk operations] Bulk deactivate users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -89,7 +89,7 @@ When I go to "Users"
  And I click "Deactivate all"
 Then I see a confirmation dialog
 
-Scenario: Bulk operations > Confirm bulk deactivation of users
+Scenario: [Bulk operations] Confirm bulk deactivation of users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -107,7 +107,7 @@ Then I see "0 users selected"
     | Name   | Status |
     | Connie | Active |
 
-Scenario: Bulk operations > Cancel out of bulk deactivation of users
+Scenario: [Bulk operations] Cancel out of bulk deactivation of users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
