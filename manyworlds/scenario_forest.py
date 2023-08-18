@@ -231,23 +231,6 @@ class ScenarioForest:
             last_step.data = DataTable(data_row)
 
     @classmethod
-    def write_scenario_name_strict(cls, file_handle, scenario):
-        """Writes formatted scenario name to the end of a 'strict' flat feature file.
-
-        Uses both any organizatinal scenarios and the validated scenario.
-
-        Parameters
-        ----------
-        file_handle : io.TextIOWrapper
-            The file to which to append the scenario
-
-        scenario : Scenario
-            Scenario to append to file_handle
-        """
-
-        file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
-
-    @classmethod
     def write_scenario_name(cls, file_handle, scenarios):
         """Writes formatted scenario name to the end of a 'relaxed' flat feature file.
 
@@ -262,8 +245,6 @@ class ScenarioForest:
 
         groups = []
         group_strings = []
-
-        
 
         # Group consecutive regular or organizational scenarios:
 
@@ -292,22 +273,6 @@ class ScenarioForest:
 
         # Assemble and write name:
         file_handle.write("Scenario: " + ' '.join(group_strings) + "\n")
-
-    @classmethod
-    def write_scenario_name_relaxed(cls, file_handle, path_scenarios):
-        """Writes formatted scenario name to the end of a 'relaxed' flat feature file.
-
-        Parameters
-        ----------
-        file_handle : io.TextIOWrapper
-            The file to which to append the scenario name
-
-        path_scenarios : list[Scenario]
-            Organizational and validated scenarios along the path
-        """
-
-        scenario_name = ' > '.join([sc.name for sc in path_scenarios])
-        file_handle.write("Scenario: " + scenario_name + "\n")
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):

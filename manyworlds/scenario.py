@@ -176,17 +176,6 @@ class Scenario:
 
         return self.ancestors() + [self]
 
-    def organizational_only_ancestors(self):
-        """Returns the scenario's ancestors that are organizational only.
-
-        Returns
-        -------
-        list[Scenario]
-            List of organizational scenarios
-        """
-
-        return [sc for sc in self.ancestors() if sc.organizational_only()]
-
     def level(self):
         """Returns the scenario's level in the scenario tree.
 
@@ -213,22 +202,6 @@ class Scenario:
         """
 
         return len(self.assertions()) == 0
-
-    def name_with_breadcrumbs(self):
-        """Returns the name of the Scenario prepended with 'breadcrumbs'.
-
-        Breadcrumbs are the scenario's organizational ancestor names joined by ' > '.
-
-        Returns
-        ----------
-        str
-            The name of the Scenario prepended with 'breadcrumbs'
-        """
-
-        breadcrumbs = ''.join(
-            [sc.name + ' > ' for sc in self.organizational_only_ancestors()]
-        )
-        return breadcrumbs + self.name
 
     def index(self):
         """Returns the 'index' of the scenario.
