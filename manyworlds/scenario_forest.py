@@ -243,10 +243,8 @@ class ScenarioForest:
             Organizational and validated scenarios along the path
         """
 
-        groups = []
-        group_strings = []
-
         # Group consecutive regular or organizational scenarios:
+        groups = []
 
         # Function for determining whether a scenario can be added to a current group:
         def group_available_for_scenario(gr, sc):
@@ -261,6 +259,8 @@ class ScenarioForest:
                 groups.append([sc]) # start new group
 
         # Format each group to strings:
+        group_strings = []
+        
         for group in groups:
             if group[-1].organizational_only():
                 group_strings.append(
