@@ -1,10 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [0.2.0] - 2023-08-18
 
 ### Changed
 
-- When using the cli, the --output parameter is now optional so that one can use the cli to print the scenario hierarchy only
+- When using the cli, the --output parameter is now optional so that the cli can be used to print the scenario hierarchy to the terminal only
+- Change naming scheme for output scenarios: It is now the same for strict and relaxed scenarios, and organizational scenario names are enclosed in angle brackets to distinguish them from regular scenarios
 
 ### Fixed
 
@@ -15,7 +16,7 @@
 
 ### Changed
 
-- Change naming scheme for output scenarios: Organizational scenario names are now enclosed in angle brackets to distinguish them from regular scenarios
+- Change naming scheme for 'relaxed' output scenarios: All path scenario names are now joined using ' > ' rather than using ' > ' for organizational scenarios and ' / ' for validated scenarios
 
 ## [0.0.2] - 2023-08-11
 
