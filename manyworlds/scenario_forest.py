@@ -231,24 +231,7 @@ class ScenarioForest:
             last_step.data = DataTable(data_row)
 
     @classmethod
-    def write_scenario_name_strict(cls, file_handle, scenario):
-        """Writes formatted scenario name to the end of a 'strict' flat feature file.
-
-        Uses both any organizatinal scenarios and the validated scenario.
-
-        Parameters
-        ----------
-        file_handle : io.TextIOWrapper
-            The file to which to append the scenario
-
-        scenario : Scenario
-            Scenario to append to file_handle
-        """
-
-        file_handle.write("Scenario: " + scenario.name_with_breadcrumbs() + "\n")
-
-    @classmethod
-    def write_scenario_name_relaxed(cls, file_handle, path_scenarios):
+    def write_scenario_name(cls, file_handle, scenarios):
         """Writes formatted scenario name to the end of a 'relaxed' flat feature file.
 
         Parameters
@@ -256,12 +239,40 @@ class ScenarioForest:
         file_handle : io.TextIOWrapper
             The file to which to append the scenario name
 
-        path_scenarios : list[Scenario]
+        scenarios : list[Scenario]
             Organizational and validated scenarios along the path
         """
 
-        scenario_name = ' > '.join([sc.name for sc in path_scenarios])
-        file_handle.write("Scenario: " + scenario_name + "\n")
+        # Group consecutive regular or organizational scenarios:
+        groups = []
+
+        # Function for determining whether a scenario can be added to a current group:
+        def group_available_for_scenario(gr, sc):
+            return len(gr) > 0 and \
+                   len(gr[-1]) > 0 and \
+                   gr[-1][-1].organizational_only() == sc.organizational_only()
+
+        for sc in scenarios:
+            if group_available_for_scenario(groups, sc):
+                groups[-1].append(sc) # add to current group
+            else:
+                groups.append([sc]) # start new group
+
+        # Format each group to strings:
+        group_strings = []
+        
+        for group in groups:
+            if group[-1].organizational_only():
+                group_strings.append(
+                    "[{}]".format(' / '.join([sc.name for sc in group]))
+                )
+            else:
+                group_strings.append(
+                    ' > '.join([sc.name for sc in group])
+                )
+
+        # Assemble and write name:
+        file_handle.write("Scenario: " + ' '.join(group_strings) + "\n")
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):
@@ -356,7 +367,12 @@ class ScenarioForest:
                 sc for sc in self.scenarios()
                 if not sc.organizational_only()
             ]:
-                ScenarioForest.write_scenario_name_strict(flat_file, scenario)
+                scenarios_for_naming = [
+                    sc for sc in scenario.path_scenarios()
+                    if sc.organizational_only()
+                    or sc == scenario
+                ]
+                ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
                 ancestor_scenarios = scenario.ancestors()
                 steps=[]
@@ -410,7 +426,7 @@ class ScenarioForest:
                         path_scenario.validated = True
                         scenarios_for_naming.append(path_scenario)
 
-                ScenarioForest.write_scenario_name_relaxed(
+                ScenarioForest.write_scenario_name(
                     flat_file,
                     scenarios_for_naming
                 )
