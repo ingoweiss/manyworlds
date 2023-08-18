@@ -27,7 +27,7 @@ classifiers = [
 "Bug Tracker" = "https://github.com/ingoweiss/manyworlds/issues"
 "Repository" = "https://github.com/ingoweiss/manyworlds.git"
 "Changelog" = "https://github.com/ingoweiss/manyworlds/blob/master/CHANGELOG.md"
-"Documentation" = "http://manyworlds.ingoweiss.com"
+"Documentation" = "https://manyworlds.ingoweiss.com/"
 
 [tool.hatch.version]
 path = "manyworlds/__init__.py"
