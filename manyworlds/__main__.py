@@ -19,9 +19,10 @@ def main():
                         help='output comments')
     args = parser.parse_args()
 
+    # read hierarchical feature file:
     tree = mw.ScenarioForest.from_file(args.input)
 
-    # print tree:
+    # print scenario forest outline to terminal:
     for sc in tree.scenarios():
         level = sc.level()
         if level > 1:
@@ -30,6 +31,7 @@ def main():
             indentation_string = ''
         print(indentation_string + sc.name)
 
+    # write flat feature file:
     if args.output:
         tree.flatten(args.output, mode=args.mode, comments=args.comments)
 
