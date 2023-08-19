@@ -4,7 +4,7 @@ import igraph as ig
 
 from .scenario   import Scenario
 from .step       import Step, Prerequisite, Action, Assertion
-from .data_table import DataTable
+from .data_table import DataTable, DataTableRow
 from .exceptions import InvalidFeatureFileError
 
 class ScenarioForest:
@@ -131,7 +131,7 @@ class ScenarioForest:
                 elif isinstance(parsed_line, Step):
                     forest.append_step(parsed_line, at_level=level)
                 # Data table line:
-                elif isinstance(parsed_line, list):
+                elif isinstance(parsed_line, DataTableRow):
                     forest.append_data_row(parsed_line, at_level=level)
                 # Not a valid line:
                 else:
@@ -226,7 +226,6 @@ class ScenarioForest:
             Used for indentation validation.
         """
 
-        # TODO: Extract methods 'last_scenario' and 'last_step'
         last_step = self.scenarios()[-1].steps[-1]
         if last_step.data:
             # row is an additional row for an existing table

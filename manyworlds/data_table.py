@@ -1,4 +1,4 @@
-"""Defines the DataTable class"""
+"""Defines the DataTable and DataTableRow classes"""
 
 class DataTable:
     """A Gherkin data table"""
@@ -28,7 +28,7 @@ class DataTable:
             The list of list of str representation of itself
         """
 
-        return [self.header_row] + self.rows
+        return [self.header_row.values] + [row.values for row in self.rows]
 
     def to_list_of_dict(self):
         """Returns a list of dict representation of itself
@@ -39,7 +39,7 @@ class DataTable:
             The list of dict representation of itself
         """
 
-        return [dict(zip(self.header_row, row)) for row in self.rows]
+        return [dict(zip(self.header_row.values, row.values)) for row in self.rows]
 
     @classmethod
     def parse_line(cls, line):
@@ -55,4 +55,13 @@ class DataTable:
         list[str]
         """
 
-        return [s.strip() for s in line.split('|')[1:-1]]
+        values = [s.strip() for s in line.split('|')[1:-1]]
+        return DataTableRow(values)
+
+class DataTableRow:
+    """A Gherkin data table row"""
+
+    def __init__(self, values, comment=None):
+
+        self.values = values
+        self.comment = comment
