@@ -4,7 +4,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
 Then I see the following users:
     | Name   | Status |
@@ -18,7 +18,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I click "Deactivate" for user "Ben"
  And I click "OK"
@@ -34,7 +34,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
 Then I see "1 user selected"
@@ -45,7 +45,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I deselect user "Ben"
@@ -57,7 +57,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -69,7 +69,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -82,7 +82,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -95,7 +95,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -113,7 +113,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -121,9 +121,8 @@ When I go to "Users"
  And I click "Cancel"
 Then I see "2 users selected"
  And I see the following users:
-# same as before
     | Name   | Status |
-    | Ben    | Active |
-    | Alice  | Active |
+    | Ben    | Active | # still there
+    | Alice  | Active | # still there
     | Connie | Active |
 

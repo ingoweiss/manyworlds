@@ -1,9 +1,11 @@
-"""Defines the DataTable class"""
+"""Defines the DataTable and DataTableRow classes"""
+
+import re
 
 class DataTable:
     """A Gherkin data table"""
 
-    data_table_row_pattern = r'\| ([^|]* +\|)+'
+    data_table_row_pattern = r'(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?'
 
     def __init__(self, header_row):
         """Constructor method
@@ -28,7 +30,7 @@ class DataTable:
             The list of list of str representation of itself
         """
 
-        return [self.header_row] + self.rows
+        return [self.header_row.values] + [row.values for row in self.rows]
 
     def to_list_of_dict(self):
         """Returns a list of dict representation of itself
@@ -39,7 +41,18 @@ class DataTable:
             The list of dict representation of itself
         """
 
-        return [dict(zip(self.header_row, row)) for row in self.rows]
+        return [dict(zip(self.header_row.values, row.values)) for row in self.rows]
+
+    def to_list(self):
+        """Returns a list of DataTableRow representation of itself
+
+        Returns
+        -------
+        list[DataTableRow]
+            The list of DataTableRow representation of itself
+        """
+
+        return [self.header_row] + self.rows
 
     @classmethod
     def parse_line(cls, line):
@@ -54,5 +67,15 @@ class DataTable:
         -------
         list[str]
         """
+        match = re.compile(DataTable.data_table_row_pattern).match(line)
+        values = [s.strip() for s in match['table_row'].split('|')[1:-1]]
+        comment = match['comment']
+        return DataTableRow(values, comment)
 
-        return [s.strip() for s in line.split('|')[1:-1]]
+class DataTableRow:
+    """A Gherkin data table row"""
+
+    def __init__(self, values, comment=None):
+
+        self.values = values
+        self.comment = comment
