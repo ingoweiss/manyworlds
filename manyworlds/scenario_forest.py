@@ -12,7 +12,10 @@ class ScenarioForest:
     the vertices of which represent BDD scenarios."""
 
     TAB_SIZE = 4
+    """The number of spaces per indentation level"""
+
     LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
+    """Optional indentation, followed by an arbitrary string, followed by newline"""
 
     def __init__(self):
         """Constructor method"""
@@ -51,11 +54,11 @@ class ScenarioForest:
             An instance representing the line
         """
 
-        if re.compile(Scenario.scenario_pattern).match(line):
+        if Scenario.SCENARIO_PATTERN.match(line):
             return Scenario.parse_line(line)
-        elif re.compile(Step.step_pattern).match(line):
+        elif Step.STEP_PATTERN.match(line):
             return self.parse_step_line(line)
-        elif re.compile(DataTable.data_table_row_pattern).match(line):
+        elif DataTable.TABLE_ROW_PATTERN.match(line):
             return DataTable.parse_line(line)
         else:
             return None
@@ -78,7 +81,7 @@ class ScenarioForest:
             An instance of a Step subclass
         """
 
-        match = re.compile(Step.step_pattern).match(line)
+        match = Step.STEP_PATTERN.match(line)
         conjunction = match['conjunction']
         if conjunction in ['And', 'But']:
             previous_step = self.scenarios()[-1].steps[-1]

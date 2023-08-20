@@ -7,7 +7,8 @@ from .step import Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    scenario_pattern = r'Scenario: (?P<scenario_name>.*)'
+    SCENARIO_PATTERN = re.compile('Scenario: (?P<scenario_name>.*)')
+    """String "Scenario: ", followed by arbitrary string"""
 
     def __init__(self, name):
         """Constructor method
@@ -66,7 +67,7 @@ class Scenario:
             A Scenario instance
         """
 
-        match = re.compile(cls.scenario_pattern).match(line)
+        match = cls.SCENARIO_PATTERN.match(line)
         return Scenario(match['scenario_name'])
 
     def prerequisites(self):

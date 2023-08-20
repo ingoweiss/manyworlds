@@ -5,7 +5,10 @@ import re
 class DataTable:
     """A Gherkin data table"""
 
-    data_table_row_pattern = r'(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?'
+    TABLE_ROW_PATTERN = re.compile(
+        '(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?'
+    )
+    """Pipe-delimited list of values, followed by an optional comment"""
 
     def __init__(self, header_row):
         """Constructor method
@@ -67,7 +70,7 @@ class DataTable:
         -------
         list[str]
         """
-        match = re.compile(DataTable.data_table_row_pattern).match(line)
+        match = DataTable.TABLE_ROW_PATTERN.match(line)
         values = [s.strip() for s in match['table_row'].split('|')[1:-1]]
         comment = match['comment']
         return DataTableRow(values, comment)

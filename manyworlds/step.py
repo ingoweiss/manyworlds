@@ -1,10 +1,16 @@
 """Defines the Step Class and subclasses"""
 
+import re
+
 class Step:
     """A BDD scenario step"""
 
-    step_pattern = \
-        r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
+    STEP_PATTERN = re.compile(
+        '(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
+    )
+    """A conjunction ("Given", "When", ...), followed by an arbitrary string,
+    followed by an optional comment
+    """
 
     def __init__(self, name, data=None, comment=None):
         """Constructor method
