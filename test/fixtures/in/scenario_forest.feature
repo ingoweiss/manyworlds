@@ -25,19 +25,19 @@ Then I see the following users:
         Scenario: Select user
         When I select user "Ben"
         Then I see "1 user selected"
-        
+
             Scenario: Deselect user
             When I deselect user "Ben"
             Then I see "0 users selected"
-            
+
             Scenario: Select multiple users
             When I select user "Alice"
             Then I see "2 users selected"
-            
+
                 Scenario: Deselect all users
                 When I click "Deselect all"
                 Then I see "0 users selected"
-                
+
                 Scenario: Bulk deactivate users
                 When I click "Deactivate all"
                 Then I see a confirmation dialog
