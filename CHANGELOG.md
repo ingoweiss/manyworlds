@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Add support for data table row comments
+
 ## [0.2.0] - 2023-08-18
 
 ### Changed
