@@ -10,7 +10,7 @@ class Scenario:
     SCENARIO_PATTERN = re.compile('Scenario: (?P<scenario_name>.*)')
     """
     re.Pattern
-    
+
     The string 'Scenario: ', followed by arbitrary string
     """
 
@@ -32,11 +32,11 @@ class Scenario:
     @property
     def validated(self):
         """The 'validated' property
-        
+
         Used to keep track of which scenarios had their assertions written
         to an output scenario already so that assertions are not run multiple
         times.
-        
+
         Returns
         -------
         bool
@@ -47,12 +47,12 @@ class Scenario:
     @validated.setter
     def validated(self, value):
         """The validated property setter
-        
+
         Parameters
         ----------
         value : bool
             Whether or not this scenario has been validated
-        
+
         """
         self._validated = value
 
@@ -170,7 +170,7 @@ class Scenario:
         return [vx['scenario'] for vx in self.graph.vs(ancestors)]
 
     def path_scenarios(self):
-        """Returns the complete scenario path from the root scenario to 
+        """Returns the complete scenario path from the root scenario to
         (and including) self.
 
         Returns

@@ -14,14 +14,14 @@ class ScenarioForest:
     TAB_SIZE = 4
     """
     int
-    
+
     The number of spaces per indentation level
     """
 
     LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
     """
     re.Pattern
-    
+
     Optional indentation, followed by an arbitrary string, followed by newline
     """
 

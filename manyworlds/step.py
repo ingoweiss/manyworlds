@@ -10,7 +10,7 @@ class Step:
     )
     """
     re.Pattern
-    
+
     A conjunction ("Given", "When", ...), followed by an arbitrary string,
     followed by an optional comment
     """
