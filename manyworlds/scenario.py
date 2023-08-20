@@ -8,7 +8,11 @@ class Scenario:
     """A BDD Scenario"""
 
     SCENARIO_PATTERN = re.compile('Scenario: (?P<scenario_name>.*)')
-    """String "Scenario: ", followed by arbitrary string"""
+    """
+    re.Pattern
+    
+    The string 'Scenario: ', followed by arbitrary string
+    """
 
     def __init__(self, name):
         """Constructor method

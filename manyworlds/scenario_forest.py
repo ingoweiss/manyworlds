@@ -12,10 +12,18 @@ class ScenarioForest:
     the vertices of which represent BDD scenarios."""
 
     TAB_SIZE = 4
-    """The number of spaces per indentation level"""
+    """
+    int
+    
+    The number of spaces per indentation level
+    """
 
     LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
-    """Optional indentation, followed by an arbitrary string, followed by newline"""
+    """
+    re.Pattern
+    
+    Optional indentation, followed by an arbitrary string, followed by newline
+    """
 
     def __init__(self):
         """Constructor method"""
