@@ -4,7 +4,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
 Then I see the following users:
     | Name   | Status |

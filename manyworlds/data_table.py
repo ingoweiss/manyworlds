@@ -1,9 +1,11 @@
 """Defines the DataTable and DataTableRow classes"""
 
+import re
+
 class DataTable:
     """A Gherkin data table"""
 
-    data_table_row_pattern = r'\| ([^|]* +\|)+'
+    data_table_row_pattern = r'(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?'
 
     def __init__(self, header_row):
         """Constructor method
@@ -41,6 +43,17 @@ class DataTable:
 
         return [dict(zip(self.header_row.values, row.values)) for row in self.rows]
 
+    def to_list(self):
+        """Returns a list of DataTableRow representation of itself
+
+        Returns
+        -------
+        list[DataTableRow]
+            The list of DataTableRow representation of itself
+        """
+
+        return [self.header_row] + self.rows
+
     @classmethod
     def parse_line(cls, line):
         """Parses a pipe delimited data table line into a list of str
@@ -54,9 +67,10 @@ class DataTable:
         -------
         list[str]
         """
-
-        values = [s.strip() for s in line.split('|')[1:-1]]
-        return DataTableRow(values)
+        match = re.compile(DataTable.data_table_row_pattern).match(line)
+        values = [s.strip() for s in match['table_row'].split('|')[1:-1]]
+        comment = match['comment']
+        return DataTableRow(values, comment)
 
 class DataTableRow:
     """A Gherkin data table row"""

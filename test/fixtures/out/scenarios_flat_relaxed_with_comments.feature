@@ -4,7 +4,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
 Then I see the following users:
     | Name   | Status |
@@ -25,7 +25,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
 Then I see "1 user selected"
@@ -38,7 +38,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -52,7 +52,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
@@ -71,7 +71,7 @@ Given the following users:
     | Ben    | Active      |
     | Alice  | Active      |
     | Connie | Active      |
-    | Dan    | Deactivated |
+    | Dan    | Deactivated | # inactive
 When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"

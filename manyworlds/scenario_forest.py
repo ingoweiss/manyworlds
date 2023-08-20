@@ -264,7 +264,7 @@ class ScenarioForest:
 
         # Format each group to strings:
         group_strings = []
-        
+
         for group in groups:
             if group[-1].organizational_only():
                 group_strings.append(
@@ -304,11 +304,11 @@ class ScenarioForest:
             if comments and step.comment:
                 file_handle.write("# " + step.comment + "\n")
             if step.data:
-                ScenarioForest.write_data_table(file_handle, step.data)
+                ScenarioForest.write_data_table(file_handle, step.data, comments)
             last_step = step
 
     @classmethod
-    def write_data_table(cls, file_handle, data_table):
+    def write_data_table(cls, file_handle, data_table, comments=False):
         """Writes formatted data table to the end of the flat feature file.
 
         Parameters
@@ -318,16 +318,34 @@ class ScenarioForest:
 
         data_table : DataTable
             A data table
+
+        comments : bool
+            Whether or not to write comments
         """
 
-        data = data_table.to_list_of_list()
-        col_widths = [max([len(cell) for cell in col]) for col in list(zip(*data))]
-        for row in data:
+        # Determine column widths to accommodate all values:
+        col_widths = [
+            max([len(cell) for cell in col])
+            for col in list(zip(*data_table.to_list_of_list()))
+        ]
+
+        for row in data_table.to_list():
+
+            # pad values with spaces to column width:
             padded_row = [
-                row[col_num].ljust(col_width)
+                row.values[col_num].ljust(col_width)
                 for col_num, col_width in enumerate(col_widths)
             ]
-            file_handle.write("    | {} |\n".format(" | ".join(padded_row)))
+
+            # add column enclosing pipes:
+            table_row_string = "    | {} |".format(" | ".join(padded_row))
+
+            # add comments:
+            if comments and row.comment:
+                table_row_string += " # {}".format(row.comment)
+
+            # write line:
+            file_handle.write(table_row_string + "\n")
 
     def flatten(self, file_path, mode='strict', comments=False):
         """Writes a flat (no indentation) feature file representing the scenario forest.

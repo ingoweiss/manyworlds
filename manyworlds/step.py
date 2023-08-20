@@ -5,7 +5,6 @@ class Step:
 
     step_pattern = \
         r'(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
-    table_pattern = r'\| ([^|]* +\|)+'
 
     def __init__(self, name, data=None, comment=None):
         """Constructor method
