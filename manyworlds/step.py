@@ -6,7 +6,7 @@ class Step:
     """A BDD scenario step"""
 
     STEP_PATTERN = re.compile(
-        '(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?'
+        "(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?"
     )
     """
     re.Pattern
@@ -45,7 +45,7 @@ class Step:
         Parameters
         ----------
         first_of_type : bool
-            Whether or not the step is the first of it's type
+            Whether or not the step is the first of it"s type
 
         Returns
         -------
@@ -53,8 +53,8 @@ class Step:
             String representation of the Step instance
         """
 
-        conjunction = (self.conjunction if first_of_type else ' And')
-        return conjunction + ' ' + self.name
+        conjunction = (self.conjunction if first_of_type else " And")
+        return conjunction + " " + self.name
 
     def __str__(self):
         """Return. a string representation of the Step instance
@@ -87,20 +87,20 @@ class Prerequisite(Step):
     """A BDD scenario prerequisite ("Given") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = 'Given'
+       self.conjunction = "Given"
        super().__init__(name, data=data, comment=comment)
 
 class Action(Step):
     """A BDD scenario action ("When") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = 'When'
+       self.conjunction = "When"
        super().__init__(name, data=data, comment=comment)
 
 class Assertion(Step):
     """A BDD scenario assertion ("Then") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = 'Then'
+       self.conjunction = "Then"
        super().__init__(name, data=data, comment=comment)
 

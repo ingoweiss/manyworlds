@@ -18,7 +18,7 @@ class ScenarioForest:
     The number of spaces per indentation level
     """
 
-    LINE_PATTERN = re.compile('(?P<indentation> *)(?P<line>.*)\n')
+    LINE_PATTERN = re.compile("(?P<indentation> *)(?P<line>.*)\n")
     """
     re.Pattern
 
@@ -46,7 +46,7 @@ class ScenarioForest:
         """
 
         match = cls.LINE_PATTERN.match(raw_line)
-        return (match['indentation'], match['line'])
+        return (match["indentation"], match["line"])
 
     def parse_step_line(self, line):
         """Parses a feature file step line into the appropriate
@@ -67,17 +67,17 @@ class ScenarioForest:
         """
 
         match = Step.STEP_PATTERN.match(line)
-        conjunction = match['conjunction']
-        if conjunction in ['And', 'But']:
+        conjunction = match["conjunction"]
+        if conjunction in ["And", "But"]:
             previous_step = self.scenarios()[-1].steps[-1]
             step_type = type(previous_step)
         else:
             step_type = {
-                'Given': Prerequisite,
-                'When' : Action,
-                'Then' : Assertion
+                "Given": Prerequisite,
+                "When" : Action,
+                "Then" : Assertion
             }[conjunction]
-        return step_type(match['name'], comment=match['comment'])
+        return step_type(match["name"], comment=match["comment"])
 
     @classmethod
     def from_file(cls, file_path):
@@ -97,7 +97,7 @@ class ScenarioForest:
         forest = ScenarioForest()
         with open(file_path) as indented_file:
             for line_no, raw_line in enumerate(indented_file.readlines()):
-                if raw_line.strip() == '':
+                if raw_line.strip() == "":
                     continue # Skip empty lines
 
                 indentation, line = cls.split_line(raw_line)
@@ -166,7 +166,7 @@ class ScenarioForest:
 
             # add vertex to scenario:
             vertex = self.graph.add_vertex()
-            vertex['scenario'] = scenario
+            vertex["scenario"] = scenario
             scenario.vertex = vertex
             scenario.graph = vertex.graph
 
@@ -179,7 +179,7 @@ class ScenarioForest:
 
             # add vertex to scenario:
             vertex = self.graph.add_vertex()
-            vertex['scenario'] = scenario
+            vertex["scenario"] = scenario
             scenario.vertex = vertex
             scenario.graph = vertex.graph
 
@@ -230,7 +230,7 @@ class ScenarioForest:
 
     @classmethod
     def write_scenario_name(cls, file_handle, scenarios):
-        """Writes formatted scenario name to the end of a 'relaxed' flat feature file.
+        """Writes formatted scenario name to the end of a "relaxed" flat feature file.
 
         Parameters
         ----------
@@ -262,15 +262,15 @@ class ScenarioForest:
         for group in groups:
             if group[-1].organizational_only():
                 group_strings.append(
-                    "[{}]".format(' / '.join([sc.name for sc in group]))
+                    "[{}]".format(" / ".join([sc.name for sc in group]))
                 )
             else:
                 group_strings.append(
-                    ' > '.join([sc.name for sc in group])
+                    " > ".join([sc.name for sc in group])
                 )
 
         # Assemble and write name:
-        file_handle.write("Scenario: " + ' '.join(group_strings) + "\n")
+        file_handle.write("Scenario: " + " ".join(group_strings) + "\n")
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):
@@ -341,7 +341,7 @@ class ScenarioForest:
             # write line:
             file_handle.write(table_row_string + "\n")
 
-    def flatten(self, file_path, mode='strict', comments=False):
+    def flatten(self, file_path, mode="strict", comments=False):
         """Writes a flat (no indentation) feature file representing the scenario forest.
 
         Parameters
@@ -349,25 +349,25 @@ class ScenarioForest:
         file_path : str
             Path to flat feature file to be written
 
-        mode : {'strict', 'relaxed'}, default='strict'
-            Flattening mode. Either 'strict' or 'relaxed'
+        mode : {"strict", "relaxed"}, default="strict"
+            Flattening mode. Either "strict" or "relaxed"
 
         comments : bool, default = False
             Whether or not to write comments
         """
 
-        if mode == 'strict':
+        if mode == "strict":
             self.flatten_strict(file_path, comments=comments)
-        elif mode == 'relaxed':
+        elif mode == "relaxed":
             self.flatten_relaxed(file_path, comments=comments)
 
     def flatten_strict(self, file_path, comments=False):
         """Write. a flat (no indentation) feature file representing the forest
-        using the 'strict' flattening mode.
+        using the "strict" flattening mode.
 
-        The 'strict' flattening mode writes one scenario per vertex in the tree,
-        resulting in a feature file with one set of 'When' steps followed by one
-        set of 'Then' steps (generally recommended).
+        The "strict" flattening mode writes one scenario per vertex in the tree,
+        resulting in a feature file with one set of "When" steps followed by one
+        set of "Then" steps (generally recommended).
 
         Parameters
         ----------
@@ -378,7 +378,7 @@ class ScenarioForest:
             Whether or not to write comments
         """
 
-        with open(file_path, 'w') as flat_file:
+        with open(file_path, "w") as flat_file:
             for scenario in [
                 sc for sc in self.scenarios()
                 if not sc.organizational_only()
@@ -411,9 +411,9 @@ class ScenarioForest:
 
     def flatten_relaxed(self, file_path, comments=False):
         """Writes a flat (no indentation) feature file representing the forest
-        using the 'relaxed' flattening mode.
+        using the "relaxed" flattening mode.
 
-        The 'relaxed' flattening mode writes one scenario per leaf vertex in the tree,
+        The "relaxed" flattening mode writes one scenario per leaf vertex in the tree,
         resulting in a feature file with multiple consecutive sets of "When" and "Then"
         steps per scenario (generally considered an anti-pattern).
 
@@ -426,7 +426,7 @@ class ScenarioForest:
             Whether or not to write comments
         """
 
-        with open(file_path, 'w') as flat_file:
+        with open(file_path, "w") as flat_file:
             for scenario in self.leaf_scenarios():
 
                 steps=[]
@@ -474,8 +474,8 @@ class ScenarioForest:
         )
         for scenario_name in scenario_names[1:]:
             scenario = next((
-                vt['scenario'] for vt in scenario.vertex.successors()
-                if vt['scenario'].name == scenario_name
+                vt["scenario"] for vt in scenario.vertex.successors()
+                if vt["scenario"].name == scenario_name
             ), None)
 
         return scenario # TODO: Return None if none found
@@ -489,7 +489,7 @@ class ScenarioForest:
             All scenarios in index order
         """
 
-        return [vx['scenario'] for vx in self.graph.vs]
+        return [vx["scenario"] for vx in self.graph.vs]
 
     def root_scenarios(self):
         """Returns the root scenarios (scenarios with vertices without incoming edges).
@@ -499,7 +499,7 @@ class ScenarioForest:
         list[Scenario]
             All root scenarios in index order
         """
-        return [vx['scenario'] for vx in self.graph.vs if vx.indegree() == 0]
+        return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
 
     def leaf_scenarios(self):
         """Returns the leaf scenarios (scenarios with vertices without outgoing edges).
@@ -509,4 +509,4 @@ class ScenarioForest:
         list[Scenario]
             All leaf scenarios in index order
         """
-        return [vx['scenario'] for vx in self.graph.vs if vx.outdegree() == 0]
+        return [vx["scenario"] for vx in self.graph.vs if vx.outdegree() == 0]

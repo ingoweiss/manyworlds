@@ -7,11 +7,11 @@ from .step import Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    SCENARIO_PATTERN = re.compile('Scenario: (?P<scenario_name>.*)')
+    SCENARIO_PATTERN = re.compile("Scenario: (?P<scenario_name>.*)")
     """
     re.Pattern
 
-    The string 'Scenario: ', followed by arbitrary string
+    The string "Scenario: ", followed by arbitrary string
     """
 
     def __init__(self, name):
@@ -31,7 +31,7 @@ class Scenario:
 
     @property
     def validated(self):
-        """The 'validated' property
+        """The "validated" property
 
         Used to keep track of which scenarios had their assertions written
         to an output scenario already so that assertions are not run multiple
@@ -72,7 +72,7 @@ class Scenario:
         """
 
         match = cls.SCENARIO_PATTERN.match(line)
-        return Scenario(match['scenario_name'])
+        return Scenario(match["scenario_name"])
 
     def prerequisites(self):
         """Returns all steps of type Prerequisite
@@ -152,7 +152,7 @@ class Scenario:
         return self.__str__()
 
     def ancestors(self):
-        """Returns the scenario's ancestors, starting with a root scenario
+        """Returns the scenario"s ancestors, starting with a root scenario
 
         Returns
         -------
@@ -162,12 +162,12 @@ class Scenario:
 
         ancestors = self.graph.neighborhood(
             self.vertex,
-            mode='IN',
+            mode="IN",
             order=1000,
             mindist=1
         )
         ancestors.reverse()
-        return [vx['scenario'] for vx in self.graph.vs(ancestors)]
+        return [vx["scenario"] for vx in self.graph.vs(ancestors)]
 
     def path_scenarios(self):
         """Returns the complete scenario path from the root scenario to
@@ -182,36 +182,36 @@ class Scenario:
         return self.ancestors() + [self]
 
     def level(self):
-        """Returns the scenario's level in the scenario tree.
+        """Returns the scenario"s level in the scenario tree.
 
         Root scenario =  Level 1
 
         Returns
         -------
         int
-            The scenario's level
+            The scenario"s level
         """
 
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
     def organizational_only(self):
-        """Returns whether the scenario is an 'organizational' scenario.
+        """Returns whether the scenario is an "organizational" scenario.
 
-        'Organizational' scenarios are used for grouping only.
+        "Organizational" scenarios are used for grouping only.
         They do not have any assertions.
 
         Returns
         ----------
         bool
-            Whether the scenario is an 'organizational' scenario
+            Whether the scenario is an "organizational" scenario
         """
 
         return len(self.assertions()) == 0
 
     def index(self):
-        """Returns the 'index' of the scenario.
+        """Returns the "index" of the scenario.
 
-        The scenario's vertical position in the feature file.
+        The scenario"s vertical position in the feature file.
 
         Returns
         ----------
@@ -222,16 +222,16 @@ class Scenario:
         return self.vertex.index
 
     def is_closed(self):
-        """Returns whether or not the scenario is 'closed'.
+        """Returns whether or not the scenario is "closed".
 
-        A scenario is 'closed' if additional child scenarios cannot
-        be added which is the case when there is a 'later' (higher index)
+        A scenario is "closed" if additional child scenarios cannot
+        be added which is the case when there is a "later" (higher index)
         scenario with a lower indentation level in the feature file.
 
         Returns
         ----------
         bool
-            Whether or not the scenario is 'closed'
+            Whether or not the scenario is "closed"
         """
 
         later_scenario_at_same_or_lower_indentation_level = next((

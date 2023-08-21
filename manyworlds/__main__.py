@@ -5,18 +5,18 @@ from termcolor import colored
 
 def main():
     parser = argparse.ArgumentParser(prog="manyworlds")
-    parser.add_argument('--input', '-i',
+    parser.add_argument("--input", "-i",
                         help="input scenario file")
-    parser.add_argument('--output', '-o',
+    parser.add_argument("--output", "-o",
                         help="output scenario file")
-    parser.add_argument('--mode', '-m',
-                        choices=['strict', 'relaxed'],
-                        default='strict',
-                        help='flattening mode')
-    parser.add_argument('--comments', '-c',
+    parser.add_argument("--mode", "-m",
+                        choices=["strict", "relaxed"],
+                        default="strict",
+                        help="flattening mode")
+    parser.add_argument("--comments", "-c",
                         default=False,
-                        action='store_true',
-                        help='output comments')
+                        action="store_true",
+                        help="output comments")
     args = parser.parse_args()
 
     # read hierarchical feature file:
@@ -26,9 +26,9 @@ def main():
     for sc in tree.scenarios():
         level = sc.level()
         if level > 1:
-            indentation_string = '   '*(level-2) + colored('└─ ', 'blue')
+            indentation_string = "   " * (level-2) + colored("└─ ", "blue")
         else:
-            indentation_string = ''
+            indentation_string = ""
         print(indentation_string + sc.name)
 
     # write flat feature file:

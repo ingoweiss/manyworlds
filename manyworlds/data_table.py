@@ -6,7 +6,7 @@ class DataTable:
     """A Gherkin data table"""
 
     TABLE_ROW_PATTERN = re.compile(
-        '(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?'
+        "(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?"
     )
     """Pipe-delimited list of values, followed by an optional comment"""
 
@@ -71,8 +71,8 @@ class DataTable:
         list[str]
         """
         match = DataTable.TABLE_ROW_PATTERN.match(line)
-        values = [s.strip() for s in match['table_row'].split('|')[1:-1]]
-        comment = match['comment']
+        values = [s.strip() for s in match["table_row"].split("|")[1:-1]]
+        comment = match["comment"]
         return DataTableRow(values, comment)
 
 class DataTableRow:
