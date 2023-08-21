@@ -26,7 +26,7 @@ def main():
     for sc in tree.scenarios():
         level = sc.level()
         if level > 1:
-            indentation_string = "   " * (level-2) + colored("└─ ", "blue")
+            indentation_string = "   " * (level - 2) + colored("└─ ", "blue")
         else:
             indentation_string = ""
         print(indentation_string + sc.name)

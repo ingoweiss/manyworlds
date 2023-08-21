@@ -2,10 +2,11 @@
 import re
 import igraph as ig
 
-from .scenario   import Scenario
-from .step       import Step, Prerequisite, Action, Assertion
+from .scenario import Scenario
+from .step import Step, Prerequisite, Action, Assertion
 from .data_table import DataTable
 from .exceptions import InvalidFeatureFileError
+
 
 class ScenarioForest:
     """A collection of one or more directed trees
@@ -67,6 +68,7 @@ class ScenarioForest:
         """
 
         match = Step.STEP_PATTERN.match(line)
+
         conjunction = match["conjunction"]
         if conjunction in ["And", "But"]:
             previous_step = self.scenarios()[-1].steps[-1]
@@ -74,9 +76,10 @@ class ScenarioForest:
         else:
             step_type = {
                 "Given": Prerequisite,
-                "When" : Action,
-                "Then" : Assertion
+                "When": Action,
+                "Then": Assertion,
             }[conjunction]
+
         return step_type(match["name"], comment=match["comment"])
 
     @classmethod
@@ -98,7 +101,7 @@ class ScenarioForest:
         with open(file_path) as indented_file:
             for line_no, raw_line in enumerate(indented_file.readlines()):
                 if raw_line.strip() == "":
-                    continue # Skip empty lines
+                    continue  # Skip empty lines
 
                 indentation, line = cls.split_line(raw_line)
 
@@ -107,7 +110,7 @@ class ScenarioForest:
                     level = int(len(indentation) / cls.TAB_SIZE) + 1
                 else:
                     raise InvalidFeatureFileError(
-                        "Invalid indentation at line {}: {}".format(line_no+1, line)
+                        "Invalid indentation at line {}: {}".format(line_no + 1, line)
                     )
 
                 # Parse line:
@@ -130,7 +133,7 @@ class ScenarioForest:
                 # Not a valid line:
                 else:
                     raise InvalidFeatureFileError(
-                        "Unable to parse line {}: {}".format(line_no+1, line)
+                        "Unable to parse line {}: {}".format(line_no + 1, line)
                     )
 
         return forest
@@ -148,14 +151,14 @@ class ScenarioForest:
             Used for indentation validation.
         """
 
-        if at_level > 1: # Non-root scenario:
+        if at_level > 1:  # Non-root scenario:
 
             # Find the parent to connect scenario to:
-            parent_level = at_level-1
+            parent_level = at_level - 1
             scenarios_at_parent_level = [
-                sc for sc in self.scenarios()
-                if sc.level() == parent_level
-                and not sc.is_closed()
+                sc
+                for sc in self.scenarios()
+                if sc.level() == parent_level and not sc.is_closed()
             ]
             if not scenarios_at_parent_level:
                 raise InvalidFeatureFileError(
@@ -175,6 +178,7 @@ class ScenarioForest:
                 last_scenario_at_parent_level.vertex,
                 scenario.vertex
             )
+
         else: # root scenario:
 
             # add vertex to scenario:
@@ -196,6 +200,8 @@ class ScenarioForest:
             Used for indentation validation.
         """
 
+        # Ensure the indentation level of the step matches
+        # the last scenario indentation level
         last_scenario = self.scenarios()[-1]
         if at_level == last_scenario.level():
             last_scenario.steps.append(step)
@@ -222,10 +228,10 @@ class ScenarioForest:
 
         last_step = self.scenarios()[-1].steps[-1]
         if last_step.data:
-            # row is an additional row for an existing table
+            # Row is an additional row for an existing table
             last_step.data.rows.append(data_row)
         else:
-            # row is the header row of a new table
+            # Row is the header row of a new table
             last_step.data = DataTable(data_row)
 
     @classmethod
@@ -241,22 +247,24 @@ class ScenarioForest:
             Organizational and validated scenarios along the path
         """
 
-        # Group consecutive regular or organizational scenarios:
+        # (1) Group consecutive regular or organizational scenarios:
         groups = []
 
         # Function for determining whether a scenario can be added to a current group:
         def group_available_for_scenario(gr, sc):
-            return len(gr) > 0 and \
-                   len(gr[-1]) > 0 and \
-                   gr[-1][-1].organizational_only() == sc.organizational_only()
+            return (
+                len(gr) > 0
+                and len(gr[-1]) > 0
+                and gr[-1][-1].organizational_only() == sc.organizational_only()
+            )
 
         for sc in scenarios:
             if group_available_for_scenario(groups, sc):
-                groups[-1].append(sc) # add to current group
+                groups[-1].append(sc)  # add to current group
             else:
-                groups.append([sc]) # start new group
+                groups.append([sc])  # start new group
 
-        # Format each group to strings:
+        # (2) Format each group to strings:
         group_strings = []
 
         for group in groups:
@@ -269,8 +277,8 @@ class ScenarioForest:
                     " > ".join([sc.name for sc in group])
                 )
 
-        # Assemble and write name:
-        file_handle.write("Scenario: " + " ".join(group_strings) + "\n")
+        # (3) Assemble and write name:
+        file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
 
     @classmethod
     def write_scenario_steps(cls, file_handle, steps, comments=False):
@@ -290,13 +298,14 @@ class ScenarioForest:
 
         last_step = None
         for step_num, step in enumerate(steps):
+
             first_of_type = (
                 last_step is None
                 or last_step.conjunction != step.conjunction
             )
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments and step.comment:
-                file_handle.write("# " + step.comment + "\n")
+                file_handle.write("# {}\n".format(step.comment))
             if step.data:
                 ScenarioForest.write_data_table(file_handle, step.data, comments)
             last_step = step
@@ -324,7 +333,6 @@ class ScenarioForest:
         ]
 
         for row in data_table.to_list():
-
             # pad values with spaces to column width:
             padded_row = [
                 row.values[col_num].ljust(col_width)
@@ -380,34 +388,42 @@ class ScenarioForest:
 
         with open(file_path, "w") as flat_file:
             for scenario in [
-                sc for sc in self.scenarios()
+                sc
+                for sc in self.scenarios()
                 if not sc.organizational_only()
             ]:
+                # Scenario name:
                 scenarios_for_naming = [
-                    sc for sc in scenario.path_scenarios()
-                    if sc.organizational_only()
-                    or sc == scenario
+                    sc
+                    for sc in scenario.path_scenarios()
+                    if sc.organizational_only() or sc == scenario
                 ]
                 ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
                 ancestor_scenarios = scenario.ancestors()
-                steps=[]
+                steps = []
                 # collect prerequisites from all scenarios along the path
-                steps += [st
-                            for sc in ancestor_scenarios
-                            for st in sc.prerequisites()]
+                steps += [
+                    st
+                    for sc in ancestor_scenarios
+                    for st in sc.prerequisites()
+                ]
                 # collect actions from all scenarios along the path
-                steps += [st
-                            for sc in ancestor_scenarios
-                            for st in sc.actions()]
+                steps += [
+                    st
+                    for sc in ancestor_scenarios
+                    for st in sc.actions()
+                ]
                 # add all steps from the destination scenario only
                 steps += scenario.steps
+
+                # Write steps:
                 ScenarioForest.write_scenario_steps(
                     flat_file,
                     steps,
                     comments=comments
                 )
-                flat_file.write("\n")
+                flat_file.write("\n")  # Empty line to separate scenarios
 
     def flatten_relaxed(self, file_path, comments=False):
         """Writes a flat (no indentation) feature file representing the forest
@@ -428,8 +444,7 @@ class ScenarioForest:
 
         with open(file_path, "w") as flat_file:
             for scenario in self.leaf_scenarios():
-
-                steps=[]
+                steps = []
                 # organizational and validated scenarios used for naming:
                 scenarios_for_naming = []
                 for path_scenario in scenario.path_scenarios():
@@ -446,12 +461,13 @@ class ScenarioForest:
                     flat_file,
                     scenarios_for_naming
                 )
+                # Write steps:
                 ScenarioForest.write_scenario_steps(
                     flat_file,
                     steps,
                     comments=comments
                 )
-                flat_file.write("\n")
+                flat_file.write("\n")  # Empty line to separate scenarios
 
     def find(self, *scenario_names):
         """Finds and returns a scenario by the names of all scenarios along the path
@@ -469,16 +485,19 @@ class ScenarioForest:
         """
 
         scenario = next(
-            sc for sc in self.root_scenarios()
-            if sc.name == scenario_names[0]
+            sc for sc in self.root_scenarios() if sc.name == scenario_names[0]
         )
         for scenario_name in scenario_names[1:]:
-            scenario = next((
-                vt["scenario"] for vt in scenario.vertex.successors()
-                if vt["scenario"].name == scenario_name
-            ), None)
+            scenario = next(
+                (
+                    vt["scenario"]
+                    for vt in scenario.vertex.successors()
+                    if vt["scenario"].name == scenario_name
+                ),
+                None,
+            )
 
-        return scenario # TODO: Return None if none found
+        return scenario
 
     def scenarios(self):
         """Returns all scenarios

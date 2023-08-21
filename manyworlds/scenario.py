@@ -4,6 +4,7 @@ import re
 
 from .step import Prerequisite, Action, Assertion
 
+
 class Scenario:
     """A BDD Scenario"""
 
@@ -23,10 +24,10 @@ class Scenario:
             The name of the scenario
         """
 
-        self.name       = name.strip()
-        self.vertex     = None
-        self.graph      = None
-        self.steps      = []
+        self.name = name.strip()
+        self.vertex = None
+        self.graph = None
+        self.steps = []
         self._validated = False
 
     @property
@@ -137,7 +138,7 @@ class Scenario:
             self.name,
             len(self.prerequisites()),
             len(self.actions()),
-            len(self.assertions())
+            len(self.assertions()),
         )
 
     def __repr__(self):
@@ -164,7 +165,7 @@ class Scenario:
             self.vertex,
             mode="IN",
             order=1000,
-            mindist=1
+            mindist=1,
         )
         ancestors.reverse()
         return [vx["scenario"] for vx in self.graph.vs(ancestors)]
@@ -234,9 +235,14 @@ class Scenario:
             Whether or not the scenario is "closed"
         """
 
-        later_scenario_at_same_or_lower_indentation_level = next((
-            vx for vx in self.graph.vs()
-            if vx.index > self.index()
-            and self.graph.neighborhood_size(vx, mode="IN", order=1000) <= self.level()
-        ), None)
+        later_scenario_at_same_or_lower_indentation_level = next(
+            (
+                vx
+                for vx in self.graph.vs()
+                if vx.index > self.index()
+                and self.graph.neighborhood_size(vx, mode="IN", order=1000)
+                <= self.level()
+            ),
+            None,
+        )
         return later_scenario_at_same_or_lower_indentation_level is not None

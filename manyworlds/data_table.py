@@ -2,6 +2,7 @@
 
 import re
 
+
 class DataTable:
     """A Gherkin data table"""
 
@@ -75,10 +76,10 @@ class DataTable:
         comment = match["comment"]
         return DataTableRow(values, comment)
 
+
 class DataTableRow:
     """A Gherkin data table row"""
 
     def __init__(self, values, comment=None):
-
         self.values = values
         self.comment = comment

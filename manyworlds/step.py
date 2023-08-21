@@ -2,6 +2,7 @@
 
 import re
 
+
 class Step:
     """A BDD scenario step"""
 
@@ -53,8 +54,8 @@ class Step:
             String representation of the Step instance
         """
 
-        conjunction = (self.conjunction if first_of_type else " And")
-        return conjunction + " " + self.name
+        conjunction = self.conjunction if first_of_type else " And"
+        return " ".join([conjunction, self.name])
 
     def __str__(self):
         """Return. a string representation of the Step instance
@@ -83,24 +84,26 @@ class Step:
 
         return self.__str__()
 
+
 class Prerequisite(Step):
     """A BDD scenario prerequisite ("Given") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = "Given"
-       super().__init__(name, data=data, comment=comment)
+        self.conjunction = "Given"
+        super().__init__(name, data=data, comment=comment)
+
 
 class Action(Step):
     """A BDD scenario action ("When") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = "When"
-       super().__init__(name, data=data, comment=comment)
+        self.conjunction = "When"
+        super().__init__(name, data=data, comment=comment)
+
 
 class Assertion(Step):
     """A BDD scenario assertion ("Then") step"""
 
     def __init__(self, name, data=None, comment=None):
-       self.conjunction = "Then"
-       super().__init__(name, data=data, comment=comment)
-
+        self.conjunction = "Then"
+        super().__init__(name, data=data, comment=comment)
