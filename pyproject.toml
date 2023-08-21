@@ -4,7 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "manyworlds"
-dynamic = ["version"]
+dynamic = [
+  "version",
+  "dependencies",
+]
 authors = [
   { name="Ingo Weiss", email="ingo@ingoweiss.com" },
 ]
@@ -12,10 +15,6 @@ description = "Organize BDD scenarios as hierarchical trees for more concise and
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.7"
-dependencies = [
-    "igraph",
-    "termcolor"
-]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -31,3 +30,6 @@ classifiers = [
 
 [tool.hatch.version]
 path = "manyworlds/__init__.py"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
