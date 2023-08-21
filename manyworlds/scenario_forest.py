@@ -4,7 +4,7 @@ import igraph as ig
 
 from .scenario   import Scenario
 from .step       import Step, Prerequisite, Action, Assertion
-from .data_table import DataTable, DataTableRow
+from .data_table import DataTable
 from .exceptions import InvalidFeatureFileError
 
 class ScenarioForest:
@@ -47,29 +47,6 @@ class ScenarioForest:
 
         match = cls.LINE_PATTERN.match(raw_line)
         return (match['indentation'], match['line'])
-
-    def parse_line(self, line):
-        """Parses a feature file line into an appropriate instance.
-
-        Parameters
-        ----------
-        line : str
-            The feature file line (without indentation and newline)
-
-        Returns
-        -------
-        Scenario or Prerequisite or Action or Assertion or list
-            An instance representing the line
-        """
-
-        if Scenario.SCENARIO_PATTERN.match(line):
-            return Scenario.parse_line(line)
-        elif Step.STEP_PATTERN.match(line):
-            return self.parse_step_line(line)
-        elif DataTable.TABLE_ROW_PATTERN.match(line):
-            return DataTable.parse_line(line)
-        else:
-            return None
 
     def parse_step_line(self, line):
         """Parses a feature file step line into the appropriate
@@ -121,11 +98,11 @@ class ScenarioForest:
         with open(file_path) as indented_file:
             for line_no, raw_line in enumerate(indented_file.readlines()):
                 if raw_line.strip() == '':
-                    continue #skip empty lines
+                    continue # Skip empty lines
 
                 indentation, line = cls.split_line(raw_line)
 
-                # validate indentation:
+                # Validate indentation:
                 if len(indentation) % cls.TAB_SIZE == 0:
                     level = int(len(indentation) / cls.TAB_SIZE) + 1
                 else:
@@ -133,17 +110,23 @@ class ScenarioForest:
                         "Invalid indentation at line {}: {}".format(line_no+1, line)
                     )
 
-                # determine what kind of line this is:
-                parsed_line = forest.parse_line(line)
+                # Parse line:
+
                 # Scenario line:
-                if isinstance(parsed_line, Scenario):
-                    forest.append_scenario(parsed_line, at_level=level)
+                if Scenario.SCENARIO_PATTERN.match(line):
+                    new_scenario = Scenario.parse_line(line)
+                    forest.append_scenario(new_scenario, at_level=level)
+
                 # Step line:
-                elif isinstance(parsed_line, Step):
-                    forest.append_step(parsed_line, at_level=level)
+                elif Step.STEP_PATTERN.match(line):
+                    new_step = forest.parse_step_line(line)
+                    forest.append_step(new_step, at_level=level)
+
                 # Data table line:
-                elif isinstance(parsed_line, DataTableRow):
-                    forest.append_data_row(parsed_line, at_level=level)
+                elif DataTable.TABLE_ROW_PATTERN.match(line):
+                    new_data_row = DataTable.parse_line(line)
+                    forest.append_data_row(new_data_row, at_level=level)
+
                 # Not a valid line:
                 else:
                     raise InvalidFeatureFileError(
