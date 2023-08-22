@@ -1,6 +1,6 @@
 """Defines the ScenarioForest Class"""
 import re
-import igraph as ig
+import igraph as ig  # type: ignore
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
