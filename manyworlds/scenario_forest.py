@@ -1,11 +1,11 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
-from typing import Optional
+from typing import Optional, TextIO, Literal
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
-from .data_table import DataTable
+from .data_table import DataTable, DataTableRow
 from .exceptions import InvalidFeatureFileError
 
 
@@ -92,7 +92,7 @@ class ScenarioForest:
             return None
 
     @classmethod
-    def from_file(cls, file_path):
+    def from_file(cls, file_path):  # TODO: Add return type of Self as soon as moving to Python 3.11 (where it is available)
         """Parses an indented feature file into a ScenarioForest instance.
 
         Parameters
@@ -147,7 +147,7 @@ class ScenarioForest:
 
         return forest
 
-    def append_scenario(self, scenario, at_level):
+    def append_scenario(self, scenario : Scenario, at_level : int) -> None:
         """Append a scenario to the scenario forest.
 
         Parameters
@@ -196,7 +196,7 @@ class ScenarioForest:
             scenario.vertex = vertex
             scenario.graph = vertex.graph
 
-    def append_step(self, step, at_level):
+    def append_step(self, step : Step, at_level : int) -> None:
         """Appends a step to the scenario forest.
 
         Parameters
@@ -219,7 +219,7 @@ class ScenarioForest:
                 "Invalid indentation at line: {}".format(step.name)
             )
 
-    def append_data_row(self, data_row, at_level):
+    def append_data_row(self, data_row : DataTableRow, at_level : int) -> None:
         """Appends a data row to the scenario forest.
 
         Adds a data table to the last step if necessary
@@ -227,7 +227,7 @@ class ScenarioForest:
 
         Parameters
         ----------
-        data_row : list[str]
+        data_row : DataTableRow
             The data row to append
 
         at_level : int
@@ -244,12 +244,12 @@ class ScenarioForest:
             last_step.data = DataTable(data_row)
 
     @classmethod
-    def write_scenario_name(cls, file_handle, scenarios):
+    def write_scenario_name(cls, file_handle : TextIO, scenarios : list[Scenario]) -> None:
         """Writes formatted scenario name to the end of a "relaxed" flat feature file.
 
         Parameters
         ----------
-        file_handle : io.TextIOWrapper
+        file_handle : TextIO
             The file to which to append the scenario name
 
         scenarios : list[Scenario]
@@ -257,7 +257,7 @@ class ScenarioForest:
         """
 
         # (1) Group consecutive regular or organizational scenarios:
-        groups = []
+        groups : list[list[Scenario]] = []
 
         # Function for determining whether a scenario can be added to a current group:
         def group_available_for_scenario(gr, sc):
@@ -290,7 +290,7 @@ class ScenarioForest:
         file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
 
     @classmethod
-    def write_scenario_steps(cls, file_handle, steps, comments=False):
+    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Step], comments : bool = False) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
         Parameters
@@ -320,7 +320,7 @@ class ScenarioForest:
             last_step = step
 
     @classmethod
-    def write_data_table(cls, file_handle, data_table, comments=False):
+    def write_data_table(cls, file_handle : TextIO, data_table : DataTable, comments : bool = False) -> None:
         """Writes formatted data table to the end of the flat feature file.
 
         Parameters
@@ -358,7 +358,7 @@ class ScenarioForest:
             # write line:
             file_handle.write(table_row_string + "\n")
 
-    def flatten(self, file_path, mode="strict", comments=False):
+    def flatten(self, file_path : str, mode : Literal["strict", "relaxed"] = "strict", comments : bool = False) -> None:
         """Writes a flat (no indentation) feature file representing the scenario forest.
 
         Parameters
@@ -378,7 +378,7 @@ class ScenarioForest:
         elif mode == "relaxed":
             self.flatten_relaxed(file_path, comments=comments)
 
-    def flatten_strict(self, file_path, comments=False):
+    def flatten_strict(self, file_path : str, comments : bool = False) -> None:
         """Write. a flat (no indentation) feature file representing the forest
         using the "strict" flattening mode.
 
@@ -434,7 +434,7 @@ class ScenarioForest:
                 )
                 flat_file.write("\n")  # Empty line to separate scenarios
 
-    def flatten_relaxed(self, file_path, comments=False):
+    def flatten_relaxed(self, file_path : str, comments : bool = False) -> None:
         """Writes a flat (no indentation) feature file representing the forest
         using the "relaxed" flattening mode.
 
@@ -478,7 +478,7 @@ class ScenarioForest:
                 )
                 flat_file.write("\n")  # Empty line to separate scenarios
 
-    def find(self, *scenario_names):
+    def find(self, *scenario_names : list[str]) -> Optional[Scenario]:
         """Finds and returns a scenario by the names of all scenarios along the path
         from a root scenario to the destination scenario.
 
@@ -494,8 +494,12 @@ class ScenarioForest:
         """
 
         scenario = next(
-            sc for sc in self.root_scenarios() if sc.name == scenario_names[0]
+            (sc for sc in self.root_scenarios() if sc.name == scenario_names[0]),
+            None
         )
+        if scenario is None:
+            return None
+
         for scenario_name in scenario_names[1:]:
             scenario = next(
                 (
@@ -505,10 +509,12 @@ class ScenarioForest:
                 ),
                 None,
             )
+            if scenario is None:
+                return None
 
         return scenario
 
-    def scenarios(self):
+    def scenarios(self) -> list[Scenario]:
         """Returns all scenarios
 
         Returns
@@ -519,7 +525,7 @@ class ScenarioForest:
 
         return [vx["scenario"] for vx in self.graph.vs]
 
-    def root_scenarios(self):
+    def root_scenarios(self) -> list[Scenario]:
         """Returns the root scenarios (scenarios with vertices without incoming edges).
 
         Returns
@@ -529,7 +535,7 @@ class ScenarioForest:
         """
         return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
 
-    def leaf_scenarios(self):
+    def leaf_scenarios(self) -> list[Scenario]:
         """Returns the leaf scenarios (scenarios with vertices without outgoing edges).
 
         Returns
