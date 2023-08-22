@@ -1,6 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
+from typing import Optional
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -12,27 +13,27 @@ class ScenarioForest:
     """A collection of one or more directed trees
     the vertices of which represent BDD scenarios."""
 
-    TAB_SIZE = 4
+    TAB_SIZE : int = 4
     """
     int
 
     The number of spaces per indentation level
     """
 
-    LINE_PATTERN = re.compile("(?P<indentation> *)(?P<line>.*)\n")
+    LINE_PATTERN : re.Pattern = re.compile("(?P<indentation> *)(?P<line>.*)\n")
     """
     re.Pattern
 
     Optional indentation, followed by an arbitrary string, followed by newline
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Constructor method"""
 
-        self.graph = ig.Graph(directed=True)
+        self.graph : ig.Graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, raw_line):
+    def split_line(cls, raw_line : str) -> Optional[tuple[str, str]]:
         """Splits a raw feature file line into the indentation part and the line part.
 
         Parameters
@@ -42,14 +43,18 @@ class ScenarioForest:
 
         Returns
         -------
-        (str, str)
+        tuple[str, str]
             The indentation part and the line part (without newline) as a tuple
         """
 
         match = cls.LINE_PATTERN.match(raw_line)
-        return (match["indentation"], match["line"])
 
-    def parse_step_line(self, line):
+        if match:
+            return (match.group("indentation"), match.group("line"))
+        else:
+            return None
+
+    def parse_step_line(self, line : str) -> Optional[Step]:
         """Parses a feature file step line into the appropriate
         Step subclass instance.
 
@@ -69,18 +74,22 @@ class ScenarioForest:
 
         match = Step.STEP_PATTERN.match(line)
 
-        conjunction = match["conjunction"]
-        if conjunction in ["And", "But"]:
-            previous_step = self.scenarios()[-1].steps[-1]
-            step_type = type(previous_step)
-        else:
-            step_type = {
-                "Given": Prerequisite,
-                "When": Action,
-                "Then": Assertion,
-            }[conjunction]
+        if match:
+            conjunction = match.group("conjunction")
+            if conjunction in ["And", "But"]:
+                previous_step = self.scenarios()[-1].steps[-1]
+                step_type = type(previous_step)
+            else:
+                step_type = {
+                    "Given": Prerequisite,
+                    "When": Action,
+                    "Then": Assertion,
+                }[conjunction]
 
-        return step_type(match["name"], comment=match["comment"])
+            return step_type(match.group("name"), comment=match.group("comment"))
+
+        else:
+            return None
 
     @classmethod
     def from_file(cls, file_path):
