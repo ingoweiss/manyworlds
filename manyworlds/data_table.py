@@ -7,7 +7,7 @@ class DataTableRow:
     """A Gherkin data table row"""
 
     values : list[str]
-    comment : str
+    comment : Optional[str]
 
     def __init__(self, values : list[str], comment : Optional[str] = None):
         """Constructor method
