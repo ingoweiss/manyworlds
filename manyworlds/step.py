@@ -65,8 +65,10 @@ class Step:
             String representation of the Step instance
         """
 
-        conjunction = self.conjunction if first_of_type else " And"
-        return " ".join([conjunction, self.name])
+        return "{conjunction} {name}".format(
+            conjunction = self.conjunction if first_of_type else " And",
+            name = self.name
+        )
 
     def __str__(self) -> str:
         """Return. a string representation of the Step instance
@@ -78,9 +80,9 @@ class Step:
             String representation of the Step instance
         """
 
-        return "<{}: {}>".format(
-            self.__class__.__name__,
-            (self.name[0].upper() + self.name[1:])
+        return "<{type}: {name}>".format(
+            type = self.__class__.__name__,
+            name = (self.name[0].upper() + self.name[1:])
         )
 
     def __repr__(self) -> str:
