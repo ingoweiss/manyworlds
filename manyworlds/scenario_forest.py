@@ -1,5 +1,4 @@
 """Defines the ScenarioForest Class"""
-import re
 import igraph as ig  # type: ignore
 from typing import Optional, TextIO, Literal
 
