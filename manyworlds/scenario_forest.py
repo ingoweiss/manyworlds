@@ -247,7 +247,7 @@ class ScenarioForest:
             return (
                 len(gr) > 0
                 and len(gr[-1]) > 0
-                and gr[-1][-1].organizational_only() == sc.organizational_only()
+                and gr[-1][-1].is_organizational() == sc.is_organizational()
             )
 
         for sc in scenarios:
@@ -260,7 +260,7 @@ class ScenarioForest:
         group_strings = []
 
         for group in groups:
-            if group[-1].organizational_only():
+            if group[-1].is_organizational():
                 group_strings.append(
                     "[{}]".format(" / ".join([sc.name for sc in group]))
                 )
@@ -394,13 +394,13 @@ class ScenarioForest:
             for scenario in [
                 sc
                 for sc in self.scenarios()
-                if not sc.organizational_only()
+                if not sc.is_organizational()
             ]:
                 # Scenario name:
                 scenarios_for_naming = [
                     sc
                     for sc in scenario.path_scenarios()
-                    if sc.organizational_only() or sc == scenario
+                    if sc.is_organizational() or sc == scenario
                 ]
                 ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
@@ -454,7 +454,7 @@ class ScenarioForest:
                 for path_scenario in scenario.path_scenarios():
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
-                    if path_scenario.organizational_only():
+                    if path_scenario.is_organizational():
                         scenarios_for_naming.append(path_scenario)
                     elif not path_scenario.validated:
                         steps += path_scenario.assertions()
