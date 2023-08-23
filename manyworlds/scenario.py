@@ -1,4 +1,5 @@
 """Defines the Scenario Class"""
+from __future__ import annotations # in order to support type[] annotations in Python 3.8
 
 import re
 import igraph as ig  # type: ignore
