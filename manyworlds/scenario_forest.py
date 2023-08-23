@@ -1,7 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, TextIO, Literal, Union
+from typing import Optional, TextIO, Literal
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -52,7 +52,7 @@ class ScenarioForest:
 
         return match.group("indentation", "line")
 
-    def parse_step_line(self, line : str) -> Optional[Union[Prerequisite, Action, Assertion]]:
+    def parse_step_line(self, line : str) -> Optional[Step]:
         """Parses a feature file step line into the appropriate
         Step subclass instance.
 
@@ -179,7 +179,7 @@ class ScenarioForest:
 
         return scenario
 
-    def append_step(self, step : Union[Prerequisite, Action, Assertion], at_level : int) -> None:
+    def append_step(self, step : Step, at_level : int) -> None:
         """Appends a step to the scenario forest.
 
         Parameters
@@ -273,7 +273,7 @@ class ScenarioForest:
         file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
 
     @classmethod
-    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Union[Prerequisite, Action, Assertion]], comments : bool = False) -> None:
+    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Step], comments : bool = False) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
         Parameters
