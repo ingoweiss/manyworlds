@@ -21,6 +21,8 @@ class ScenarioForest:
 
     graph : ig.Graph
 
+    graph : ig.Graph
+
     def __init__(self) -> None:
         """Constructor method"""
 
