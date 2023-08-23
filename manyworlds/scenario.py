@@ -36,7 +36,7 @@ class Scenario:
         self.graph : ig.Graph = graph
         self.vertex : ig.Vertex = graph.add_vertex()
         self.vertex["scenario"] = self
-        self.steps : list[Step] = []
+        self.steps : list[Union[Prerequisite, Action, Assertion]] = []
         self._validated : bool = False
 
         if parent_scenario is not None:
