@@ -1,4 +1,4 @@
-name: Mypy Check
+name: Mypy
 on: [push, pull_request]
 jobs:
   mypy:
