@@ -1,7 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, TextIO, Literal
+from typing import Optional, TextIO, Literal, Union
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -33,7 +33,7 @@ class ScenarioForest:
         self.graph : ig.Graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, raw_line : str) -> Optional[tuple[str, str]]:
+    def split_line(cls, raw_line : str) -> tuple[str, str]:
         """Splits a raw feature file line into the indentation part and the line part.
 
         Parameters
@@ -48,13 +48,9 @@ class ScenarioForest:
         """
 
         match = cls.LINE_PATTERN.match(raw_line)
+        return (match.group("indentation"), match.group("line"))
 
-        if match:
-            return (match.group("indentation"), match.group("line"))
-        else:
-            return None
-
-    def parse_step_line(self, line : str) -> Optional[Step]:
+    def parse_step_line(self, line : str) -> Optional[Union[Prerequisite, Action, Assertion]]:
         """Parses a feature file step line into the appropriate
         Step subclass instance.
 
@@ -114,7 +110,7 @@ class ScenarioForest:
 
                 indentation, line = cls.split_line(raw_line)
 
-                # Validate indentation:
+                # (1) Validate indentation:
                 if len(indentation) % cls.TAB_SIZE == 0:
                     level = int(len(indentation) / cls.TAB_SIZE) + 1
                 else:
@@ -122,32 +118,34 @@ class ScenarioForest:
                         "Invalid indentation at line {}: {}".format(line_no + 1, line)
                     )
 
-                # Parse line:
+                # (2) Parse line:
 
-                # Scenario line:
-                if Scenario.SCENARIO_PATTERN.match(line):
-                    new_scenario = Scenario.parse_line(line)
-                    forest.append_scenario(new_scenario, at_level=level)
+                # Scenario line?
+                match = Scenario.SCENARIO_PATTERN.match(line)
+                if match:
+                    forest.append_scenario(match.group("scenario_name"), at_level=level)
+                    continue
 
-                # Step line:
-                elif Step.STEP_PATTERN.match(line):
-                    new_step = forest.parse_step_line(line)
+                # Step line?
+                new_step = forest.parse_step_line(line)
+                if new_step:
                     forest.append_step(new_step, at_level=level)
+                    continue
 
-                # Data table line:
-                elif DataTable.TABLE_ROW_PATTERN.match(line):
-                    new_data_row = DataTable.parse_line(line)
+                # Data table line?
+                new_data_row = DataTable.parse_line(line)
+                if new_data_row:
                     forest.append_data_row(new_data_row, at_level=level)
+                    continue
 
-                # Not a valid line:
-                else:
-                    raise InvalidFeatureFileError(
-                        "Unable to parse line {}: {}".format(line_no + 1, line)
-                    )
+                # Not a valid line
+                raise InvalidFeatureFileError(
+                    "Unable to parse line {}: {}".format(line_no + 1, line)
+                )
 
         return forest
 
-    def append_scenario(self, scenario : Scenario, at_level : int) -> None:
+    def append_scenario(self, scenario_name : str, at_level : int) -> Scenario:
         """Append a scenario to the scenario forest.
 
         Parameters
@@ -171,30 +169,16 @@ class ScenarioForest:
             ]
             if not scenarios_at_parent_level:
                 raise InvalidFeatureFileError(
-                    "Excessive indentation at line: Scenario: {}".format(scenario.name)
+                    "Excessive indentation at line: Scenario: {}".format(scenario_name)
                 )
             else:
                 last_scenario_at_parent_level = scenarios_at_parent_level[-1]
 
-            # add vertex to scenario:
-            vertex = self.graph.add_vertex()
-            vertex["scenario"] = scenario
-            scenario.vertex = vertex
-            scenario.graph = vertex.graph
+            scenario = Scenario(scenario_name, self.graph, parent_scenario = last_scenario_at_parent_level)
+        else:
+            scenario = Scenario(scenario_name, self.graph)
 
-            # connect scenario to parent:
-            self.graph.add_edge(
-                last_scenario_at_parent_level.vertex,
-                scenario.vertex
-            )
-
-        else: # root scenario:
-
-            # add vertex to scenario:
-            vertex = self.graph.add_vertex()
-            vertex["scenario"] = scenario
-            scenario.vertex = vertex
-            scenario.graph = vertex.graph
+        return scenario
 
     def append_step(self, step : Step, at_level : int) -> None:
         """Appends a step to the scenario forest.
@@ -478,7 +462,7 @@ class ScenarioForest:
                 )
                 flat_file.write("\n")  # Empty line to separate scenarios
 
-    def find(self, *scenario_names : list[str]) -> Optional[Scenario]:
+    def find(self, *scenario_names : list[str]) -> Scenario:
         """Finds and returns a scenario by the names of all scenarios along the path
         from a root scenario to the destination scenario.
 
@@ -497,8 +481,6 @@ class ScenarioForest:
             (sc for sc in self.root_scenarios() if sc.name == scenario_names[0]),
             None
         )
-        if scenario is None:
-            return None
 
         for scenario_name in scenario_names[1:]:
             scenario = next(
@@ -509,8 +491,6 @@ class ScenarioForest:
                 ),
                 None,
             )
-            if scenario is None:
-                return None
 
         return scenario
 
