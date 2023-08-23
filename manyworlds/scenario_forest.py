@@ -109,7 +109,10 @@ class ScenarioForest:
                     level = int(indentation / cls.TAB_SIZE) + 1
                 else:
                     raise InvalidFeatureFileError(
-                        "Invalid indentation at line {}: {}".format(line_no + 1, line)
+                        "Invalid indentation at line {line_no}: {line}".format(
+                            line_no = line_no + 1,
+                            line = line
+                        )
                     )
 
                 # (2) Parse line:
@@ -134,7 +137,10 @@ class ScenarioForest:
 
                 # Not a valid line
                 raise InvalidFeatureFileError(
-                    "Unable to parse line {}: {}".format(line_no + 1, line)
+                    "Unable to parse line {line_no}: {line}".format(
+                        line_no = line_no + 1,
+                        line = line
+                    )
                 )
 
         return forest
@@ -163,7 +169,9 @@ class ScenarioForest:
             ]
             if not scenarios_at_parent_level:
                 raise InvalidFeatureFileError(
-                    "Excessive indentation at line: Scenario: {}".format(scenario_name)
+                    "Excessive indentation at line: Scenario: {name}".format(
+                        name = scenario_name
+                    )
                 )
             else:
                 last_scenario_at_parent_level = scenarios_at_parent_level[-1]
@@ -196,7 +204,7 @@ class ScenarioForest:
             last_scenario.steps.append(step)
         else:
             raise InvalidFeatureFileError(
-                "Invalid indentation at line: {}".format(step.name)
+                "Invalid indentation at line: {name}".format(name = step.name)
             )
 
     def append_data_row(self, data_row : DataTableRow, at_level : int) -> None:
@@ -270,7 +278,11 @@ class ScenarioForest:
                 )
 
         # (3) Assemble and write name:
-        file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
+        file_handle.write(
+            "Scenario: {scenario_name}\n".format(
+                scenario_name = " ".join(group_strings)
+            )
+        )
 
     @classmethod
     def write_scenario_steps(cls,
@@ -301,7 +313,7 @@ class ScenarioForest:
             )
             file_handle.write(step.format(first_of_type=first_of_type) + "\n")
             if comments and step.comment:
-                file_handle.write("# {}\n".format(step.comment))
+                file_handle.write("# {comment}\n".format(comment = step.comment))
             if step.data:
                 ScenarioForest.write_data_table(file_handle, step.data, comments)
             last_step = step
@@ -340,11 +352,13 @@ class ScenarioForest:
             ]
 
             # add column enclosing pipes:
-            table_row_string = "    | {} |".format(" | ".join(padded_row))
+            table_row_string = "    | {columns} |".format(
+                columns = " | ".join(padded_row)
+            )
 
             # add comments:
             if comments and row.comment:
-                table_row_string += " # {}".format(row.comment)
+                table_row_string += " # {comment}".format(comment = row.comment)
 
             # write line:
             file_handle.write(table_row_string + "\n")
