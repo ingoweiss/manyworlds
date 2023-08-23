@@ -6,7 +6,21 @@ from typing import Optional
 class DataTableRow:
     """A Gherkin data table row"""
 
+    values : list[str]
+    comment : str
+
     def __init__(self, values : list[str], comment : Optional[str] = None):
+        """Constructor method
+        
+        Parameters
+        ----------
+        values : list[str]
+            The header row
+
+        comment : str
+            Comment (optional)
+        """
+
         self.values = values
         self.comment = comment
 
@@ -19,6 +33,9 @@ class DataTable:
     )
     """Pipe-delimited list of values, followed by an optional comment"""
 
+    header_row : DataTableRow
+    rows : list[DataTableRow]
+
     def __init__(self, header_row : DataTableRow) -> None:
         """Constructor method
 
@@ -28,8 +45,8 @@ class DataTable:
             The header row
         """
 
-        self.header_row : DataTableRow = header_row
-        self.rows : list[DataTableRow] = []
+        self.header_row = header_row
+        self.rows = []
 
     def to_list_of_list(self) -> list[list[str]]:
         """Returns a list of list of str representation of itself
