@@ -104,7 +104,7 @@ class ScenarioForest:
 
                 indentation, line = cls.split_line(raw_line)
 
-                # (1) Validate indentation:
+                # (1) Determine and validate indentation level:
                 if indentation % cls.TAB_SIZE == 0:
                     level = int(indentation / cls.TAB_SIZE) + 1
                 else:
@@ -154,7 +154,7 @@ class ScenarioForest:
             The scenario to append
 
         at_level : int
-            The level at which to add the scenario.
+            The indentation level of the scenario in the input file.
             Used for indentation validation.
         """
 
