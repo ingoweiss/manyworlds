@@ -17,6 +17,12 @@ class Scenario:
     The string "Scenario: ", followed by arbitrary string
     """
 
+    name : str
+    graph: ig.Graph
+    vertex : ig.Vertex
+    steps : list[Step]
+    _validated : bool
+
     def __init__(self, name : str, graph : ig.Graph, parent_scenario : Optional['Scenario'] = None):
         """Constructor method
 
@@ -32,12 +38,12 @@ class Scenario:
             The parent scenario to connect the new scenario to
         """
 
-        self.name : str = name.strip()
-        self.graph : ig.Graph = graph
-        self.vertex : ig.Vertex = graph.add_vertex()
+        self.name = name.strip()
+        self.graph = graph
+        self.vertex = graph.add_vertex()
         self.vertex["scenario"] = self
-        self.steps : list[Union[Prerequisite, Action, Assertion]] = []
-        self._validated : bool = False
+        self.steps = []
+        self._validated = False
 
         if parent_scenario is not None:
             self.graph.add_edge(
