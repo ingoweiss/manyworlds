@@ -204,7 +204,7 @@ class Scenario:
 
         return self.graph.neighborhood_size(self.vertex, mode="IN", order=1000)
 
-    def organizational_only(self) -> bool:  # TODO: rename to "is_organizational"
+    def is_organizational(self) -> bool:
         """Returns whether the scenario is an "organizational" scenario.
 
         "Organizational" scenarios are used for grouping only.
