@@ -23,7 +23,11 @@ class Scenario:
     steps : list[Step]
     _validated : bool
 
-    def __init__(self, name : str, graph : ig.Graph, parent_scenario : Optional['Scenario'] = None):
+    def __init__(self,
+            name : str,
+            graph : ig.Graph,
+            parent_scenario : Optional['Scenario'] = None
+        ) -> None:
         """Constructor method
 
         Parameters
@@ -112,7 +116,9 @@ class Scenario:
 
         return self.steps_of_type(Assertion)
 
-    def steps_of_type(self, step_type : Union[type[Prerequisite], type[Action], type[Assertion]]) -> list[Step]:
+    def steps_of_type(self,
+            step_type : Union[type[Prerequisite], type[Action], type[Assertion]]
+        ) -> list[Step]:
         """Returns all steps of the passed in type
 
         Parameters
