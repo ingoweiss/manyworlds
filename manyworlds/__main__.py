@@ -1,7 +1,7 @@
 # __main__.py
 import argparse
 import manyworlds as mw
-from termcolor import colored
+from termcolor import colored  # type: ignore
 
 def main():
     parser = argparse.ArgumentParser(prog="manyworlds")
