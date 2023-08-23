@@ -143,11 +143,11 @@ class Scenario:
             String representation of the Scenario instance
         """
 
-        return "<Scenario: {} ({} prerequisites, {} actions, {} assertions)>".format(
-            self.name,
-            len(self.prerequisites()),
-            len(self.actions()),
-            len(self.assertions()),
+        return "<Scenario: {name} ({givens} prerequisites, {whens} actions, {thens} assertions)>".format(
+            name = self.name,
+            givens = len(self.prerequisites()),
+            whens = len(self.actions()),
+            thens = len(self.assertions()),
         )
 
     def __repr__(self) -> str:
