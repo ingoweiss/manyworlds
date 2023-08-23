@@ -11,6 +11,12 @@ class Step:
     STEP_PATTERN : re.Pattern = re.compile(
         "(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?"
     )
+
+    name : str
+    conjunction: str
+    data : Optional[DataTable]
+    comment : Optional[str]
+
     """
     re.Pattern
 
@@ -33,9 +39,9 @@ class Step:
             A comment
         """
 
-        self.name :str = name.strip()
-        self.data : Optional[DataTable] = data
-        self.comment : Optional[str] = comment
+        self.name = name.strip()
+        self.data = data
+        self.comment = comment
 
     def format(self, first_of_type : bool = True) -> str:
         """Returns a string representation of the Step instance
