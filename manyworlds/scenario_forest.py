@@ -33,7 +33,7 @@ class ScenarioForest:
         self.graph : ig.Graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, raw_line : str) -> Optional[tuple[str, str]]:
+    def split_line(cls, raw_line : str) -> tuple[int, str]:
         """Splits a raw feature file line into the indentation part and the line part.
 
         Parameters
@@ -43,15 +43,14 @@ class ScenarioForest:
 
         Returns
         -------
-        tuple[str, str]
+        tuple[int, str]
             The indentation part and the line part (without newline) as a tuple
         """
 
-        match = cls.LINE_PATTERN.match(raw_line)
-        if match is None:
-            return None
-
-        return (match.group("indentation"), match.group("line"))
+        line = raw_line.rstrip()
+        line_wo_indentation = line.lstrip()
+        indentation = len(line) - len(line_wo_indentation)
+        return (indentation, line_wo_indentation)
 
     def parse_step_line(self, line : str) -> Optional[Step]:
         """Parses a feature file step line into the appropriate
@@ -112,8 +111,8 @@ class ScenarioForest:
                 indentation, line = cls.split_line(raw_line)
 
                 # (1) Validate indentation:
-                if len(indentation) % cls.TAB_SIZE == 0:
-                    level = int(len(indentation) / cls.TAB_SIZE) + 1
+                if indentation % cls.TAB_SIZE == 0:
+                    level = int(indentation / cls.TAB_SIZE) + 1
                 else:
                     raise InvalidFeatureFileError(
                         "Invalid indentation at line {}: {}".format(line_no + 1, line)
