@@ -1,7 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, TextIO, Literal
+from typing import Optional, TextIO, Literal, Any
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -50,7 +50,7 @@ class ScenarioForest:
         match = cls.LINE_PATTERN.match(raw_line)
         if match is None: return None
 
-        return match.group("indentation", "line")
+        return (match.group("indentation"), match.group("line"))
 
     def parse_step_line(self, line : str) -> Optional[Step]:
         """Parses a feature file step line into the appropriate
