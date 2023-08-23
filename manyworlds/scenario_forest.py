@@ -20,13 +20,6 @@ class ScenarioForest:
     The number of spaces per indentation level
     """
 
-    LINE_PATTERN : re.Pattern = re.compile("(?P<indentation> *)(?P<line>.*)\n")
-    """
-    re.Pattern
-
-    Optional indentation, followed by an arbitrary string, followed by newline
-    """
-
     graph : ig.Graph
 
     def __init__(self) -> None:
