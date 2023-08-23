@@ -1,9 +1,11 @@
 name: Mypy Check
 on: [push, pull_request]
 jobs:
-  ruff:
+  mypy:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Mypy Check
         uses: jpetrucciani/mypy-check@master
         with:
