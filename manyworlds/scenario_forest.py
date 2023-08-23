@@ -27,10 +27,12 @@ class ScenarioForest:
     Optional indentation, followed by an arbitrary string, followed by newline
     """
 
+    graph : ig.Graph
+
     def __init__(self) -> None:
         """Constructor method"""
 
-        self.graph : ig.Graph = ig.Graph(directed=True)
+        self.graph = ig.Graph(directed=True)
 
     @classmethod
     def split_line(cls, raw_line : str) -> tuple[int, str]:
