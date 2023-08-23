@@ -1,5 +1,6 @@
 """Defines the Scenario Class"""
 
+import re
 import igraph as ig  # type: ignore
 from typing import Optional, Union
 
