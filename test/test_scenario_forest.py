@@ -17,6 +17,25 @@ def clear_out_directory():
             os.unlink(file_path)
     yield
 
+def test_find():
+    forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
+
+    # existing root scenario:
+    root_scenario = forest.find('View users')
+    assert root_scenario is not None
+
+    # existing but not a root scenario:
+    root_scenario = forest.find('Select user')
+    assert root_scenario is None
+
+    # existing non-root scenario
+    non_root_scenario = forest.find('View users', 'Bulk operations', 'Select user')
+    assert non_root_scenario is not None
+
+    # non-existing non-root scenario (path scenario missing)
+    non_root_scenario = forest.find('View users', 'Select user')
+    assert non_root_scenario is None
+
 def test_parse():
     """Test the structure of the forest graph after using the 'from_file' method"""
     forest = mw.ScenarioForest.from_file('test/fixtures/in/scenario_forest.feature')
