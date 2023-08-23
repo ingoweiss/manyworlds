@@ -1,7 +1,7 @@
 """Defines the ScenarioForest Class"""
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, TextIO, Literal, Any
+from typing import Optional, TextIO, Literal
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -48,7 +48,8 @@ class ScenarioForest:
         """
 
         match = cls.LINE_PATTERN.match(raw_line)
-        if match is None: return None
+        if match is None:
+            return None
 
         return (match.group("indentation"), match.group("line"))
 
@@ -71,7 +72,8 @@ class ScenarioForest:
         """
 
         match = Step.STEP_PATTERN.match(line)
-        if match is None: return None
+        if match is None:
+            return None
 
         conjunction, name, comment = match.group("conjunction", "name", "comment")
 
@@ -87,7 +89,7 @@ class ScenarioForest:
             return Assertion(name, comment=comment)
 
     @classmethod
-    def from_file(cls, file_path):  # TODO: Add return type of Self as soon as moving to Python 3.11 (where it is available)
+    def from_file(cls, file_path) -> 'ScenarioForest':
         """Parses an indented feature file into a ScenarioForest instance.
 
         Parameters
@@ -173,7 +175,9 @@ class ScenarioForest:
             else:
                 last_scenario_at_parent_level = scenarios_at_parent_level[-1]
 
-            scenario = Scenario(scenario_name, self.graph, parent_scenario = last_scenario_at_parent_level)
+            scenario = Scenario(scenario_name, self.graph,
+                parent_scenario = last_scenario_at_parent_level
+            )
         else:
             scenario = Scenario(scenario_name, self.graph)
 
@@ -227,7 +231,10 @@ class ScenarioForest:
             last_step.data = DataTable(data_row)
 
     @classmethod
-    def write_scenario_name(cls, file_handle : TextIO, scenarios : list[Scenario]) -> None:
+    def write_scenario_name(cls,
+            file_handle : TextIO,
+            scenarios : list[Scenario]
+        ) -> None:
         """Writes formatted scenario name to the end of a "relaxed" flat feature file.
 
         Parameters
@@ -273,7 +280,11 @@ class ScenarioForest:
         file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
 
     @classmethod
-    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Step], comments : bool = False) -> None:
+    def write_scenario_steps(cls,
+            file_handle : TextIO,
+            steps : list[Step],
+            comments : bool = False
+        ) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
         Parameters
@@ -303,7 +314,11 @@ class ScenarioForest:
             last_step = step
 
     @classmethod
-    def write_data_table(cls, file_handle : TextIO, data_table : DataTable, comments : bool = False) -> None:
+    def write_data_table(cls,
+            file_handle : TextIO,
+            data_table : DataTable,
+            comments : bool = False
+        ) -> None:
         """Writes formatted data table to the end of the flat feature file.
 
         Parameters
@@ -341,7 +356,11 @@ class ScenarioForest:
             # write line:
             file_handle.write(table_row_string + "\n")
 
-    def flatten(self, file_path : str, mode : Literal["strict", "relaxed"] = "strict", comments : bool = False) -> None:
+    def flatten(self,
+            file_path : str,
+            mode : Literal["strict", "relaxed"] = "strict",
+            comments : bool = False
+        ) -> None:
         """Writes a flat (no indentation) feature file representing the scenario forest.
 
         Parameters
@@ -482,7 +501,8 @@ class ScenarioForest:
             (sc for sc in self.root_scenarios() if sc.name == scenario_names[0]),
             None
         )
-        if scenario is None: return None
+        if scenario is None:
+            return None
             
         for scenario_name in scenario_names[1:]:
             scenario = next(
@@ -493,7 +513,8 @@ class ScenarioForest:
                 ),
                 None,
             )
-            if scenario is None: return None
+            if scenario is None:
+                return None
 
         return scenario
 
