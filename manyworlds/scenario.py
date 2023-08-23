@@ -2,7 +2,7 @@
 
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, Union, Type
+from typing import Optional, Union
 
 from .step import Step, Prerequisite, Action, Assertion
 
@@ -117,7 +117,7 @@ class Scenario:
         return self.steps_of_type(Assertion)
 
     def steps_of_type(self,
-            step_type : Union[Type[Prerequisite], Type[Action], Type[Assertion]]
+            step_type : Union[type[Prerequisite], type[Action], type[Assertion]]
         ) -> list[Step]:
         """Returns all steps of the passed in type
 
