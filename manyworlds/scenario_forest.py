@@ -33,7 +33,7 @@ class ScenarioForest:
         self.graph : ig.Graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, raw_line : str) -> tuple[str, str]:
+    def split_line(cls, raw_line : str) -> Optional[tuple[str, str]]:
         """Splits a raw feature file line into the indentation part and the line part.
 
         Parameters
@@ -48,7 +48,9 @@ class ScenarioForest:
         """
 
         match = cls.LINE_PATTERN.match(raw_line)
-        return (match.group("indentation"), match.group("line"))
+        if match is None: return None
+
+        return match.group("indentation", "line")
 
     def parse_step_line(self, line : str) -> Optional[Union[Prerequisite, Action, Assertion]]:
         """Parses a feature file step line into the appropriate
@@ -69,23 +71,20 @@ class ScenarioForest:
         """
 
         match = Step.STEP_PATTERN.match(line)
+        if match is None: return None
 
-        if match:
-            conjunction = match.group("conjunction")
-            if conjunction in ["And", "But"]:
-                previous_step = self.scenarios()[-1].steps[-1]
-                step_type = type(previous_step)
-            else:
-                step_type = {
-                    "Given": Prerequisite,
-                    "When": Action,
-                    "Then": Assertion,
-                }[conjunction]
+        conjunction, name, comment = match.group("conjunction", "name", "comment")
 
-            return step_type(match.group("name"), comment=match.group("comment"))
+        if conjunction in ["And", "But"]:
+            previous_step = self.scenarios()[-1].steps[-1]
+            conjunction = previous_step.conjunction
 
-        else:
-            return None
+        if conjunction == "Given":
+            return Prerequisite(name, comment=comment)
+        elif conjunction == "When":
+            return Action(name, comment=comment)
+        elif conjunction ==  "Then":
+            return Assertion(name, comment=comment)
 
     @classmethod
     def from_file(cls, file_path):  # TODO: Add return type of Self as soon as moving to Python 3.11 (where it is available)
@@ -180,7 +179,7 @@ class ScenarioForest:
 
         return scenario
 
-    def append_step(self, step : Step, at_level : int) -> None:
+    def append_step(self, step : Union[Prerequisite, Action, Assertion], at_level : int) -> None:
         """Appends a step to the scenario forest.
 
         Parameters
@@ -274,7 +273,7 @@ class ScenarioForest:
         file_handle.write("Scenario: {}\n".format(" ".join(group_strings)))
 
     @classmethod
-    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Step], comments : bool = False) -> None:
+    def write_scenario_steps(cls, file_handle : TextIO, steps : list[Union[Prerequisite, Action, Assertion]], comments : bool = False) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
         Parameters
