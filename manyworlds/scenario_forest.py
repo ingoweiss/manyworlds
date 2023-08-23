@@ -462,9 +462,11 @@ class ScenarioForest:
                 )
                 flat_file.write("\n")  # Empty line to separate scenarios
 
-    def find(self, *scenario_names : list[str]) -> Scenario:
+    def find(self, *scenario_names : list[str]) -> Optional[Scenario]:
         """Finds and returns a scenario by the names of all scenarios along the path
         from a root scenario to the destination scenario.
+
+        Used in tests only
 
         Parameters
         ----------
@@ -481,7 +483,8 @@ class ScenarioForest:
             (sc for sc in self.root_scenarios() if sc.name == scenario_names[0]),
             None
         )
-
+        if scenario is None: return None
+            
         for scenario_name in scenario_names[1:]:
             scenario = next(
                 (
@@ -491,6 +494,7 @@ class ScenarioForest:
                 ),
                 None,
             )
+            if scenario is None: return None
 
         return scenario
 
