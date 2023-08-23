@@ -83,7 +83,7 @@ class ScenarioForest:
             return Prerequisite(name, comment=comment)
         elif conjunction == "When":
             return Action(name, comment=comment)
-        elif conjunction ==  "Then":
+        else:  # conjunction == "Then"
             return Assertion(name, comment=comment)
 
     @classmethod
