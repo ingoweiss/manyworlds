@@ -24,7 +24,11 @@ class Step:
     followed by an optional comment
     """
 
-    def __init__(self, name : str, data : Optional[DataTable] = None, comment : Optional[str] = None) -> None:
+    def __init__(self,
+            name : str,
+            data : Optional[DataTable] = None,
+            comment : Optional[str] = None
+        ) -> None:
         """Constructor method
 
         Parameters
@@ -95,7 +99,11 @@ class Step:
 class Prerequisite(Step):
     """A BDD scenario prerequisite ("Given") step"""
 
-    def __init__(self, name : str, data : Optional[DataTable] = None, comment : Optional[str] = None) -> None:
+    def __init__(self,
+            name : str,
+            data : Optional[DataTable] = None,
+            comment : Optional[str] = None
+        ) -> None:
         self.conjunction = "Given"
         super().__init__(name, data=data, comment=comment)
 
@@ -103,7 +111,11 @@ class Prerequisite(Step):
 class Action(Step):
     """A BDD scenario action ("When") step"""
 
-    def __init__(self, name : str, data : Optional[DataTable] = None, comment : Optional[str] = None) -> None:
+    def __init__(self,
+            name : str,
+            data : Optional[DataTable] = None,
+            comment : Optional[str] = None
+        ) -> None:
         self.conjunction = "When"
         super().__init__(name, data=data, comment=comment)
 
@@ -111,6 +123,10 @@ class Action(Step):
 class Assertion(Step):
     """A BDD scenario assertion ("Then") step"""
 
-    def __init__(self, name : str, data : Optional[DataTable] = None, comment : Optional[str] = None) -> None:
+    def __init__(self,
+            name : str,
+            data : Optional[DataTable] = None,
+            comment : Optional[str] = None
+        ) -> None:
         self.conjunction = "Then"
         super().__init__(name, data=data, comment=comment)
