@@ -98,7 +98,7 @@ class DataTable:
         DataTableRow
         """
 
-        match = DataTable.TABLE_ROW_PATTERN.match(line)
+        match: Optional[re.Match] = DataTable.TABLE_ROW_PATTERN.match(line)
 
         if match:
             values = [s.strip() for s in match.group("table_row").split("|")[1:-1]]
