@@ -1,4 +1,6 @@
 """Defines the ScenarioForest Class"""
+
+import re
 import igraph as ig  # type: ignore
 from typing import Optional, TextIO, Literal
 
@@ -41,9 +43,9 @@ class ScenarioForest:
             The indentation part and the line part (without newline) as a tuple
         """
 
-        line = raw_line.rstrip()
-        line_wo_indentation = line.lstrip()
-        indentation = len(line) - len(line_wo_indentation)
+        line: str = raw_line.rstrip()
+        line_wo_indentation: str = line.lstrip()
+        indentation: int = len(line) - len(line_wo_indentation)
         return (indentation, line_wo_indentation)
 
     def parse_step_line(self, line: str) -> Optional[Step]:
@@ -64,7 +66,7 @@ class ScenarioForest:
             An instance of a Step subclass
         """
 
-        match = Step.STEP_PATTERN.match(line)
+        match: Optional[re.Match] = Step.STEP_PATTERN.match(line)
         if match is None:
             return None
 
@@ -117,8 +119,8 @@ class ScenarioForest:
                 # (2) Parse line:
 
                 # Scenario line?
-                match = Scenario.SCENARIO_PATTERN.match(line)
-                if match:
+                match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(line)
+                if match is not None:
                     forest.append_scenario(match.group("scenario_name"), at_level=level)
                     continue
 
@@ -158,8 +160,8 @@ class ScenarioForest:
 
         if at_level > 1:  # Non-root scenario:
             # Find the parent to connect scenario to:
-            parent_level = at_level - 1
-            scenarios_at_parent_level = [
+            parent_level: int = at_level - 1
+            scenarios_at_parent_level: list[Scenario] = [
                 sc
                 for sc in self.scenarios()
                 if sc.level() == parent_level and not sc.is_closed()
@@ -171,15 +173,13 @@ class ScenarioForest:
                     )
                 )
             else:
-                last_scenario_at_parent_level = scenarios_at_parent_level[-1]
+                last_scenario_at_parent_level: Scenario = scenarios_at_parent_level[-1]
 
-            scenario = Scenario(
+            return Scenario(
                 scenario_name, self.graph, parent_scenario=last_scenario_at_parent_level
             )
         else:  # Root scenario:
-            scenario = Scenario(scenario_name, self.graph)
-
-        return scenario
+            return Scenario(scenario_name, self.graph)
 
     def append_step(self, step: Step, at_level: int) -> None:
         """Appends a step to the scenario forest.
@@ -196,7 +196,7 @@ class ScenarioForest:
 
         # Ensure the indentation level of the step matches
         # the last scenario indentation level
-        last_scenario = self.scenarios()[-1]
+        last_scenario: Scenario = self.scenarios()[-1]
         if at_level == last_scenario.level():
             last_scenario.steps.append(step)
         else:
@@ -220,7 +220,7 @@ class ScenarioForest:
             Used for indentation validation.
         """
 
-        last_step = self.scenarios()[-1].steps[-1]
+        last_step: Step = self.scenarios()[-1].steps[-1]
         if last_step.data:
             # Row is an additional row for an existing table
             last_step.data.rows.append(data_row)
@@ -294,7 +294,7 @@ class ScenarioForest:
             Whether or not to write comments
         """
 
-        last_step = None
+        last_step: Optional[Step] = None
         for step_num, step in enumerate(steps):
             first_of_type = (
                 last_step is None or last_step.conjunction != step.conjunction
@@ -325,20 +325,20 @@ class ScenarioForest:
         """
 
         # Determine column widths to accommodate all values:
-        col_widths = [
+        col_widths: list[int] = [
             max([len(cell) for cell in col])
             for col in list(zip(*data_table.to_list_of_list()))
         ]
 
         for row in data_table.to_list():
             # pad values with spaces to column width:
-            padded_row = [
+            padded_row: list[str] = [
                 row.values[col_num].ljust(col_width)
                 for col_num, col_width in enumerate(col_widths)
             ]
 
             # add column enclosing pipes:
-            table_row_string = "    | {columns} |".format(
+            table_row_string: str = "    | {columns} |".format(
                 columns=" | ".join(padded_row)
             )
 
@@ -396,7 +396,7 @@ class ScenarioForest:
                 sc for sc in self.scenarios() if not sc.is_organizational()
             ]:
                 # Scenario name:
-                scenarios_for_naming = [
+                scenarios_for_naming: list[Scenario] = [
                     sc
                     for sc in scenario.path_scenarios()
                     if sc.is_organizational() or sc == scenario
@@ -404,7 +404,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
                 ancestor_scenarios = scenario.ancestors()
-                steps = []
+                steps: list[Step] = []
                 # collect prerequisites from all scenarios along the path
                 steps += [st for sc in ancestor_scenarios for st in sc.prerequisites()]
                 # collect actions from all scenarios along the path
@@ -435,9 +435,9 @@ class ScenarioForest:
 
         with open(file_path, "w") as flat_file:
             for scenario in self.leaf_scenarios():
-                steps = []
+                steps: list[Step] = []
                 # organizational and validated scenarios used for naming:
-                scenarios_for_naming = []
+                scenarios_for_naming: list[Scenario] = []
                 for path_scenario in scenario.path_scenarios():
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
@@ -470,12 +470,14 @@ class ScenarioForest:
             The found scenario, or None if none found
         """
 
-        scenario = next(
+        # Root scenario:
+        scenario: Optional[Scenario] = next(
             (sc for sc in self.root_scenarios() if sc.name == scenario_names[0]), None
         )
         if scenario is None:
             return None
 
+        # Root descendant scenarios:
         for scenario_name in scenario_names[1:]:
             scenario = next(
                 (

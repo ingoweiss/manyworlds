@@ -75,6 +75,7 @@ class Scenario:
             Whether or not this scenario has been validated
 
         """
+
         self._validated = value
 
     def prerequisites(self) -> list[Step]:
@@ -165,7 +166,7 @@ class Scenario:
             List of scenarios
         """
 
-        ancestors = self.graph.neighborhood(
+        ancestors: list[Scenario] = self.graph.neighborhood(
             self.vertex,
             mode="IN",
             order=1000,
@@ -229,9 +230,9 @@ class Scenario:
     def is_closed(self) -> bool:
         """Returns whether or not the scenario is "closed".
 
-        A scenario is "closed" if additional child scenarios cannot
-        be added which is the case when there is a "later" (higher index)
-        scenario with a lower indentation level in the feature file.
+        A scenario is "closed" if additional child scenarios cannot be added
+        which is the case when there is a "later" (higher index) scenario
+        with a lower or equal indentation level in the feature file.
 
         Returns
         ----------
@@ -239,7 +240,8 @@ class Scenario:
             Whether or not the scenario is "closed"
         """
 
-        later_scenario_at_same_or_lower_indentation_level = next(
+        # Later scenario with lower or equal indentation level:
+        closing_scenario: Optional[Scenario] = next(
             (
                 vx
                 for vx in self.graph.vs()
@@ -249,4 +251,4 @@ class Scenario:
             ),
             None,
         )
-        return later_scenario_at_same_or_lower_indentation_level is not None
+        return closing_scenario is not None
