@@ -13,7 +13,7 @@ def given_step():
 
 
 def test_repr(given_step):
-    assert given_step.__repr__() == '<Prerequisite: The following users:>'
+    assert given_step.__repr__() == "<Prerequisite: The following users:>"
 
 
 def test_format(given_step):
