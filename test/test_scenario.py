@@ -46,6 +46,7 @@ def test_ancestors(root_scenario, leaf_scenario):
     assert len(root_scenario.ancestors()) == 0
     assert len(leaf_scenario.ancestors()) == 5
 
+
 def test_index(root_scenario, leaf_scenario):
     assert root_scenario.index() == 0
     assert leaf_scenario.index() == 8
