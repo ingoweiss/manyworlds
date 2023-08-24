@@ -30,7 +30,8 @@ def main():
             indentation_string = "   " * (level - 2) + colored("└─ ", "blue")
         else:
             indentation_string = ""
-        print(indentation_string + sc.name)
+        optional_colon = ":" if sc.is_organizational() else ""
+        print(indentation_string + sc.name + optional_colon)
 
     # write flat feature file:
     if args.output:
