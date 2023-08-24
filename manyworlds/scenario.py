@@ -225,7 +225,7 @@ class Scenario:
             Index of self
         """
 
-        return self.vertex.index
+        return self.vertex.index  # TODO: start at index 1 (instead of 0)
 
     def is_closed(self) -> bool:
         """Returns whether or not the scenario is "closed".
