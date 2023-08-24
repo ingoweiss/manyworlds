@@ -9,4 +9,4 @@ jobs:
       - name: Black Check
         uses: jpetrucciani/black-check@master
         with:
-          path: 'manyworlds/'
+          path: '.'
