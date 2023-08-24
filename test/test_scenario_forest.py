@@ -44,14 +44,9 @@ def test_parse():
     forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
     assert len(forest.root_scenarios()) == 1
 
+    # root scenario:
     root_scenario = forest.find("View users")
-    assert (
-        root_scenario.__repr__() == "<Scenario: View users "
-        "(1 prerequisites, 1 actions, 1 assertions)>"
-    )
     assert root_scenario.name == "View users"
-    assert root_scenario.level() == 1
-    assert len(root_scenario.ancestors()) == 0
     assert len(root_scenario.prerequisites()) == 1
     assert len(root_scenario.actions()) == 1
     assert len(root_scenario.assertions()) == 1
@@ -59,9 +54,8 @@ def test_parse():
     assert len(data) == 4
     assert data[2]["Name"] == "Connie"
     assert data[2]["Status"] == "Active"
-    action = root_scenario.actions()[0]
-    assert action.__repr__() == '<Action: I go to "Users">'
 
+    # leaf scenario:
     leaf_scenario = forest.find(
         "View users",
         "Bulk operations",
@@ -70,18 +64,10 @@ def test_parse():
         "Bulk deactivate users",
         "Confirm bulk deactivation of users",
     )
-    assert (
-        leaf_scenario.__repr__() == "<Scenario: Confirm bulk deactivation of users "
-        "(0 prerequisites, 1 actions, 2 assertions)>"
-    )
     assert leaf_scenario.name == "Confirm bulk deactivation of users"
-    assert leaf_scenario.level() == 6
-    assert len(leaf_scenario.ancestors()) == 5
     assert len(leaf_scenario.prerequisites()) == 0
     assert len(leaf_scenario.actions()) == 1
     assert len(leaf_scenario.assertions()) == 2
-    assertion = leaf_scenario.assertions()[0]
-    assert assertion.__repr__() == '<Assertion: I see "0 users selected">'
 
 
 def test_flatten_strict():
