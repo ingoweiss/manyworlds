@@ -22,7 +22,7 @@ copyright = "2023, Ingo Weiss"
 author = "Ingo Weiss"
 
 # The full version, including alpha/beta/rc tags
-release = "00.00.01"
+release = "0.2.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
