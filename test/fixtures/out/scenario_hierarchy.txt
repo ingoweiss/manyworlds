@@ -1,6 +1,6 @@
 View users
 └─ Deactivate user
-└─ Bulk operations
+└─ Bulk operations:
    └─ Select user
       └─ Deselect user
       └─ Select multiple users
