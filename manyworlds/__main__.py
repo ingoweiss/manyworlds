@@ -3,20 +3,21 @@ import argparse
 import manyworlds as mw
 from termcolor import colored  # type: ignore
 
+
 def main():
     parser = argparse.ArgumentParser(prog="manyworlds")
-    parser.add_argument("--input", "-i",
-                        help="input scenario file")
-    parser.add_argument("--output", "-o",
-                        help="output scenario file")
-    parser.add_argument("--mode", "-m",
-                        choices=["strict", "relaxed"],
-                        default="strict",
-                        help="flattening mode")
-    parser.add_argument("--comments", "-c",
-                        default=False,
-                        action="store_true",
-                        help="output comments")
+    parser.add_argument("--input", "-i", help="input scenario file")
+    parser.add_argument("--output", "-o", help="output scenario file")
+    parser.add_argument(
+        "--mode",
+        "-m",
+        choices=["strict", "relaxed"],
+        default="strict",
+        help="flattening mode",
+    )
+    parser.add_argument(
+        "--comments", "-c", default=False, action="store_true", help="output comments"
+    )
     args = parser.parse_args()
 
     # read hierarchical feature file:
@@ -34,6 +35,7 @@ def main():
     # write flat feature file:
     if args.output:
         tree.flatten(args.output, mode=args.mode, comments=args.comments)
+
 
 if __name__ == "__main__":
     main()
