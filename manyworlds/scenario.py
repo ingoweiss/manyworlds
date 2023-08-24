@@ -10,24 +10,22 @@ from .step import Step, Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    SCENARIO_PATTERN : re.Pattern = re.compile("Scenario: (?P<scenario_name>.*)")
+    SCENARIO_PATTERN: re.Pattern = re.compile("Scenario: (?P<scenario_name>.*)")
     """
     re.Pattern
 
     The string "Scenario: ", followed by arbitrary string
     """
 
-    name : str
+    name: str
     graph: ig.Graph
-    vertex : ig.Vertex
-    steps : list[Step]
-    _validated : bool
+    vertex: ig.Vertex
+    steps: list[Step]
+    _validated: bool
 
-    def __init__(self,
-            name : str,
-            graph : ig.Graph,
-            parent_scenario : Optional['Scenario'] = None
-        ) -> None:
+    def __init__(
+        self, name: str, graph: ig.Graph, parent_scenario: Optional["Scenario"] = None
+    ) -> None:
         """Constructor method
 
         Parameters
@@ -50,10 +48,7 @@ class Scenario:
         self._validated = False
 
         if parent_scenario is not None:
-            self.graph.add_edge(
-                parent_scenario.vertex,
-                self.vertex
-            )
+            self.graph.add_edge(parent_scenario.vertex, self.vertex)
 
     @property
     def validated(self) -> bool:
@@ -71,7 +66,7 @@ class Scenario:
         return self._validated
 
     @validated.setter
-    def validated(self, value : bool) -> None:
+    def validated(self, value: bool) -> None:
         """The validated property setter
 
         Parameters
@@ -116,9 +111,9 @@ class Scenario:
 
         return self.steps_of_type(Assertion)
 
-    def steps_of_type(self,
-            step_type : Union[type[Prerequisite], type[Action], type[Assertion]]
-        ) -> list[Step]:
+    def steps_of_type(
+        self, step_type: Union[type[Prerequisite], type[Action], type[Assertion]]
+    ) -> list[Step]:
         """Returns all steps of the passed in type
 
         Parameters

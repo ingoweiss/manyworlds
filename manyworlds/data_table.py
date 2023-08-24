@@ -3,15 +3,16 @@
 import re
 from typing import Optional
 
+
 class DataTableRow:
     """A Gherkin data table row"""
 
-    values : list[str]
-    comment : Optional[str]
+    values: list[str]
+    comment: Optional[str]
 
-    def __init__(self, values : list[str], comment : Optional[str] = None):
+    def __init__(self, values: list[str], comment: Optional[str] = None):
         """Constructor method
-        
+
         Parameters
         ----------
         values : list[str]
@@ -33,10 +34,10 @@ class DataTable:
     )
     """Pipe-delimited list of values, followed by an optional comment"""
 
-    header_row : DataTableRow
-    rows : list[DataTableRow]
+    header_row: DataTableRow
+    rows: list[DataTableRow]
 
-    def __init__(self, header_row : DataTableRow) -> None:
+    def __init__(self, header_row: DataTableRow) -> None:
         """Constructor method
 
         Parameters
@@ -84,7 +85,7 @@ class DataTable:
         return [self.header_row] + self.rows
 
     @classmethod
-    def parse_line(cls, line : str) -> Optional[DataTableRow]:
+    def parse_line(cls, line: str) -> Optional[DataTableRow]:
         """Parses a pipe delimited data table line into a DataTableRow
 
         Parameters
