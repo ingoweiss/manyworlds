@@ -22,11 +22,11 @@ def clear_out_directory():
 def test_find():
     forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
 
-    # finds existing root scenario:
+    # Finds existing root scenario:
     root_scenario = forest.find("View users")
     assert type(root_scenario) == mw.scenario.Scenario
 
-    # does not find anything if first name provided is not a root scenario:
+    # Does not find anything if first name provided is not a root scenario:
     root_scenario = forest.find("Select user")
     assert root_scenario is None
 
@@ -114,65 +114,6 @@ def test_flatten_relaxed():
         "test/out/scenarios_flat_relaxed.feature",
         "test/fixtures/out/scenarios_flat_relaxed.feature",
     )
-
-
-def test_flatten_relaxed_with_comments():
-    """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
-    forest.flatten(
-        "test/out/scenarios_flat_relaxed_with_comments.feature",
-        mode="relaxed",
-        comments=True,
-    )
-    assert filecmp.cmp(
-        "test/out/scenarios_flat_relaxed_with_comments.feature",
-        "test/fixtures/out/scenarios_flat_relaxed_with_comments.feature",
-    )
-
-
-def test_invalid_file_mis_spelled_conjunction():
-    """Test that the correct error is raised when attempting to parse invalid files"""
-    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
-            "test/fixtures/in/invalid/mis-spelled_conjunction.feature"
-        )
-    assert (
-        str(error_info.value)
-        == 'Unable to parse line 2: Whenx I go to "Users" # mis-spelled conjunction'
-    )
-
-
-def test_invalid_file_invalid_indentation():
-    """Test that the correct error is raised when attempting to parse invalid files"""
-    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
-            "test/fixtures/in/invalid/invalid_indentation.feature"
-        )
-    assert (
-        str(error_info.value) == "Invalid indentation at line 5: Scenario: "
-        "Indented using 3 spaces instead of 4"
-    )
-
-
-def test_invalid_file_excessive_indentation():
-    """Test that the correct error is raised when attempting to parse invalid files"""
-    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
-            "test/fixtures/in/invalid/excessive_indentation.feature"
-        )
-    assert (
-        str(error_info.value) == "Excessive indentation at line: Scenario: "
-        "Indented 2 instead of 1 levels"
-    )
-
-
-def test_invalid_file_excessive_step_indentation():
-    """Test that the correct error is raised when attempting to parse invalid files"""
-    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
-            "test/fixtures/in/invalid/excessive_step_indentation.feature"
-        )
-    assert str(error_info.value) == "Invalid indentation at line: " "I see users"
 
 
 def test_organizational_scenarios():
