@@ -1,7 +1,7 @@
 """Defines the Step Class and subclasses"""
 
 import re
-from typing import Optional, Union, Literal
+from typing import Optional, Literal
 
 from .data_table import DataTable
 
