@@ -1,8 +1,9 @@
 """Defines the Scenario Class"""
+from __future__ import annotations
 
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from .step import Step, Prerequisite, Action, Assertion
 
@@ -20,7 +21,7 @@ class Scenario:
     name: str
     graph: ig.Graph
     vertex: ig.Vertex
-    steps: list[Step]
+    steps: List[Step]
     _validated: bool
 
     def __init__(
@@ -78,35 +79,35 @@ class Scenario:
 
         self._validated = value
 
-    def prerequisites(self) -> list[Step]:
+    def prerequisites(self) -> List[Step]:
         """Returns all steps of type Prerequisite
 
         Returns
         -------
-        list[Prerequisite]
+        List[Prerequisite]
             List of steps of type Prerequisite
         """
 
         return self.steps_of_type(Prerequisite)
 
-    def actions(self) -> list[Step]:
+    def actions(self) -> List[Step]:
         """Returns all steps of type Action
 
         Returns
         -------
-        list[Action]
+        List[Action]
             List of steps of type Action
         """
 
         return self.steps_of_type(Action)
 
-    def assertions(self) -> list[Step]:
+    def assertions(self) -> List[Step]:
         """Returns all steps of type Assertion
 
         Returns
         ----------
         list
-            list[Assertion]
+            List[Assertion]
                 List of steps of type Assertion
         """
 
@@ -114,7 +115,7 @@ class Scenario:
 
     def steps_of_type(
         self, step_type: Union[type[Prerequisite], type[Action], type[Assertion]]
-    ) -> list[Step]:
+    ) -> List[Step]:
         """Returns all steps of the passed in type
 
         Parameters
@@ -124,7 +125,7 @@ class Scenario:
 
         Returns
         -------
-        list[Step]
+        List[Step]
             All steps of the passed in type
         """
 
@@ -157,16 +158,16 @@ class Scenario:
 
         return self.__str__()
 
-    def ancestors(self) -> list["Scenario"]:
+    def ancestors(self) -> List["Scenario"]:
         """Returns the scenario"s ancestors, starting with a root scenario
 
         Returns
         -------
-        list[Scenario]
+        List[Scenario]
             List of scenarios
         """
 
-        ancestors: list[Scenario] = self.graph.neighborhood(
+        ancestors: List[Scenario] = self.graph.neighborhood(
             self.vertex,
             mode="IN",
             order=1000,
@@ -175,13 +176,13 @@ class Scenario:
         ancestors.reverse()
         return [vx["scenario"] for vx in self.graph.vs(ancestors)]
 
-    def path_scenarios(self) -> list["Scenario"]:
+    def path_scenarios(self) -> List["Scenario"]:
         """Returns the complete scenario path from the root scenario to
         (and including) self.
 
         Returns
         -------
-        list[Scenario]
+        List[Scenario]
             List of scenarios. The last scenario is self
         """
 
