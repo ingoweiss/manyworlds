@@ -1,4 +1,5 @@
 """Defines the Scenario Class"""
+# needed to support "type[]" class type annotations in Python 3.8:
 from __future__ import annotations
 
 import re
