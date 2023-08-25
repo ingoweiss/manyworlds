@@ -30,7 +30,7 @@ The tree structure has a few advantages:
 2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice gaps in the scenarios.
 
- Manyworlds provides a simple way to reap the benefits of scenario trees. It enables you to:
+ Manyworlds provides a simple way to reap some of the benefits of scenario trees. It enables you to:
  1. Use indentation in Gherkin feature files to organize scenarios hierarchically.
  2. Expand hierarchical feature files into standard flat feature files which can be run using any testing tool that understands Gherkin.
 
@@ -100,7 +100,7 @@ Then I see the following users:
                         | Connie | Active |
 ```
 
-Now let's use Manyworlds to expand it:
+Now let's use Manyworlds to flatten it:
 
 ```bash
 python -m manyworlds --input hierarchical.feature --output flat.feature
