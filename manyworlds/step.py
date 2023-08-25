@@ -1,7 +1,7 @@
 """Defines the Step Class and subclasses"""
 
 import re
-from typing import Optional
+from typing import Optional, Union, Literal
 
 from .data_table import DataTable
 
@@ -14,7 +14,7 @@ class Step:
     )
 
     name: str
-    conjunction: str
+    conjunction: Literal["Given", "When", "Then"]
     data: Optional[DataTable]
     comment: Optional[str]
 
