@@ -2,7 +2,7 @@
 
 import re
 import igraph as ig  # type: ignore
-from typing import Optional, TextIO, Literal
+from typing import Optional, TextIO, Literal, List, Tuple
 
 from .scenario import Scenario
 from .step import Step, Prerequisite, Action, Assertion
@@ -29,7 +29,7 @@ class ScenarioForest:
         self.graph = ig.Graph(directed=True)
 
     @classmethod
-    def split_line(cls, raw_line: str) -> tuple[int, str]:
+    def split_line(cls, raw_line: str) -> Tuple[int, str]:
         """Splits a raw feature file line into the indentation part and the line part.
 
         Parameters
@@ -163,7 +163,7 @@ class ScenarioForest:
         if at_level > 1:  # Non-root scenario:
             # Find the parent to connect scenario to:
             parent_level: int = at_level - 1
-            parent_level_scenarios: list[Scenario] = [
+            parent_level_scenarios: List[Scenario] = [
                 sc
                 for sc in self.scenarios()
                 if sc.level() == parent_level and not sc.is_closed()
@@ -233,7 +233,7 @@ class ScenarioForest:
 
     @classmethod
     def write_scenario_name(
-        cls, file_handle: TextIO, scenarios: list[Scenario]
+        cls, file_handle: TextIO, scenarios: List[Scenario]
     ) -> None:
         """Writes formatted scenario name to the end of a "relaxed" flat feature file.
 
@@ -242,12 +242,12 @@ class ScenarioForest:
         file_handle : TextIO
             The file to which to append the scenario name
 
-        scenarios : list[Scenario]
+        scenarios : List[Scenario]
             Organizational and validated scenarios along the path
         """
 
         # (1) Group consecutive regular or organizational scenarios:
-        groups: list[list[Scenario]] = []
+        groups: List[List[Scenario]] = []
 
         # Function for determining whether a scenario can be added to a current group:
         def group_available_for_scenario(gr, sc):
@@ -264,7 +264,7 @@ class ScenarioForest:
                 groups.append([sc])  # start new group
 
         # (2) Format each group to strings:
-        group_strings: list[str] = []
+        group_strings: List[str] = []
 
         for group in groups:
             if group[-1].is_organizational():
@@ -281,7 +281,7 @@ class ScenarioForest:
 
     @classmethod
     def write_scenario_steps(
-        cls, file_handle: TextIO, steps: list[Step], comments: bool = False
+        cls, file_handle: TextIO, steps: List[Step], comments: bool = False
     ) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
@@ -290,7 +290,7 @@ class ScenarioForest:
         file_handle : io.TextIOWrapper
             The file to which to append the steps
 
-        steps : list[Step]
+        steps : List[Step]
             Steps to append to file_handle
 
         comments: bool
@@ -328,14 +328,14 @@ class ScenarioForest:
         """
 
         # Determine column widths to accommodate all values:
-        col_widths: list[int] = [
+        col_widths: List[int] = [
             max([len(cell) for cell in col])
             for col in list(zip(*data_table.to_list_of_list()))
         ]
 
         for row in data_table.to_list():
             # pad values with spaces to column width:
-            padded_row: list[str] = [
+            padded_row: List[str] = [
                 row.values[col_num].ljust(col_width)
                 for col_num, col_width in enumerate(col_widths)
             ]
@@ -399,7 +399,7 @@ class ScenarioForest:
                 sc for sc in self.scenarios() if not sc.is_organizational()
             ]:
                 # Scenario name:
-                scenarios_for_naming: list[Scenario] = [
+                scenarios_for_naming: List[Scenario] = [
                     sc
                     for sc in scenario.path_scenarios()
                     if sc.is_organizational() or sc == scenario
@@ -407,7 +407,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
                 ancestor_scenarios = scenario.ancestors()
-                steps: list[Step] = []
+                steps: List[Step] = []
                 # collect prerequisites from all scenarios along the path
                 steps += [st for sc in ancestor_scenarios for st in sc.prerequisites()]
                 # collect actions from all scenarios along the path
@@ -438,9 +438,9 @@ class ScenarioForest:
 
         with open(file_path, "w") as flat_file:
             for scenario in self.leaf_scenarios():
-                steps: list[Step] = []
+                steps: List[Step] = []
                 # organizational and validated scenarios used for naming:
-                scenarios_for_naming: list[Scenario] = []
+                scenarios_for_naming: List[Scenario] = []
                 for path_scenario in scenario.path_scenarios():
                     steps += path_scenario.prerequisites()
                     steps += path_scenario.actions()
@@ -456,7 +456,7 @@ class ScenarioForest:
                 ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
                 flat_file.write("\n")  # Empty line to separate scenarios
 
-    def find(self, *scenario_names: list[str]) -> Optional[Scenario]:
+    def find(self, *scenario_names: List[str]) -> Optional[Scenario]:
         """Finds and returns a scenario by the names of all scenarios along the path
         from a root scenario to the destination scenario.
 
@@ -464,7 +464,7 @@ class ScenarioForest:
 
         Parameters
         ----------
-        scenario_names : list[str]
+        scenario_names : List[str]
             List of scenario names
 
         Returns
@@ -495,33 +495,33 @@ class ScenarioForest:
 
         return scenario
 
-    def scenarios(self) -> list[Scenario]:
+    def scenarios(self) -> List[Scenario]:
         """Returns all scenarios
 
         Returns
         -------
-        list[Scenario]
+        List[Scenario]
             All scenarios in index order
         """
 
         return [vx["scenario"] for vx in self.graph.vs]
 
-    def root_scenarios(self) -> list[Scenario]:
+    def root_scenarios(self) -> List[Scenario]:
         """Returns the root scenarios (scenarios with vertices without incoming edges).
 
         Returns
         -------
-        list[Scenario]
+        List[Scenario]
             All root scenarios in index order
         """
         return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
 
-    def leaf_scenarios(self) -> list[Scenario]:
+    def leaf_scenarios(self) -> List[Scenario]:
         """Returns the leaf scenarios (scenarios with vertices without outgoing edges).
 
         Returns
         -------
-        list[Scenario]
+        List[Scenario]
             All leaf scenarios in index order
         """
         return [vx["scenario"] for vx in self.graph.vs if vx.outdegree() == 0]

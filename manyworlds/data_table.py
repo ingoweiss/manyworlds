@@ -1,21 +1,21 @@
 """Defines the DataTable and DataTableRow classes"""
 
 import re
-from typing import Optional
+from typing import Optional, List
 
 
 class DataTableRow:
     """A Gherkin data table row"""
 
-    values: list[str]
+    values: List[str]
     comment: Optional[str]
 
-    def __init__(self, values: list[str], comment: Optional[str] = None):
+    def __init__(self, values: List[str], comment: Optional[str] = None):
         """Constructor method
 
         Parameters
         ----------
-        values : list[str]
+        values : List[str]
             The header row
 
         comment : str
@@ -35,7 +35,7 @@ class DataTable:
     """Pipe-delimited list of values, followed by an optional comment"""
 
     header_row: DataTableRow
-    rows: list[DataTableRow]
+    rows: List[DataTableRow]
 
     def __init__(self, header_row: DataTableRow) -> None:
         """Constructor method
@@ -49,36 +49,36 @@ class DataTable:
         self.header_row = header_row
         self.rows = []
 
-    def to_list_of_list(self) -> list[list[str]]:
+    def to_list_of_list(self) -> List[List[str]]:
         """Returns a list of list of str representation of itself
 
         First row is header row
 
         Returns
         -------
-        list[list[str]]
+        List[List[str]]
             The list of list of str representation of itself
         """
 
         return [self.header_row.values] + [row.values for row in self.rows]
 
-    def to_list_of_dict(self) -> list[dict]:
+    def to_list_of_dict(self) -> List[dict]:
         """Returns a list of dict representation of itself
 
         Returns
         -------
-        list[dict]
+        List[dict]
             The list of dict representation of itself
         """
 
         return [dict(zip(self.header_row.values, row.values)) for row in self.rows]
 
-    def to_list(self) -> list[DataTableRow]:
+    def to_list(self) -> List[DataTableRow]:
         """Returns a list of DataTableRow representation of itself
 
         Returns
         -------
-        list[DataTableRow]
+        List[DataTableRow]
             The list of DataTableRow representation of itself
         """
 
