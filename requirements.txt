@@ -1,2 +1,1 @@
-igraph
-termcolor
+-r requirements/common.txt

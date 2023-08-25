@@ -1,0 +1,6 @@
+-r common.txt
+pytest
+coverage
+ruff
+mypy
+black
