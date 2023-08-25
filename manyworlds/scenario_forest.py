@@ -163,23 +163,24 @@ class ScenarioForest:
         if at_level > 1:  # Non-root scenario:
             # Find the parent to connect scenario to:
             parent_level: int = at_level - 1
-            scenarios_at_parent_level: list[Scenario] = [
+            parent_level_scenarios: list[Scenario] = [
                 sc
                 for sc in self.scenarios()
                 if sc.level() == parent_level and not sc.is_closed()
             ]
-            if not scenarios_at_parent_level:
+            if len(parent_level_scenarios) > 0:
+                return Scenario(
+                    scenario_name,
+                    self.graph,
+                    parent_scenario=parent_level_scenarios[-1],
+                )
+            else:
                 raise InvalidFeatureFileError(
                     "Excessive indentation at line: Scenario: {name}".format(
                         name=scenario_name
                     )
                 )
-            else:
-                last_scenario_at_parent_level: Scenario = scenarios_at_parent_level[-1]
 
-            return Scenario(
-                scenario_name, self.graph, parent_scenario=last_scenario_at_parent_level
-            )
         else:  # Root scenario:
             return Scenario(scenario_name, self.graph)
 
