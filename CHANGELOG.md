@@ -6,10 +6,6 @@
 
 - Add support for data table row comments
 
-### Changed
-
-- Now requires Python 3.9 or up (due to the use of type hinting)
-
 ## [0.2.0] - 2023-08-18
 
 ### Changed
