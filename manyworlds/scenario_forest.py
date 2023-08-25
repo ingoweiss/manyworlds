@@ -104,11 +104,13 @@ class ScenarioForest:
                 if raw_line.strip() == "":
                     continue  # Skip empty lines
 
+                indentation: int
+                line: str
                 indentation, line = cls.split_line(raw_line)
 
                 # (1) Determine and validate indentation level:
                 if indentation % cls.TAB_SIZE == 0:
-                    level = int(indentation / cls.TAB_SIZE) + 1
+                    level: int = int(indentation / cls.TAB_SIZE) + 1
                 else:
                     raise InvalidFeatureFileError(
                         "Invalid indentation at line {line_no}: {line}".format(
@@ -125,13 +127,13 @@ class ScenarioForest:
                     continue
 
                 # Step line?
-                new_step = forest.parse_step_line(line)
+                new_step: Optional[Step] = forest.parse_step_line(line)
                 if new_step:
                     forest.append_step(new_step, at_level=level)
                     continue
 
                 # Data table line?
-                new_data_row = DataTable.parse_line(line)
+                new_data_row: Optional[DataTableRow] = DataTable.parse_line(line)
                 if new_data_row:
                     forest.append_data_row(new_data_row, at_level=level)
                     continue
