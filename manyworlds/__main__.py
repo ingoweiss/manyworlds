@@ -21,21 +21,32 @@ def main():
     args = parser.parse_args()
 
     # read hierarchical feature file:
-    tree = mw.ScenarioForest.from_file(args.input)
+    forest = mw.ScenarioForest.from_file(args.input)
 
-    # print scenario forest outline to terminal:
-    for sc in tree.scenarios():
-        level = sc.level()
-        if level > 1:
-            indentation_string = "   " * (level - 2) + colored("└─ ", "blue")
-        else:
-            indentation_string = ""
-        optional_colon = ":" if sc.is_organizational() else ""
-        print(indentation_string + sc.name + optional_colon)
+    print_scenario_forest(forest)
 
     # write flat feature file:
     if args.output:
-        tree.flatten(args.output, mode=args.mode, comments=args.comments)
+        forest.flatten(args.output, mode=args.mode, comments=args.comments)
+
+
+def print_scenario_forest(forest):
+    """print scenario forest outline to terminal"""
+    for sc in forest.scenarios():
+        scenario_string = sc.name
+
+        # Indentation:
+        level: int = sc.level()
+        if level > 1:
+            scenario_string = (
+                "   " * (level - 2) + colored("└─ ", "blue") + scenario_string
+            )
+
+        # Colon for organizational scenarios:
+        if sc.is_organizational():
+            scenario_string += ":"
+
+        print(scenario_string)
 
 
 if __name__ == "__main__":
