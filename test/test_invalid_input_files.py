@@ -9,7 +9,7 @@ def test_invalid_file_mis_spelled_conjunction():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
         mw.ScenarioForest.from_file(
-            "test/fixtures/in/invalid/mis-spelled_conjunction.feature"
+            "test/fixtures/in/invalid/invalid_conjunction.feature"
         )
     assert (
         str(error_info.value)
