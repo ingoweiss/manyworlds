@@ -250,7 +250,9 @@ class ScenarioForest:
         groups: List[List[Scenario]] = []
 
         # Function for determining whether a scenario can be added to a current group:
-        def group_available_for_scenario(gr: List[List[Scenario]], sc: Scenario) -> bool:
+        def group_available_for_scenario(
+            gr: List[List[Scenario]], sc: Scenario
+        ) -> bool:
             return (
                 len(gr) > 0
                 and len(gr[-1]) > 0
