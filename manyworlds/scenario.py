@@ -177,6 +177,64 @@ class Scenario:
         ancestors.reverse()
         return [vx["scenario"] for vx in self.graph.vs(ancestors)]
 
+
+    def parent(self) -> Optional[Scenario]:
+        """Returns the scenario's parent scenario, if one exists
+
+        Returns
+        -------
+        Scenario, optional
+            The parent scenario
+        """
+
+        parents: List[ig.Vertex] = self.graph.neighborhood(
+            self.vertex,
+            mode="IN",
+            order=1,
+            mindist=1
+        )
+        if len(parents) == 1:
+            return self.graph.vs[parents[0]]["scenario"]
+        else:
+            return None
+
+    def children(self) -> List[Scenario]:
+        """Returns the scenario's child scenarios
+
+        Returns
+        -------
+        List[Scenario]
+            The child scenarios
+        """
+
+        children: List[ig.Vertex] = self.graph.neighborhood(
+            self.vertex,
+            mode="OUT",
+            order=1,
+            mindist=1
+        )
+        return [vx["scenario"] for vx in self.graph.vs(children)]
+
+
+    def siblings(self) -> List[Scenario]:
+        """Returns the scenario's sibling scenarios
+
+        The scenario's parent's children (including self)
+
+        Returns
+        -------
+        List[Scenario]
+            The sibling scenarios
+        """
+
+        if self.level() == 1:
+            return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
+            # TODO: This duplicates the implementation of ScenarioForest#root_scenarios()
+            # but Scenario does not currently have access to its forest. Might want to
+            # change that
+        else:
+            return self.parent().children()
+
     def path_scenarios(self) -> List["Scenario"]:
         """Returns the complete scenario path from the root scenario to
         (and including) self.
