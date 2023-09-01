@@ -160,7 +160,7 @@ class Scenario:
         return self.__str__()
 
     def ancestors(self) -> List["Scenario"]:
-        """Returns the scenario"s ancestors, starting with a root scenario
+        """Returns the scenario's ancestors, starting with a root scenario
 
         Returns
         -------
