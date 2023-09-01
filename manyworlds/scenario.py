@@ -168,7 +168,7 @@ class Scenario:
             List of scenarios
         """
 
-        ancestors: List[Scenario] = self.graph.neighborhood(
+        ancestors: List[ig.Vertex] = self.graph.neighborhood(
             self.vertex,
             mode="IN",
             order=1000,
