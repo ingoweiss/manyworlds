@@ -35,12 +35,18 @@ def main():
 def print_scenario_forest(forest: mw.ScenarioForest) -> None:
     """print scenario forest outline to terminal"""
     level_open: Dict[int, bool] = {}
+    branch_shape: str
+    later_sibling: bool
+    sib: mw.scenario.Scenario
+    sib_index: Optional[int]
+
     for sc in forest.scenarios():
         scenario_string = sc.name
 
         # Indentation and branch shapes:
-        level: int = sc.level()
-        if level is None:
+        level: Optional[int] = sc.level()
+        index: Optional[int] = sc.index()
+        if level is None or index is None:
             continue
         if level > 1:
             # indentation:
@@ -51,11 +57,15 @@ def print_scenario_forest(forest: mw.ScenarioForest) -> None:
                 )
 
             # branch shape:
-            branch_shape: str
-            later_sibling: Optional[mw.scenario.Scenario] = next(
-                (sib for sib in sc.siblings() if sib.index() > sc.index()), None
-            )
-            if later_sibling is not None:
+            later_sibling = False
+            for sib in sc.siblings():
+                sib_index = sib.index()
+                if sib_index is None:
+                    continue
+                if sib_index > index:
+                    later_sibling = True
+
+            if later_sibling is True:
                 branch_shape = "├──"
                 level_open[level] = True
             else:
