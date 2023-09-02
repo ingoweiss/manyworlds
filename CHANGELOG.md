@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Improved terminal output of scenario hierarchy (better branch lines)
+
 ## [0.3.0] - 2023-08-25
 
 ### Added
