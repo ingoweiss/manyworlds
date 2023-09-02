@@ -1,5 +1,8 @@
 # __main__.py
+
+from typing import Optional, Dict
 import argparse
+
 import manyworlds as mw
 
 
@@ -31,7 +34,7 @@ def main():
 
 def print_scenario_forest(forest: mw.ScenarioForest) -> None:
     """print scenario forest outline to terminal"""
-    level_open: dir = {}
+    level_open: Dict[int, bool] = {}
     for sc in forest.scenarios():
         scenario_string = sc.name
 
@@ -42,11 +45,16 @@ def print_scenario_forest(forest: mw.ScenarioForest) -> None:
             # indentation:
             indentation: str = ""
             for lvl in range(2, level):
-                indentation += ("│   " if (lvl in level_open.keys() and level_open[lvl]) else "    ")
+                indentation += (
+                    "│   "
+                    if (lvl in level_open.keys() and level_open[lvl])
+                    else
+                    "    "
+                )
 
             # branch shape:
             branch_shape: str
-            later_sibling: Optional[Scenario] = next((
+            later_sibling: Optional[mw.Scenario] = next((
                 sib
                 for sib in sc.siblings()
                 if sib.index() > sc.index()

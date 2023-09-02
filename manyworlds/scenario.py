@@ -229,9 +229,9 @@ class Scenario:
 
         if self.level() == 1:
             return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
-            # TODO: This duplicates the implementation of ScenarioForest#root_scenarios()
-            # but Scenario does not currently have access to its forest. Might want to
-            # change that
+            # TODO: This duplicates the implementation of
+            # ScenarioForest#root_scenarios() but Scenario does not currently
+            # have access to its forest. Might want to change that
         else:
             return self.parent().children()
 
