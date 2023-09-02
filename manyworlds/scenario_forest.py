@@ -21,12 +21,23 @@ class ScenarioForest:
     The number of spaces per indentation level
     """
 
+    FEATURE_PATTERN: re.Pattern = re.compile("^Feature: (?P<feature_name>.*)")
+    """
+    re.Pattern
+
+    The string "Feature: ", followed by arbitrary string
+    """
+
     graph: ig.Graph
+    name: Optional[str]
+    description: List[str]
 
     def __init__(self) -> None:
         """Constructor method"""
 
         self.graph = ig.Graph(directed=True)
+        self.name = None
+        self.description = []
 
     @classmethod
     def split_line(cls, raw_line: str) -> Tuple[int, str]:
@@ -120,6 +131,12 @@ class ScenarioForest:
 
                 # (2) Parse line:
 
+                # Feature line?
+                match: Optional[re.Match] = cls.FEATURE_PATTERN.match(line)
+                if match is not None:
+                    forest.name = match["feature_name"]
+                    continue
+
                 # Scenario line?
                 match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(line)
                 if match is not None:
@@ -138,7 +155,12 @@ class ScenarioForest:
                     forest.append_data_row(new_data_row, at_level=level)
                     continue
 
-                # Not a valid line
+                # Feature description line?
+                if forest.name is not None and len(forest.scenarios()) == 0:
+                    forest.description.append(line)
+                    continue
+
+                # Not a valid line!
                 raise InvalidFeatureFileError(
                     "Unable to parse line {line_no}: {line}".format(
                         line_no=line_no + 1, line=line
