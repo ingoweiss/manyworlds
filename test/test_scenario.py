@@ -53,7 +53,7 @@ def test_index(root_scenario, leaf_scenario):
 
 
 def test_parent(root_scenario, leaf_scenario):
-    assert root_scenario.parent() == None
+    assert root_scenario.parent() is None
     assert leaf_scenario.parent().name == "Bulk deactivate users"
 
 
