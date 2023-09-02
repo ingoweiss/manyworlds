@@ -132,15 +132,15 @@ class ScenarioForest:
                 # (2) Parse line:
 
                 # Feature line?
-                match: Optional[re.Match] = cls.FEATURE_PATTERN.match(line)
-                if match is not None:
-                    forest.name = match["feature_name"]
+                feature_match: Optional[re.Match] = cls.FEATURE_PATTERN.match(line)
+                if feature_match is not None:
+                    forest.name = feature_match["feature_name"]
                     continue
 
                 # Scenario line?
-                match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(line)
-                if match is not None:
-                    forest.append_scenario(match.group("scenario_name"), at_level=level)
+                scenario_match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(line)
+                if scenario_match is not None:
+                    forest.append_scenario(scenario_match.group("scenario_name"), at_level=level)
                     continue
 
                 # Step line?
