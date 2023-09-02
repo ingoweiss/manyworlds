@@ -227,13 +227,15 @@ class Scenario:
             The sibling scenarios
         """
 
-        if self.level() == 1:
+        parent: Optional[Scenario] = self.parent()
+        if parent is not None:
+            return parent.children()
+        else:
             return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
             # TODO: This duplicates the implementation of
             # ScenarioForest#root_scenarios() but Scenario does not currently
             # have access to its forest. Might want to change that
-        else:
-            return self.parent().children()
+
 
     def path_scenarios(self) -> List["Scenario"]:
         """Returns the complete scenario path from the root scenario to
