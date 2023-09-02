@@ -50,3 +50,18 @@ def test_ancestors(root_scenario, leaf_scenario):
 def test_index(root_scenario, leaf_scenario):
     assert root_scenario.index() == 0
     assert leaf_scenario.index() == 8
+
+
+def test_parent(root_scenario, leaf_scenario):
+    assert root_scenario.parent() is None
+    assert leaf_scenario.parent().name == "Bulk deactivate users"
+
+
+def test_children(root_scenario, leaf_scenario):
+    assert len(root_scenario.children()) == 2
+    assert len(leaf_scenario.children()) == 0
+
+
+def test_siblings(root_scenario, leaf_scenario):
+    assert len(root_scenario.siblings()) == 1
+    assert len(leaf_scenario.siblings()) == 2

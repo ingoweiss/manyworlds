@@ -104,17 +104,17 @@ python -m manyworlds --input hierarchical.feature --output flat.feature
 ```
 This will print the structure of the scenario tree(s) to the terminal:
 
-```text
+```bash
 View users
-└─ Deactivate user
-└─ Bulk operations
-   └─ Select user
-      └─ Deselect user
-      └─ Select multiple users
-         └─ Deselect all users
-         └─ Bulk deactivate users
-            └─ Confirm bulk deactivation of users
-            └─ Cancel out of bulk deactivation of users
+├── Deactivate user
+└── Bulk operations:
+    └── Select user
+        ├── Deselect user
+        └── Select multiple users
+            ├── Deselect all users
+            └── Bulk deactivate users
+                ├── Confirm bulk deactivation of users
+                └── Cancel out of bulk deactivation of users
 ```
 and write the following flat feature file:
 

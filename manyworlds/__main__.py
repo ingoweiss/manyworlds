@@ -1,7 +1,9 @@
 # __main__.py
+
+from typing import Optional, Dict
 import argparse
+
 import manyworlds as mw
-from termcolor import colored  # type: ignore
 
 
 def main():
@@ -30,17 +32,47 @@ def main():
         forest.flatten(args.output, mode=args.mode, comments=args.comments)
 
 
-def print_scenario_forest(forest):
+def print_scenario_forest(forest: mw.ScenarioForest) -> None:
     """print scenario forest outline to terminal"""
+    level_open: Dict[int, bool] = {}
+    branch_shape: str
+    later_sibling: bool
+    sib: mw.scenario.Scenario
+    sib_index: Optional[int]
+
     for sc in forest.scenarios():
         scenario_string = sc.name
 
-        # Indentation:
-        level: int = sc.level()
+        # Indentation and branch shapes:
+        level: Optional[int] = sc.level()
+        index: Optional[int] = sc.index()
+        if level is None or index is None:
+            continue
         if level > 1:
-            scenario_string = (
-                "   " * (level - 2) + colored("└─ ", "blue") + scenario_string
-            )
+            # indentation:
+            indentation: str = ""
+            for lvl in range(2, level):
+                indentation += (
+                    "│   " if (lvl in level_open.keys() and level_open[lvl]) else "    "
+                )
+
+            # branch shape:
+            later_sibling = False
+            for sib in sc.siblings():
+                sib_index = sib.index()
+                if sib_index is None:
+                    continue
+                if sib_index > index:
+                    later_sibling = True
+
+            if later_sibling is True:
+                branch_shape = "├──"
+                level_open[level] = True
+            else:
+                branch_shape = "└──"
+                level_open[level] = False
+
+            scenario_string = indentation + branch_shape + " " + scenario_string
 
         # Colon for organizational scenarios:
         if sc.is_organizational():
