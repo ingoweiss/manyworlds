@@ -43,7 +43,7 @@ def test_from_file():
     """Test the structure of the forest graph after using the 'from_file' method"""
     forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
 
-    assert forest.name == 'User Deactivation'
+    assert forest.name == "User Deactivation"
     assert len(forest.description) == 3
 
     assert len(forest.root_scenarios()) == 1

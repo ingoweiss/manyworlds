@@ -138,9 +138,13 @@ class ScenarioForest:
                     continue
 
                 # Scenario line?
-                scenario_match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(line)
+                scenario_match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(
+                    line
+                )
                 if scenario_match is not None:
-                    forest.append_scenario(scenario_match.group("scenario_name"), at_level=level)
+                    forest.append_scenario(
+                        scenario_match.group("scenario_name"), at_level=level
+                    )
                     continue
 
                 # Step line?
