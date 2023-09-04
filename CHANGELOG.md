@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support for feature declaration (name and description)
+
 ### Changed
 
 - Improved terminal output of scenario hierarchy (better branch lines)
