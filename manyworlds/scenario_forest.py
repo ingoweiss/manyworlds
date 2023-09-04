@@ -444,7 +444,6 @@ class ScenarioForest:
         """
 
         with open(file_path, "w") as flat_file:
-
             # Feature declaration:
             if self.name is not None:
                 ScenarioForest.write_feature_declaration(flat_file, self)
@@ -491,8 +490,6 @@ class ScenarioForest:
         """
 
         with open(file_path, "w") as flat_file:
-
-
             # Feature declaration:
             if self.name is not None:
                 ScenarioForest.write_feature_declaration(flat_file, self)
