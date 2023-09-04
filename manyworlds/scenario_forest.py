@@ -421,12 +421,19 @@ class ScenarioForest:
             Whether or not to write comments
         """
 
-        if mode == "strict":
-            self.flatten_strict(file_path, comments=comments)
-        elif mode == "relaxed":
-            self.flatten_relaxed(file_path, comments=comments)
+        with open(file_path, "w") as flat_file:
 
-    def flatten_strict(self, file_path: str, comments: bool = False) -> None:
+            # Feature declaration:
+            if self.name is not None:
+                ScenarioForest.write_feature_declaration(flat_file, self)
+
+            # Scenarios:
+            if mode == "strict":
+                self.flatten_strict(flat_file, comments=comments)
+            elif mode == "relaxed":
+                self.flatten_relaxed(flat_file, comments=comments)
+
+    def flatten_strict(self, flat_file: TextIO, comments: bool = False) -> None:
         """Write. a flat (no indentation) feature file representing the forest
         using the "strict" flattening mode.
 
@@ -436,43 +443,38 @@ class ScenarioForest:
 
         Parameters
         ----------
-        file_path : str
-            Path to flat feature file
+        flat_file : io.TextIOWrapper
+            The flat feature file
 
         comments : bool, default = False
             Whether or not to write comments
         """
 
-        with open(file_path, "w") as flat_file:
-            # Feature declaration:
-            if self.name is not None:
-                ScenarioForest.write_feature_declaration(flat_file, self)
+        for scenario in [
+            sc for sc in self.scenarios() if not sc.is_organizational()
+        ]:
+            # Scenario name:
+            scenarios_for_naming: List[Scenario] = [
+                sc
+                for sc in scenario.path_scenarios()
+                if sc.is_organizational() or sc == scenario
+            ]
+            ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
 
-            for scenario in [
-                sc for sc in self.scenarios() if not sc.is_organizational()
-            ]:
-                # Scenario name:
-                scenarios_for_naming: List[Scenario] = [
-                    sc
-                    for sc in scenario.path_scenarios()
-                    if sc.is_organizational() or sc == scenario
-                ]
-                ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
+            ancestor_scenarios = scenario.ancestors()
+            steps: List[Step] = []
+            # collect prerequisites from all scenarios along the path
+            steps += [st for sc in ancestor_scenarios for st in sc.prerequisites()]
+            # collect actions from all scenarios along the path
+            steps += [st for sc in ancestor_scenarios for st in sc.actions()]
+            # add all steps from the destination scenario only
+            steps += scenario.steps
 
-                ancestor_scenarios = scenario.ancestors()
-                steps: List[Step] = []
-                # collect prerequisites from all scenarios along the path
-                steps += [st for sc in ancestor_scenarios for st in sc.prerequisites()]
-                # collect actions from all scenarios along the path
-                steps += [st for sc in ancestor_scenarios for st in sc.actions()]
-                # add all steps from the destination scenario only
-                steps += scenario.steps
+            # Write steps:
+            ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+            flat_file.write("\n")  # Empty line to separate scenarios
 
-                # Write steps:
-                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
-                flat_file.write("\n")  # Empty line to separate scenarios
-
-    def flatten_relaxed(self, file_path: str, comments: bool = False) -> None:
+    def flatten_relaxed(self, flat_file: TextIO, comments: bool = False) -> None:
         """Writes a flat (no indentation) feature file representing the forest
         using the "relaxed" flattening mode.
 
@@ -482,36 +484,31 @@ class ScenarioForest:
 
         Parameters
         ----------
-        file_path : str
-            Path to flat feature file
+        flat_file : io.TextIOWrapper
+            The flat feature file
 
         comments : bool, default = False
             Whether or not to write comments
         """
 
-        with open(file_path, "w") as flat_file:
-            # Feature declaration:
-            if self.name is not None:
-                ScenarioForest.write_feature_declaration(flat_file, self)
+        for scenario in self.leaf_scenarios():
+            steps: List[Step] = []
+            # organizational and validated scenarios used for naming:
+            scenarios_for_naming: List[Scenario] = []
+            for path_scenario in scenario.path_scenarios():
+                steps += path_scenario.prerequisites()
+                steps += path_scenario.actions()
+                if path_scenario.is_organizational():
+                    scenarios_for_naming.append(path_scenario)
+                elif not path_scenario.validated:
+                    steps += path_scenario.assertions()
+                    path_scenario.validated = True
+                    scenarios_for_naming.append(path_scenario)
 
-            for scenario in self.leaf_scenarios():
-                steps: List[Step] = []
-                # organizational and validated scenarios used for naming:
-                scenarios_for_naming: List[Scenario] = []
-                for path_scenario in scenario.path_scenarios():
-                    steps += path_scenario.prerequisites()
-                    steps += path_scenario.actions()
-                    if path_scenario.is_organizational():
-                        scenarios_for_naming.append(path_scenario)
-                    elif not path_scenario.validated:
-                        steps += path_scenario.assertions()
-                        path_scenario.validated = True
-                        scenarios_for_naming.append(path_scenario)
-
-                ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
-                # Write steps:
-                ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
-                flat_file.write("\n")  # Empty line to separate scenarios
+            ScenarioForest.write_scenario_name(flat_file, scenarios_for_naming)
+            # Write steps:
+            ScenarioForest.write_scenario_steps(flat_file, steps, comments=comments)
+            flat_file.write("\n")  # Empty line to separate scenarios
 
     def find(self, *scenario_names: List[str]) -> Optional[Scenario]:
         """Finds and returns a scenario by the names of all scenarios along the path
