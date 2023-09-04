@@ -151,7 +151,9 @@ class Feature:
                 )
                 if scenario_match is not None:
                     feature.append_scenario(
-                        scenario_match.group("scenario_name"), at_level=level
+                        scenario_match.group("scenario_name"),
+                        at_level=level,
+                        line_no=line_no
                     )
                     continue
 
@@ -181,7 +183,7 @@ class Feature:
 
         return feature
 
-    def append_scenario(self, scenario_name: str, at_level: int) -> Scenario:
+    def append_scenario(self, scenario_name: str, at_level: int, line_no: int) -> Scenario:
         """Append a scenario to the feature.
 
         Parameters
@@ -192,6 +194,10 @@ class Feature:
         at_level : int
             The indentation level of the scenario in the input file.
             Used for indentation validation.
+
+        line_no : int
+            The line number of the scenario in the input file.
+            Used in InvalidFeatureFile error message.
         """
 
         if at_level > 1:  # Non-root scenario:
@@ -210,8 +216,8 @@ class Feature:
                 )
             else:
                 raise InvalidFeatureFileError(
-                    "Excessive indentation at line: Scenario: {name}".format(
-                        name=scenario_name
+                    "Excessive indentation at line {line_no}: Scenario: {name}".format(
+                        line_no=line_no + 1, name=scenario_name
                     )
                 )
 

@@ -30,7 +30,7 @@ def test_invalid_file_excessive_indentation():
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
         mw.Feature.from_file("test/fixtures/in/invalid/excessive_indentation.feature")
     assert (
-        str(error_info.value) == "Excessive indentation at line: Scenario: "
+        str(error_info.value) == "Excessive indentation at line 13: Scenario: "
         "Indented 2 instead of 1 levels"
     )
 
