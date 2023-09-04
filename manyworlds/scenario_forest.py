@@ -261,7 +261,8 @@ class ScenarioForest:
     def write_feature_declaration(
         cls, file_handle: TextIO, forest: "ScenarioForest"
     ) -> None:
-        """Writes feature name and (optional) description to the end of a flat feature file.
+        """Writes feature name and (optional) description
+        to the end of a flat feature file.
 
         Parameters
         ----------
