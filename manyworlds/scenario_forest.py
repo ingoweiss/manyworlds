@@ -258,6 +258,26 @@ class ScenarioForest:
             last_step.data = DataTable(data_row)
 
     @classmethod
+    def write_feature_declaration(
+        cls, file_handle: TextIO, forest: "ScenarioForest"
+    ) -> None:
+        """Writes feature name and (optional) description to the end of a flat feature file.
+
+        Parameters
+        ----------
+        file_handle : TextIO
+            The file to which to append the feature declaration
+        """
+        if forest.name is not None:
+            file_handle.write(
+                "Feature: {feature_name}\n\n".format(feature_name=forest.name)
+            )
+        if len(forest.description) > 0:
+            for line in forest.description:
+                file_handle.write("    {line}\n".format(line=line))
+            file_handle.write("\n")
+
+    @classmethod
     def write_scenario_name(
         cls, file_handle: TextIO, scenarios: List[Scenario]
     ) -> None:
@@ -423,6 +443,11 @@ class ScenarioForest:
         """
 
         with open(file_path, "w") as flat_file:
+
+            # Feature declaration:
+            if self.name is not None:
+                ScenarioForest.write_feature_declaration(flat_file, self)
+
             for scenario in [
                 sc for sc in self.scenarios() if not sc.is_organizational()
             ]:
@@ -465,6 +490,12 @@ class ScenarioForest:
         """
 
         with open(file_path, "w") as flat_file:
+
+
+            # Feature declaration:
+            if self.name is not None:
+                ScenarioForest.write_feature_declaration(flat_file, self)
+
             for scenario in self.leaf_scenarios():
                 steps: List[Step] = []
                 # organizational and validated scenarios used for naming:
