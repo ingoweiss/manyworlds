@@ -23,24 +23,24 @@ def main():
     args = parser.parse_args()
 
     # read hierarchical feature file:
-    forest = mw.ScenarioForest.from_file(args.input)
+    feature = mw.Feature.from_file(args.input)
 
-    print_scenario_forest(forest)
+    print_feature_outline(feature)
 
     # write flat feature file:
     if args.output:
-        forest.flatten(args.output, mode=args.mode, comments=args.comments)
+        feature.flatten(args.output, mode=args.mode, comments=args.comments)
 
 
-def print_scenario_forest(forest: mw.ScenarioForest) -> None:
-    """print scenario forest outline to terminal"""
+def print_feature_outline(feature: mw.Feature) -> None:
+    """print feature outline to terminal"""
     level_open: Dict[int, bool] = {}
     branch_shape: str
     later_sibling: bool
     sib: mw.scenario.Scenario
     sib_index: Optional[int]
 
-    for sc in forest.scenarios():
+    for sc in feature.scenarios():
         scenario_string = sc.name
 
         # Indentation and branch shapes:

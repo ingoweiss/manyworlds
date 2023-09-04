@@ -1,5 +1,6 @@
 -r common.txt
 pytest
+pytest-watch
 coverage
 ruff
 mypy

@@ -1,4 +1,4 @@
-"""Test the ScenarioForest class"""
+"""Test the Feature class"""
 
 import os
 import filecmp
@@ -20,7 +20,7 @@ def clear_out_directory():
 
 
 def test_find():
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
 
     # Finds existing root scenario:
     root_scenario = forest.find("View users")
@@ -41,7 +41,7 @@ def test_find():
 
 def test_from_file():
     """Test the structure of the forest graph after using the 'from_file' method"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
 
     assert forest.name == "User Deactivation"
     assert len(forest.description) == 3
@@ -76,7 +76,7 @@ def test_from_file():
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
     forest.flatten("test/out/scenarios_flat_strict.feature")
     assert filecmp.cmp(
         "test/out/scenarios_flat_strict.feature",
@@ -86,7 +86,7 @@ def test_flatten_strict():
 
 def test_flatten_strict_with_comments():
     """Test the 'flatten' method in 'strict' mode with comments turned on"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
     forest.flatten(
         "test/out/scenarios_flat_strict_with_comments.feature", comments=True
     )
@@ -98,7 +98,7 @@ def test_flatten_strict_with_comments():
 
 def test_flatten_relaxed():
     """Test the 'flatten' method in 'relaxed' mode"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
     forest.flatten("test/out/scenarios_flat_relaxed.feature", mode="relaxed")
     assert filecmp.cmp(
         "test/out/scenarios_flat_relaxed.feature",
@@ -108,7 +108,7 @@ def test_flatten_relaxed():
 
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
-    forest = mw.ScenarioForest.from_file(
+    forest = mw.Feature.from_file(
         "test/fixtures/in/scenario_forest_with_organizational_scenarios.feature"
     )
     forest.flatten(
