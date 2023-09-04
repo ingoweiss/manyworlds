@@ -8,7 +8,7 @@ import manyworlds as mw
 def test_invalid_file_mis_spelled_conjunction():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
+        mw.Feature.from_file(
             "test/fixtures/in/invalid/invalid_conjunction.feature"
         )
     assert (
@@ -20,7 +20,7 @@ def test_invalid_file_mis_spelled_conjunction():
 def test_invalid_file_invalid_indentation():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
+        mw.Feature.from_file(
             "test/fixtures/in/invalid/invalid_indentation.feature"
         )
     assert (
@@ -32,7 +32,7 @@ def test_invalid_file_invalid_indentation():
 def test_invalid_file_excessive_indentation():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
+        mw.Feature.from_file(
             "test/fixtures/in/invalid/excessive_indentation.feature"
         )
     assert (
@@ -44,7 +44,7 @@ def test_invalid_file_excessive_indentation():
 def test_invalid_file_excessive_step_indentation():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
+        mw.Feature.from_file(
             "test/fixtures/in/invalid/excessive_step_indentation.feature"
         )
     assert str(error_info.value) == "Invalid indentation at line: " "I see users"
@@ -53,7 +53,7 @@ def test_invalid_file_excessive_step_indentation():
 def test_invalid_file_feature_after_scenario():
     """Test that the correct error is raised when attempting to parse invalid files"""
     with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
-        mw.ScenarioForest.from_file(
+        mw.Feature.from_file(
             "test/fixtures/in/invalid/feature_after_scenario.feature"
         )
     assert (

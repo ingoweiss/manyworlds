@@ -8,7 +8,7 @@ import manyworlds as mw
 @pytest.fixture(scope="module")
 def given_step():
     """load a representative root scenario"""
-    forest = mw.ScenarioForest.from_file("test/fixtures/in/scenario_forest.feature")
+    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
     return forest.find("View users").steps[0]
 
 
