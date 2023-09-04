@@ -139,7 +139,8 @@ class ScenarioForest:
                         continue
                     else:
                         raise InvalidFeatureFileError(
-                            "Feature line is allowed only at beginning of file but was encountered at line {line_no}: {line}".format(
+                            "Feature line is allowed only at beginning of file "
+                            "but was encountered at line {line_no}: {line}".format(
                                 line_no=line_no + 1, line=line
                             )
                         )
