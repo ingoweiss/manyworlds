@@ -166,7 +166,9 @@ class Feature:
                 # Data table line?
                 new_data_row: Optional[DataTableRow] = DataTable.parse_line(line)
                 if new_data_row:
-                    feature.append_data_row(new_data_row, at_level=level)
+                    feature.append_data_row(
+                        new_data_row, at_level=level, line_no=line_no
+                    )
                     continue
 
                 # Feature description line?
@@ -183,7 +185,9 @@ class Feature:
 
         return feature
 
-    def append_scenario(self, scenario_name: str, at_level: int, line_no: int) -> Scenario:
+    def append_scenario(
+            self, scenario_name: str, at_level: int, line_no: int
+        ) -> Scenario:
         """Append a scenario to the feature.
 
         Parameters
@@ -254,7 +258,7 @@ class Feature:
                 )
             )
 
-    def append_data_row(self, data_row: DataTableRow, at_level: int) -> None:
+    def append_data_row(self, data_row: DataTableRow, at_level: int, line_no: int) -> None:
         """Appends a data row to the feature.
 
         Adds a data table to the last step if necessary
@@ -268,6 +272,10 @@ class Feature:
         at_level : int
             The level at which to add the data row.
             Used for indentation validation.
+
+        line_no : int
+            The line number of the data row in the input file.
+            Used in InvalidFeatureFile error message.
         """
 
         last_step: Step = self.scenarios()[-1].steps[-1]
