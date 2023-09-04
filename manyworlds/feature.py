@@ -266,9 +266,7 @@ class Feature:
             last_step.data = DataTable(data_row)
 
     @classmethod
-    def write_feature_declaration(
-        cls, file_handle: TextIO, feature: "Feature"
-    ) -> None:
+    def write_feature_declaration(cls, file_handle: TextIO, feature: "Feature") -> None:
         """Writes feature name and (optional) description
         to the end of a flat feature file.
 
