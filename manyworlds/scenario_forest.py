@@ -326,7 +326,7 @@ class ScenarioForest:
         """
 
         last_step: Optional[Step] = None
-        for step_num, step in enumerate(steps):
+        for step in steps:
             first_of_type = (
                 last_step is None or last_step.conjunction != step.conjunction
             )
