@@ -153,7 +153,7 @@ class Feature:
                     feature.append_scenario(
                         scenario_match.group("scenario_name"),
                         at_level=level,
-                        line_no=line_no
+                        line_no=line_no,
                     )
                     continue
 
@@ -186,8 +186,8 @@ class Feature:
         return feature
 
     def append_scenario(
-            self, scenario_name: str, at_level: int, line_no: int
-        ) -> Scenario:
+        self, scenario_name: str, at_level: int, line_no: int
+    ) -> Scenario:
         """Append a scenario to the feature.
 
         Parameters
@@ -253,12 +253,13 @@ class Feature:
         else:
             raise InvalidFeatureFileError(
                 "Invalid indentation at line {line_no}: {name}".format(
-                    line_no=line_no + 1,
-                    name=step.name
+                    line_no=line_no + 1, name=step.name
                 )
             )
 
-    def append_data_row(self, data_row: DataTableRow, at_level: int, line_no: int) -> None:
+    def append_data_row(
+        self, data_row: DataTableRow, at_level: int, line_no: int
+    ) -> None:
         """Appends a data row to the feature.
 
         Adds a data table to the last step if necessary
