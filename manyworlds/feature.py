@@ -160,7 +160,7 @@ class Feature:
                 # Step line?
                 new_step: Optional[Step] = feature.parse_step_line(line)
                 if new_step:
-                    feature.append_step(new_step, at_level=level)
+                    feature.append_step(new_step, at_level=level, line_no=line_no)
                     continue
 
                 # Data table line?
@@ -224,7 +224,7 @@ class Feature:
         else:  # Root scenario:
             return Scenario(scenario_name, self.graph)
 
-    def append_step(self, step: Step, at_level: int) -> None:
+    def append_step(self, step: Step, at_level: int, line_no: int) -> None:
         """Appends a step to the feature.
 
         Parameters
@@ -235,6 +235,10 @@ class Feature:
         at_level : int
             The level at which to add the step.
             Used for indentation validation.
+
+        line_no : int
+            The line number of the step in the input file.
+            Used in InvalidFeatureFile error message.
         """
 
         # Ensure the indentation level of the step matches
@@ -244,7 +248,10 @@ class Feature:
             last_scenario.steps.append(step)
         else:
             raise InvalidFeatureFileError(
-                "Invalid indentation at line: {name}".format(name=step.name)
+                "Invalid indentation at line {line_no}: {name}".format(
+                    line_no=line_no + 1,
+                    name=step.name
+                )
             )
 
     def append_data_row(self, data_row: DataTableRow, at_level: int) -> None:
