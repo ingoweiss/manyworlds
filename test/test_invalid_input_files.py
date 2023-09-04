@@ -48,3 +48,11 @@ def test_invalid_file_excessive_step_indentation():
             "test/fixtures/in/invalid/excessive_step_indentation.feature"
         )
     assert str(error_info.value) == "Invalid indentation at line: " "I see users"
+
+def test_invalid_file_feature_after_scenario():
+    """Test that the correct error is raised when attempting to parse invalid files"""
+    with pytest.raises(mw.exceptions.InvalidFeatureFileError) as error_info:
+        mw.ScenarioForest.from_file(
+            "test/fixtures/in/invalid/feature_after_scenario.feature"
+        )
+    assert str(error_info.value) == "Feature line is allowed only at beginning of file but was encountered at line 5: Feature: User Deactivation"

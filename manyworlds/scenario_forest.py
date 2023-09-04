@@ -134,8 +134,15 @@ class ScenarioForest:
                 # Feature line?
                 feature_match: Optional[re.Match] = cls.FEATURE_PATTERN.match(line)
                 if feature_match is not None:
-                    forest.name = feature_match["feature_name"]
-                    continue
+                    if len(forest.scenarios()) == 0:
+                        forest.name = feature_match["feature_name"]
+                        continue
+                    else:
+                        raise InvalidFeatureFileError(
+                            "Feature line is allowed only at beginning of file but was encountered at line {line_no}: {line}".format(
+                                line_no=line_no + 1, line=line
+                            )
+                        )
 
                 # Scenario line?
                 scenario_match: Optional[re.Match] = Scenario.SCENARIO_PATTERN.match(
