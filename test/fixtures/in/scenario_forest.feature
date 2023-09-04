@@ -1,8 +1,8 @@
 Feature: User Deactivation
 
-As an administrator
-I want to deactivate users who leave the company
-So that only authorized users have access to the system
+    As an administrator
+    I want to deactivate users who leave the company
+    So that only authorized users have access to the system
 
 Scenario: View users
 Given the following users:
