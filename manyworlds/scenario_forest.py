@@ -422,7 +422,6 @@ class ScenarioForest:
         """
 
         with open(file_path, "w") as flat_file:
-
             # Feature declaration:
             if self.name is not None:
                 ScenarioForest.write_feature_declaration(flat_file, self)
@@ -450,9 +449,7 @@ class ScenarioForest:
             Whether or not to write comments
         """
 
-        for scenario in [
-            sc for sc in self.scenarios() if not sc.is_organizational()
-        ]:
+        for scenario in [sc for sc in self.scenarios() if not sc.is_organizational()]:
             # Scenario name:
             scenarios_for_naming: List[Scenario] = [
                 sc
