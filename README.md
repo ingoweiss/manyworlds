@@ -346,13 +346,13 @@ Then I see "2 users selected"
 
 Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk operations" scenario in the above example is organizational.
 
-### Using the ScenarioForest Class Directly
+### Using the Feature Class Directly
 
 If you want to use Manyworlds in your code rather than using the cli, here's how to to do that:
 
 ```python
 import manyworlds as mw
-mw.ScenarioForest.from_file('hierarchical.feature').flatten('flat.feature')
+mw.Feature.from_file('hierarchical.feature').flatten('flat.feature')
 ```
 
 ### Installation
