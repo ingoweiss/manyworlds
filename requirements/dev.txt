@@ -5,3 +5,4 @@ coverage
 ruff
 mypy
 black
+hatch
