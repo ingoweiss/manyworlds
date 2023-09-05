@@ -6,3 +6,5 @@ ruff
 mypy
 black
 hatch
+sphinx
+sphinx_rtd_theme
