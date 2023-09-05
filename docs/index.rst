@@ -5,10 +5,10 @@ Manyworlds
    :maxdepth: 5
    :caption: Contents:
 
-manyworlds.scenario\_forest module
+manyworlds.feature module
 ----------------------------------
 
-.. automodule:: manyworlds.scenario_forest
+.. automodule:: manyworlds.feature
    :members:
    :undoc-members:
    :show-inheritance:
