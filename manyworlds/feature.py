@@ -29,8 +29,11 @@ class Feature:
     """
 
     graph: ig.Graph
+    """The graph representing the scenario tree(s)"""
     name: Optional[str]
+    """The name of the feature"""
     description: List[str]
+    """The description lines for the feature"""
 
     def __init__(self) -> None:
         """Constructor method"""
