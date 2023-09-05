@@ -249,9 +249,9 @@ Then I see "2 users selected"
 ```
 ### Flattening Modes
 
-By default, Manyworlds creates one scenario per node in the scenario tree, resulting in scenarios with one set of "whens" followed by one set of "thens" which is generally considered best practice. This is the "strict" mode.
+By default, Manyworlds creates one scenario per _node_ in the scenario tree, resulting in scenarios with one set of "whens" followed by one set of "thens" which is generally considered best practice. This is the "strict" mode.
 
-Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. However, it does reduce repetition and is therefore shorter and will run faster:
+Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in fewer scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. However, it does reduce repetition and will run faster:
 
 ```bash
 python -m manyworlds --input hierarchical.feature --output flat.feature --mode relaxed
