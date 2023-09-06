@@ -6,6 +6,8 @@ Organize BDD scenarios as hierarchical trees for more concise and expressive fea
 ![PyPI - Version](https://img.shields.io/pypi/v/manyworlds)
 ![PyPI - License](https://img.shields.io/pypi/l/manyworlds)
 [![Downloads](https://static.pepy.tech/badge/manyworlds)](https://pepy.tech/project/manyworlds)
+![Style Black](https://img.shields.io/badge/style-black-000000)
+
 
 BDD scenarios tend to be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
 
