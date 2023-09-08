@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
 
 [project]
@@ -31,5 +31,5 @@ classifiers = [
 [tool.hatch.version]
 path = "manyworlds/__init__.py"
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
