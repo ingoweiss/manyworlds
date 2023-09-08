@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1] - 2023-09-08
+
+### Fixed
+
+- Fix broken dependency declaration in pyproject.toml (dependencies were not installed during installation of manyworlds 0.4.0)
+
 ## [0.4.0] - 2023-09-05
 
 ### Added
