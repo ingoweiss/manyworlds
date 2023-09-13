@@ -353,7 +353,7 @@ Scenarios without assertions are considered "organizational" and are used to gro
 
 ### Comments
 
-You can add inline comments to just about anything in Manyworlds input files: Steps, scenarios and even data table lines! This is in contrast to the Cucumber specification which only allows comments on separate lines. Comments are stripped in Manyworlds output files so that they are valid Gherkin.
+You can add inline comments to just about anything in Manyworlds input files: Steps, scenarios and even data table lines! This is in contrast to the Cucumber specification which only allows comments on separate lines. Comments are stripped in Manyworlds output files so they validate as Gherkin.
 
 ### Using the Feature Class Directly
 
