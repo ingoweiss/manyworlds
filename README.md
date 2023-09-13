@@ -9,7 +9,7 @@ Organize BDD scenarios as hierarchical trees for more concise and expressive fea
 ![Style Black](https://img.shields.io/badge/style-black-000000)
 
 
-BDD scenarios tend to be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
+BDD feature files can be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
 
 ```text
 A¹ → A² → A³: O¹
@@ -32,9 +32,9 @@ The tree structure has a few advantages:
 2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice missing scenarios.
 
- Manyworlds provides a simple way to reap some of the benefits of scenario trees. Now we can:
- 1. Use indentation in Gherkin feature files to organize scenarios hierarchically.
- 2. Expand hierarchical feature files into standard flat feature files which can be run using any testing tool that understands Gherkin.
+ What if we could use indentation in feature files to reap the benefits of scenario trees? That is the simple idea behind Manyworlds. With Manyworlds we can:
+ 1. Use indentation in feature files to organize scenarios hierarchically.
+ 2. Expand the hierarchical feature files into standard, flat feature files which can be run using any testing tool that understands Gherkin.
 
 ## Usage
 
