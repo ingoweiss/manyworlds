@@ -12,20 +12,20 @@ Organize BDD scenarios as hierarchical trees for more concise and expressive fea
 BDD feature files can be verbose and repetitive. Consider the following four scenarios, represented as a series of actions (A) resulting in an observed outcome (O):
 
 ```text
-A¹ → A² → A³: O¹
-A¹ → A² → A³ → A⁴: O²
-A¹ → A² → A³ → A⁵: O³
-A¹ → A² → A³ → A⁵ → A⁶: O⁴
+S1 A¹ → A² → A³: O¹
+S2 A¹ → A² → A³ → A⁴: O²
+S3 A¹ → A² → A³ → A⁵: O³
+S4 A¹ → A² → A³ → A⁵ → A⁶: O⁴
 ```
-All four scenarios share the first three actions (A¹, A², A³). Scenario 3 and 4 share one additional action (A⁵). This is very repetitive and makes it hard to understand how the scenarios are organized.
+All four scenarios (S1-S4) share the first three actions (A¹, A², A³). Scenarios S3 and S4 share one additional action (A⁵). This is very repetitive and makes it hard to understand how the scenarios are organized.
 
 Now consider the same scenarios represented as a tree:
 
 ```text
-A¹ → A² → A³: O¹
-           ↳ A⁴: O²
-           ↳ A⁵: O³
-              ↳ A⁶: O⁴
+S1 A¹ → A² → A³: O¹
+S2            ↳ A⁴: O²
+S3            ↳ A⁵: O³
+S4               ↳ A⁶: O⁴
 ```
 The tree structure has a few advantages:
 1. Many actions are now implied by their scenario's position in the tree and no longer need to be stated which eliminates repetition and noise.
