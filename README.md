@@ -95,10 +95,10 @@ Then I see the following users:
                     Scenario: Cancel out of bulk deactivation of users
                     When I click "Cancel"
                     Then I see "2 users selected"
-                    And I see the following users: # same as before
+                    And I see the following users:
                         | Name   | Status |
-                        | Ben    | Active |
-                        | Alice  | Active |
+                        | Ben    | Active | # still there
+                        | Alice  | Active | # still there
                         | Connie | Active |
 ```
 
@@ -350,6 +350,10 @@ Then I see "2 users selected"
 ### Organizational Scenarios
 
 Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk operations" scenario in the above example is organizational.
+
+### Comments
+
+You can add inline comments to just about anything in Manyworlds input files: Steps, scenarios and even data table lines! This is in contrast to the Cucumber specification which only allows comments on separate lines. Comments are stripped in Manyworlds output files so that they are valid Gherkin.
 
 ### Using the Feature Class Directly
 
