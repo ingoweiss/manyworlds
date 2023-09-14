@@ -41,6 +41,8 @@ The tree structure has a few benefits:
 Here is an example of an indented, hierarchical feature file:
 
 ```Cucumber
+# hierarchical.feature
+
 Scenario: View users
 Given the following users:
     | Name   | Status      |
@@ -124,7 +126,7 @@ View users
 and write the following flat feature file:
 
 ```Cucumber
-# file flat.feature
+# flat.feature
 
 Scenario: View users
 Given the following users:
@@ -265,7 +267,7 @@ python -m manyworlds --input hierarchical.feature --output flat_relaxed.feature 
 This will write the following "relaxed" flat feature file:
 
 ```Cucumber
-# file flat_relaxed.feature
+# flat_relaxed.feature
 
 Scenario: View users > Deactivate user
 Given the following users:
