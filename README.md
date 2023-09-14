@@ -27,12 +27,12 @@ S²             ↳ A⁴: O²
 S³             ↳ A⁵: O³
 S⁴                ↳ A⁶: O⁴
 ```
-The tree structure has a few advantages:
+The tree structure has a few benefits:
 1. Many actions are now implied by their scenario's position in the tree and no longer need to be stated which eliminates repetition and noise.
 2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice missing scenarios.
 
- What if we could use indentation in feature files to reap the benefits of scenario trees? That is the simple idea behind Manyworlds. With Manyworlds we can:
+ What if … we could use _indentation_ in feature files to reap these benefits? That is the simple idea behind Manyworlds. With Manyworlds we can:
  1. Use indentation in feature files to organize scenarios hierarchically.
  2. Expand the hierarchical feature files into standard, flat feature files which can be run using any testing tool that understands Gherkin.
 
