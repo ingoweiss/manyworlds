@@ -380,3 +380,13 @@ mw.Feature.from_file('hierarchical.feature').flatten('flat.feature')
 ```bash
 pip install manyworlds
 ```
+
+### What If Test Runners Could Run Scenario Trees Directly?
+
+I think this is where it could get really interesting. A few examples:
+
+1. If a scenario fails in an action, the runner could mark all descendent scenarios as failing without even running them!
+2. A runner could use the 'relaxed' strategy under the hood to run scenarios optimized for speed, then display test results using the 'strict' strategy optimized for informational clarity.
+3. A runner could use network analysis tools to decide how to cleave apart the tree for optimal parallelization.
+
+I would think that these could add up to significant performance gains for faster running (and faster failing) test suites.
