@@ -109,7 +109,7 @@ Now let's use Manyworlds to flatten it:
 ```bash
 python -m manyworlds --input hierarchical.feature --output flat.feature
 ```
-This will print the structure of the scenario tree(s) to the terminal:
+This will print the structure of the scenario tree(s) to the terminal …
 
 ```bash
 View users
@@ -123,7 +123,7 @@ View users
                 ├── Confirm bulk deactivation of users
                 └── Cancel out of bulk deactivation of users
 ```
-and write the following flat feature file:
+… and write the following flat feature file:
 
 ```Cucumber
 # flat.feature
@@ -386,7 +386,7 @@ pip install manyworlds
 I believe this is where it could get really interesting. A few examples:
 
 1. If a scenario fails in an action, the runner could mark all descendent scenarios as failing without even running them!
-2. A runner could use the 'relaxed' strategy under the hood to run scenarios optimized for speed, then display test results using the 'strict' strategy optimized for informational clarity.
+2. A runner could use the 'relaxed' mode under the hood to run scenarios optimized for speed, then display test results using the 'strict' mode optimized for informational clarity.
 3. A runner could use network analysis tools to decide how to cleave apart the tree for optimal parallelization.
 
 I would think that these might add up to significant performance gains for faster running (and faster failing) test suites.
