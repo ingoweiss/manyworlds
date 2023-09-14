@@ -351,13 +351,18 @@ Then I see "2 users selected"
     | Alice  | Active |
     | Connie | Active |
 ```
+
+### File Size
+
+Manyworlds feature files are significantly shorter than the conventional output feature files, which is another reason I why find them easier to maintain. The exact factor is a function mostly of the depth of the scenario hierarchy. A factor of around 3 is not uncommon.
+
 ### Organizational Scenarios
 
 Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk Operations" scenario in the above example is organizational.
 
 ### Comments
 
-You can add inline comments to just about anything in Manyworlds input files: Steps, scenarios and even data table lines! This is in contrast to the [Gherkin specification](https://cucumber.io/docs/gherkin/reference) which only allows comments on separate lines. Comments are stripped in Manyworlds output files so they validate as Gherkin.
+You can add inline comments to just about anything in Manyworlds feature files: Steps, scenarios and even data table lines! This is in contrast to the [Gherkin specification](https://cucumber.io/docs/gherkin/reference) which only allows comments on separate lines. Comments are stripped in Manyworlds output files so they validate as Gherkin.
 
 ### Using the Feature Class Directly
 
