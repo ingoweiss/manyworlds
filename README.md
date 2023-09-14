@@ -124,6 +124,8 @@ View users
 and write the following flat feature file:
 
 ```Cucumber
+# file flat.feature
+
 Scenario: View users
 Given the following users:
     | Name   | Status      |
@@ -257,12 +259,14 @@ By default, Manyworlds creates one scenario per _node_ in the scenario tree, res
 Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in fewer scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. However, it does reduce repetition and will run faster:
 
 ```bash
-python -m manyworlds --input hierarchical.feature --output flat.feature --mode relaxed
+python -m manyworlds --input hierarchical.feature --output flat_relaxed.feature --mode relaxed
 ```
 
 This will write the following "relaxed" flat feature file:
 
 ```Cucumber
+# file flat_relaxed.feature
+
 Scenario: View users > Deactivate user
 Given the following users:
     | Name   | Status      |
@@ -349,7 +353,7 @@ Then I see "2 users selected"
 ```
 ### Organizational Scenarios
 
-Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk operations" scenario in the above example is organizational.
+Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk Operations" scenario in the above example is organizational.
 
 ### Comments
 
