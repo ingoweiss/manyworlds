@@ -24,7 +24,7 @@ def test_cli():
 
 def test_cli_hierarchy_output():
     exit_status = os.system(
-        "python -m manyworlds --input test/fixtures/in/scenario_forest.feature "
+        "python -m manyworlds --input test/fixtures/in/feature.feature "
         "--output test/out/scenarios_flat_strict_cli.feature "
         "> test/out/scenario_hierarchy.txt"
     )

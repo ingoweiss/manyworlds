@@ -8,15 +8,15 @@ import manyworlds as mw
 @pytest.fixture(scope="module")
 def root_scenario():
     """load a representative root scenario"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
-    return forest.find("View users")
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    return feature.find("View users")
 
 
 @pytest.fixture(scope="module")
 def leaf_scenario():
     """load a representative leaf scenario"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
-    return forest.find(
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    return feature.find(
         "View users",
         "Bulk operations",
         "Select user",

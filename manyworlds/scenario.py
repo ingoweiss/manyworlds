@@ -226,7 +226,7 @@ class Scenario:
             return [vx["scenario"] for vx in self.graph.vs if vx.indegree() == 0]
             # TODO: This duplicates the implementation of
             # ScenarioForest#root_scenarios() but Scenario does not currently
-            # have access to its forest. Might want to change that
+            # have access to its feature. Might want to change that
 
     def path_scenarios(self) -> List["Scenario"]:
         """Returns the complete scenario path from the root scenario to

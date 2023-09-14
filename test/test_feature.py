@@ -20,36 +20,36 @@ def clear_out_directory():
 
 
 def test_find():
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
 
     # Finds existing root scenario:
-    root_scenario = forest.find("View users")
+    root_scenario = feature.find("View users")
     assert type(root_scenario) == mw.scenario.Scenario
 
     # Does not find anything if first name provided is not a root scenario:
-    root_scenario = forest.find("Select user")
+    root_scenario = feature.find("Select user")
     assert root_scenario is None
 
     # Finds existing non-root scenario
-    non_root_scenario = forest.find("View users", "Bulk operations", "Select user")
+    non_root_scenario = feature.find("View users", "Bulk operations", "Select user")
     assert non_root_scenario is not None
 
     # Does not find non-existing non-root scenario (path scenario missing)
-    non_root_scenario = forest.find("View users", "Select user")
+    non_root_scenario = feature.find("View users", "Select user")
     assert non_root_scenario is None
 
 
 def test_from_file():
-    """Test the structure of the forest graph after using the 'from_file' method"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
+    """Test the structure of the feature graph after using the 'from_file' method"""
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
 
-    assert forest.name == "User Deactivation"
-    assert len(forest.description) == 3
+    assert feature.name == "User Deactivation"
+    assert len(feature.description) == 3
 
-    assert len(forest.root_scenarios()) == 1
+    assert len(feature.root_scenarios()) == 1
 
     # root scenario:
-    root_scenario = forest.find("View users")
+    root_scenario = feature.find("View users")
     assert root_scenario.name == "View users"
     assert len(root_scenario.prerequisites()) == 1
     assert len(root_scenario.actions()) == 1
@@ -60,7 +60,7 @@ def test_from_file():
     assert data[2]["Status"] == "Active"
 
     # leaf scenario:
-    leaf_scenario = forest.find(
+    leaf_scenario = feature.find(
         "View users",
         "Bulk operations",
         "Select user",
@@ -76,8 +76,8 @@ def test_from_file():
 
 def test_flatten_strict():
     """Test the 'flatten' method in 'strict' mode"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
-    forest.flatten("test/out/scenarios_flat_strict.feature")
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    feature.flatten("test/out/scenarios_flat_strict.feature")
     assert filecmp.cmp(
         "test/out/scenarios_flat_strict.feature",
         "test/fixtures/out/scenarios_flat_strict.feature",
@@ -86,8 +86,8 @@ def test_flatten_strict():
 
 def test_flatten_strict_with_comments():
     """Test the 'flatten' method in 'strict' mode with comments turned on"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
-    forest.flatten(
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    feature.flatten(
         "test/out/scenarios_flat_strict_with_comments.feature", comments=True
     )
     assert filecmp.cmp(
@@ -98,8 +98,8 @@ def test_flatten_strict_with_comments():
 
 def test_flatten_relaxed():
     """Test the 'flatten' method in 'relaxed' mode"""
-    forest = mw.Feature.from_file("test/fixtures/in/scenario_forest.feature")
-    forest.flatten("test/out/scenarios_flat_relaxed.feature", mode="relaxed")
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    feature.flatten("test/out/scenarios_flat_relaxed.feature", mode="relaxed")
     assert filecmp.cmp(
         "test/out/scenarios_flat_relaxed.feature",
         "test/fixtures/out/scenarios_flat_relaxed.feature",
@@ -108,10 +108,10 @@ def test_flatten_relaxed():
 
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
-    forest = mw.Feature.from_file(
-        "test/fixtures/in/scenario_forest_with_organizational_scenarios.feature"
+    feature = mw.Feature.from_file(
+        "test/fixtures/in/feature_with_organizational_scenarios.feature"
     )
-    forest.flatten(
+    feature.flatten(
         "test/out/scenarios_flat_strict_with_organizational_scenarios.feature",
         mode="strict",
     )
