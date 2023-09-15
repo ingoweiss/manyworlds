@@ -389,4 +389,4 @@ I believe this is where it could get really interesting. A few examples:
 2. A runner could use the 'relaxed' strategy under the hood to run scenarios optimized for speed, then display test results using the 'strict' strategy optimized for informational clarity.
 3. A runner could use network analysis tools to decide how to cleave apart the tree for optimal parallelization.
 
-I would think that these might add up to significant performance gains for faster running (and faster failing) test suites.
+I would think that these might result in significantly faster running (and faster failing) test suites. The display of test results might also be significantly more informative compared to what we have today.
