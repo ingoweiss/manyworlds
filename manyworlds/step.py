@@ -10,7 +10,7 @@ class Step:
     """A BDD scenario step"""
 
     STEP_PATTERN: re.Pattern = re.compile(
-        "^(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?"
+        "^(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(?:# (?P<comment>.+))?$"
     )
 
     name: str

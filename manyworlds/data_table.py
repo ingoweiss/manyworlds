@@ -30,7 +30,7 @@ class DataTable:
     """A Gherkin data table"""
 
     TABLE_ROW_PATTERN = re.compile(
-        r"^(?P<table_row>\| ([^|]* +\|)+)( # (?P<comment>.+))?"
+        r"^(?P<table_row>\| ([^|]* +\|)+)(?: +# (?P<comment>.+))?$"
     )
     """Pipe-delimited list of values, followed by an optional comment"""
 
