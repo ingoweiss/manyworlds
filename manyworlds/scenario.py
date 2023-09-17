@@ -12,7 +12,7 @@ from .step import Step, Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    SCENARIO_PATTERN: re.Pattern = re.compile("^Scenario: (?P<scenario_name>.*)")
+    SCENARIO_PATTERN: re.Pattern = re.compile("^Scenario: (?P<scenario_name>[^#]*)(?:# (?P<comment>.+))?$")
     """
     re.Pattern
 

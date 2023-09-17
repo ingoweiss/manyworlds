@@ -26,7 +26,7 @@ Then I see the following users:
         | Alice  | Active |
         | Connie | Active |
 
-    Scenario: Bulk operations
+    Scenario: Bulk operations # on multiple users
 
         Scenario: Select user
         When I select user "Ben"
