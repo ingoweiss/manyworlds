@@ -72,6 +72,7 @@ def test_from_file():
     assert len(leaf_scenario.prerequisites()) == 0
     assert len(leaf_scenario.actions()) == 1
     assert len(leaf_scenario.assertions()) == 2
+    assert leaf_scenario.comment == 'by clicking "OK"'
 
 
 def test_flatten_strict():

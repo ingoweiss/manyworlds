@@ -48,7 +48,7 @@ Then I see the following users:
                 When I click "Deactivate all"
                 Then I see a confirmation dialog
 
-                    Scenario: Confirm bulk deactivation of users
+                    Scenario: Confirm bulk deactivation of users # by clicking "OK"
                     When I click "OK"
                     Then I see "0 users selected"
                     And I see the following users: # I no longer see Ben or Alice

@@ -165,6 +165,7 @@ class Feature:
                 if scenario_match is not None:
                     feature.append_scenario(
                         scenario_match.group("scenario_name"),
+                        comment=scenario_match.group("comment"),
                         at_level=level,
                         line_no=line_no,
                     )
@@ -199,7 +200,7 @@ class Feature:
         return feature
 
     def append_scenario(
-        self, scenario_name: str, at_level: int, line_no: int
+        self, scenario_name: str, comment: Optional[str], at_level: int, line_no: int
     ) -> Scenario:
         """Append a scenario to the feature.
 
@@ -207,6 +208,9 @@ class Feature:
         ----------
         scenario : Scenario
             The scenario to append
+
+        comment : str, optional
+            A comment
 
         at_level : int
             The indentation level of the scenario in the input file.
@@ -230,6 +234,7 @@ class Feature:
                     scenario_name,
                     self.graph,
                     parent_scenario=parent_level_scenarios[-1],
+                    comment=comment,
                 )
             else:
                 raise InvalidFeatureFileError(
@@ -239,7 +244,7 @@ class Feature:
                 )
 
         else:  # Root scenario:
-            return Scenario(scenario_name, self.graph)
+            return Scenario(scenario_name, self.graph, comment=comment)
 
     def append_step(self, step: Step, at_level: int, line_no: int) -> None:
         """Appends a step to the feature.

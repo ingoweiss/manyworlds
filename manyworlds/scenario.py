@@ -34,10 +34,15 @@ class Scenario:
     graph: ig.Graph
     vertex: ig.Vertex
     steps: List[Step]
+    comment: Optional[str]
     _validated: bool
 
     def __init__(
-        self, name: str, graph: ig.Graph, parent_scenario: Optional["Scenario"] = None
+        self,
+        name: str,
+        graph: ig.Graph,
+        parent_scenario: Optional["Scenario"] = None,
+        comment: Optional[str] = None,
     ) -> None:
         """Constructor method
 
@@ -51,6 +56,8 @@ class Scenario:
 
         parent_scenario: Scenario (optional)
             The parent scenario to connect the new scenario to
+
+        comment : str, optional
         """
 
         self.name = name.strip()
@@ -59,7 +66,7 @@ class Scenario:
         self.vertex["scenario"] = self
         self.steps = []
         self._validated = False
-
+        self.comment = comment.strip() if comment is not None else None
         if parent_scenario is not None:
             self.graph.add_edge(parent_scenario.vertex, self.vertex)
 
