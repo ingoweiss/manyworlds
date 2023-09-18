@@ -12,11 +12,21 @@ from .step import Step, Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    SCENARIO_PATTERN: re.Pattern = re.compile("^Scenario: (?P<scenario_name>[^#]*)(?:# (?P<comment>.+))?$")
+    SCENARIO_PATTERN: re.Pattern = re.compile(
+        r"""
+        ^                        # start of line
+        Scenario:                # "Scenario:" keyword
+        [ ]                      # space
+        (?P<scenario_name>[^#]*) # scenario name
+        (?:\# (?P<comment>.+))?  # optional comment
+        $                        # end of line
+        """,
+        re.VERBOSE
+    )
     """
     re.Pattern
 
-    The string "Scenario: ", followed by arbitrary string
+    Pattern describing a BDD scenario line ("Scenario: …")
     """
 
     name: str
