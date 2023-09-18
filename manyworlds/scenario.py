@@ -27,6 +27,7 @@ class Scenario:
     re.Pattern
 
     Pattern describing a BDD scenario line ("Scenario: …")
+    followed by an optional comment
     """
 
     name: str

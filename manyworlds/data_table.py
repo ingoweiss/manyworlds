@@ -39,6 +39,8 @@ class DataTable:
         re.VERBOSE,
     )
     """
+    re.Pattern
+
     Pattern describing a Gherkin data table row
     followed by an optional comment
     """

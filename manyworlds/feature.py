@@ -32,7 +32,11 @@ class Feature:
         re.VERBOSE,
     )
     re.Pattern
-    """ Pattern describing a BDD feature line ("Feature: …")"""
+    """
+    re.Pattern
+
+    Pattern describing a BDD feature line ("Feature: …")
+    """
 
     graph: ig.Graph
     """The graph representing the scenario tree(s)"""
