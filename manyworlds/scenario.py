@@ -21,7 +21,7 @@ class Scenario:
         (?:\# (?P<comment>.+))?  # optional comment
         $                        # end of line
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
     """
     re.Pattern

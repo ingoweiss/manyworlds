@@ -29,7 +29,7 @@ class Feature:
         (?P<feature_name>.*) # feature name
         $                    # end of line
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
     re.Pattern
     """ Pattern describing a BDD feature line ("Feature: …")"""

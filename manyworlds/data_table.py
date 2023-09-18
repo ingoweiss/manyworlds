@@ -36,7 +36,7 @@ class DataTable:
         (?:[ ]+\#[ ](?P<comment>.+))?      # optional comment
         $                                  # end of line
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
     """
     Pattern describing a Gherkin data table row
