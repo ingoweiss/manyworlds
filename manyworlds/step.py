@@ -10,7 +10,15 @@ class Step:
     """A BDD scenario step"""
 
     STEP_PATTERN: re.Pattern = re.compile(
-        "^(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(?:# (?P<comment>.+))?$"
+        r"""
+        ^                                        # start of line
+        (?P<conjunction>Given|When|Then|And|But) # conjunction
+        [ ]                                      # space
+        (?P<name>[^#]+)                          # name
+        (?:\#[ ](?P<comment>.+))?                # optional comment
+        $                                        # end of line
+        """,
+        re.VERBOSE,
     )
 
     name: str
