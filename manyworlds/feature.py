@@ -21,12 +21,18 @@ class Feature:
     The number of spaces per indentation level
     """
 
-    FEATURE_PATTERN: re.Pattern = re.compile("^Feature: (?P<feature_name>.*)")
-    """
+    FEATURE_PATTERN: re.Pattern = re.compile(
+        r"""
+        ^                    # start of line
+        Feature:             # "Feature:" keyword
+        [ ]                  # space
+        (?P<feature_name>.*) # feature name
+        $                    # end of line
+        """,
+        re.VERBOSE
+    )
     re.Pattern
-
-    The string "Feature: ", followed by arbitrary string
-    """
+    """ Pattern describing a BDD feature line ("Feature: …")"""
 
     graph: ig.Graph
     """The graph representing the scenario tree(s)"""
