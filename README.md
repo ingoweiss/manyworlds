@@ -258,7 +258,7 @@ Then I see "2 users selected"
 
 By default, Manyworlds creates one scenario per _node_ in the scenario tree, resulting in scenarios with one set of "whens" followed by one set of "thens" which is generally considered best practice. This is the "strict" mode.
 
-Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in fewer scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. However, it does reduce repetition and will run faster:
+Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in fewer scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. It does, however, reduce repetition and will therefore run faster:
 
 ```bash
 python -m manyworlds --input hierarchical.feature --output flat_relaxed.feature --mode relaxed
@@ -356,15 +356,15 @@ Then I see "2 users selected"
 
 ### File Size
 
-Manyworlds feature files are significantly shorter than the conventional output feature files, which is another reason I why find them easier to maintain. The exact factor is a function mostly of the depth of the scenario hierarchy. A factor of around 3 is not uncommon.
+Manyworlds feature files are significantly shorter than conventional feature files, which is another reason I why find them easier to maintain. The exact factor is a function mostly of the depth of the scenario hierarchy. A factor of around 3 is not uncommon.
 
 ### Organizational Scenarios
 
-Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios, but their names are used as a "breadcrumb" in the names of their child scenarios. The "Bulk Operations" scenario in the above example is organizational.
+Scenarios without assertions are considered "organizational" and are used to group child scenarios only. In output feature files, organizationasl scenarios will not appear as their own scenarios. Instead, their names are used to prefix the names of their child scenarios. The "Bulk Operations" scenario in the above example is organizational.
 
 ### Comments
 
-You can add inline comments to just about anything in Manyworlds feature files: Steps, scenarios and even data table rows! This is in contrast to the [Gherkin specification](https://cucumber.io/docs/gherkin/reference) which only allows comments on separate lines. Comments are stripped in Manyworlds output files so they validate as Gherkin.
+While I was at it, I thought I'd fix one of my pet peeves about Gherkin - comments. The [Gherkin specification](https://cucumber.io/docs/gherkin/reference) allows comments on separate lines only. In Manyworlds files, you can add inline comments to just about anything: Steps, scenarios and even data table rows!
 
 ### Using the Feature Class Directly
 
@@ -386,7 +386,7 @@ pip install manyworlds
 I believe this is where it could get really interesting. A few examples:
 
 1. If a scenario fails in an action, the runner could mark all descendent scenarios as failing without even running them!
-2. A runner could use the 'relaxed' mode under the hood to run scenarios optimized for speed, then display test results using the 'strict' mode optimized for informational clarity.
+2. A runner could use the 'relaxed' mode under the hood to run scenarios optimized for speed, then display test results using the 'strict' mode optimized for information.
 3. A runner could use network analysis tools to decide how to cleave apart the tree for optimal parallelization.
 
 I would think that these might result in significantly faster running (and faster failing) test suites. The display of test results might also be significantly more informative compared to what we have today.
