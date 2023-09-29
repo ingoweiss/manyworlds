@@ -378,7 +378,9 @@ class Feature:
         # (4) Optional comment:
         destination_scenario: Scenario = scenarios[-1]
         if comments is True and destination_scenario.comment is not None:
-            scenario_string += " # {comment}".format(comment=destination_scenario.comment)
+            scenario_string += " # {comment}".format(
+                comment=destination_scenario.comment
+            )
 
         # (4) Write name:
         file_handle.write(scenario_string + "\n")
@@ -511,7 +513,9 @@ class Feature:
                 for sc in scenario.path_scenarios()
                 if sc.is_organizational() or sc == scenario
             ]
-            Feature.write_scenario_name(flat_file, scenarios_for_naming, comments=comments)
+            Feature.write_scenario_name(
+                flat_file, scenarios_for_naming, comments=comments
+            )
 
             ancestor_scenarios = scenario.ancestors()
             steps: List[Step] = []
@@ -557,7 +561,9 @@ class Feature:
                     path_scenario.validated = True
                     scenarios_for_naming.append(path_scenario)
 
-            Feature.write_scenario_name(flat_file, scenarios_for_naming, comments=comments)
+            Feature.write_scenario_name(
+                flat_file, scenarios_for_naming, comments=comments
+            )
             # Write steps:
             Feature.write_scenario_steps(flat_file, steps, comments=comments)
             flat_file.write("\n")  # Empty line to separate scenarios
