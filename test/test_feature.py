@@ -113,7 +113,7 @@ def test_flatten_relaxed_with_comments():
     feature.flatten(
         "test/out/scenarios_flat_relaxed_with_comments.feature",
         mode="relaxed",
-        comments=True
+        comments=True,
     )
     assert filecmp.cmp(
         "test/out/scenarios_flat_relaxed_with_comments.feature",
