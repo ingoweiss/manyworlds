@@ -4,7 +4,7 @@ Feature: User Deactivation
     I want to deactivate users who leave the company
     So that only authorized users have access to the system
 
-Scenario: View users
+Scenario: View users > Deactivate user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -17,16 +17,7 @@ Then I see the following users:
     | Ben    | Active |
     | Alice  | Active |
     | Connie | Active |
-
-Scenario: Deactivate user
-Given the following users:
-    | Name   | Status      |
-    | Ben    | Active      |
-    | Alice  | Active      |
-    | Connie | Active      |
-    | Dan    | Deactivated | # inactive
-When I go to "Users"
- And I click "Deactivate" for user "Ben"
+When I click "Deactivate" for user "Ben"
  And I click "OK"
 Then I see the following users:
 # I no longer see Ben
@@ -34,7 +25,7 @@ Then I see the following users:
     | Alice  | Active |
     | Connie | Active |
 
-Scenario: [Bulk operations] Select user
+Scenario: [Bulk operations] Select user > Deselect user
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -44,20 +35,10 @@ Given the following users:
 When I go to "Users"
  And I select user "Ben"
 Then I see "1 user selected"
-
-Scenario: [Bulk operations] Deselect user
-Given the following users:
-    | Name   | Status      |
-    | Ben    | Active      |
-    | Alice  | Active      |
-    | Connie | Active      |
-    | Dan    | Deactivated | # inactive
-When I go to "Users"
- And I select user "Ben"
- And I deselect user "Ben"
+When I deselect user "Ben"
 Then I see "0 users selected"
 
-Scenario: [Bulk operations] Select multiple users
+Scenario: [Bulk operations] Select multiple users > Deselect all users
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -68,21 +49,10 @@ When I go to "Users"
  And I select user "Ben"
  And I select user "Alice"
 Then I see "2 users selected"
-
-Scenario: [Bulk operations] Deselect all users
-Given the following users:
-    | Name   | Status      |
-    | Ben    | Active      |
-    | Alice  | Active      |
-    | Connie | Active      |
-    | Dan    | Deactivated | # inactive
-When I go to "Users"
- And I select user "Ben"
- And I select user "Alice"
- And I click "Deselect all"
+When I click "Deselect all"
 Then I see "0 users selected"
 
-Scenario: [Bulk operations] Bulk deactivate users
+Scenario: [Bulk operations] Bulk deactivate users > Confirm bulk deactivation of users # by clicking "OK"
 Given the following users:
     | Name   | Status      |
     | Ben    | Active      |
@@ -94,19 +64,7 @@ When I go to "Users"
  And I select user "Alice"
  And I click "Deactivate all"
 Then I see a confirmation dialog
-
-Scenario: [Bulk operations] Confirm bulk deactivation of users # by clicking "OK"
-Given the following users:
-    | Name   | Status      |
-    | Ben    | Active      |
-    | Alice  | Active      |
-    | Connie | Active      |
-    | Dan    | Deactivated | # inactive
-When I go to "Users"
- And I select user "Ben"
- And I select user "Alice"
- And I click "Deactivate all"
- And I click "OK"
+When I click "OK"
 Then I see "0 users selected"
  And I see the following users:
 # I no longer see Ben or Alice

@@ -107,6 +107,16 @@ def test_flatten_relaxed():
     )
 
 
+def test_flatten_relaxed_with_comments():
+    """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    feature.flatten("test/out/scenarios_flat_relaxed_with_comments.feature", mode="relaxed", comments=True)
+    assert filecmp.cmp(
+        "test/out/scenarios_flat_relaxed_with_comments.feature",
+        "test/fixtures/out/scenarios_flat_relaxed_with_comments.feature",
+    )
+
+
 def test_organizational_scenarios():
     """Test the correct output of organizational scenarios"""
     feature = mw.Feature.from_file(
