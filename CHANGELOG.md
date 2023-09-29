@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Support for in-line comments on scenario lines
+
 ## [0.4.1] - 2023-09-08
 
 ### Fixed
