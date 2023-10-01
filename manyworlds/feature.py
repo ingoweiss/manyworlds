@@ -408,9 +408,11 @@ class Feature:
             first_of_type = (
                 last_step is None or last_step.conjunction != step.conjunction
             )
-            file_handle.write(step.format(first_of_type=first_of_type) + "\n")
+            step_string = step.format(first_of_type=first_of_type)
             if comments and step.comment:
-                file_handle.write("# {comment}\n".format(comment=step.comment))
+                step_string += " # {comment}".format(comment=step.comment)
+            file_handle.write(step_string + "\n")
+
             if step.data:
                 Feature.write_data_table(file_handle, step.data, comments)
             last_step = step

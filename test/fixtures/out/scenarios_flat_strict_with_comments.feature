@@ -28,8 +28,7 @@ Given the following users:
 When I go to "Users"
  And I click "Deactivate" for user "Ben"
  And I click "OK"
-Then I see the following users:
-# I no longer see Ben
+Then I see the following users: # I no longer see Ben
     | Name   | Status |
     | Alice  | Active |
     | Connie | Active |
@@ -108,8 +107,7 @@ When I go to "Users"
  And I click "Deactivate all"
  And I click "OK"
 Then I see "0 users selected"
- And I see the following users:
-# I no longer see Ben or Alice
+ And I see the following users: # I no longer see Ben or Alice
     | Name   | Status |
     | Connie | Active |
 
