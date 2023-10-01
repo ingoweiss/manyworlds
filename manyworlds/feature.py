@@ -405,10 +405,10 @@ class Feature:
 
         last_step: Optional[Step] = None
         for step in steps:
-            first_of_type = (
+            first_of_type: bool = (
                 last_step is None or last_step.conjunction != step.conjunction
             )
-            step_string = step.format(first_of_type=first_of_type)
+            step_string: str = step.format(first_of_type=first_of_type)
             if comments and step.comment:
                 step_string += " # {comment}".format(comment=step.comment)
             file_handle.write(step_string + "\n")
