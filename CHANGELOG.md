@@ -6,6 +6,10 @@
 
 - Support for in-line comments on scenario lines
 
+### Changed
+
+- Write step comments in-line instead of on following line
+
 ## [0.4.1] - 2023-09-08
 
 ### Fixed
