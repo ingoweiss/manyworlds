@@ -5,6 +5,7 @@
 ### Added
 
 - Support for in-line comments on scenario lines
+- Support for line comments (ignored for output)
 
 ### Changed
 

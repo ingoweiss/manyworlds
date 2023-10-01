@@ -185,6 +185,11 @@ class Feature:
                     )
                     continue
 
+                # Comment line?
+                comment_match: Optional[re.Match] = re.compile("^#.*$").match(line)
+                if comment_match is not None:
+                    continue
+
                 # Feature description line?
                 if feature.name is not None and len(feature.scenarios()) == 0:
                     feature.description.append(line)

@@ -63,3 +63,5 @@ Then I see the following users:
                         | Ben    | Active | # still there
                         | Alice  | Active | # still there
                         | Connie | Active |
+
+                    # TODO: add a scenario for bulk activation of users
