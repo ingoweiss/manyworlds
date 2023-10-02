@@ -38,6 +38,22 @@ class Feature:
     Pattern describing a BDD feature line ("Feature: …")
     """
 
+    COMMENT_PATTERN: re.Pattern = re.compile(
+        r"""
+        ^                    # start of line
+        \#                   # "#" character
+        [ ]                  # space
+        (?P<comment>.*)      # comment
+        $                    # end of line
+        """,
+        re.VERBOSE,
+    )
+    """
+    re.Pattern
+
+    Pattern describing a comment line ("# …")
+    """
+
     graph: ig.Graph
     """The graph representing the scenario tree(s)"""
     name: Optional[str]
@@ -186,7 +202,7 @@ class Feature:
                     continue
 
                 # Comment line?
-                comment_match: Optional[re.Match] = re.compile("^#.*$").match(line)
+                comment_match: Optional[re.Match] = cls.COMMENT_PATTERN.match(line)
                 if comment_match is not None:
                     continue
 
