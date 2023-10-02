@@ -31,7 +31,6 @@ class Feature:
         """,
         re.VERBOSE,
     )
-    re.Pattern
     """
     re.Pattern
 
