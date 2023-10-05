@@ -18,7 +18,7 @@ def main():
         help="flattening mode",
     )
     parser.add_argument(
-        "--comments", "-c", default=False, action="store_true", help="output comments"
+        "--write-comments", "-c", default=False, action="store_true", help="output comments"
     )
     args = parser.parse_args()
 
@@ -29,7 +29,7 @@ def main():
 
     # write flat feature file:
     if args.output:
-        feature.flatten(args.output, mode=args.mode, comments=args.comments)
+        feature.flatten(args.output, mode=args.mode, write_comments=args.write_comments)
 
 
 def print_feature_outline(feature: mw.Feature) -> None:

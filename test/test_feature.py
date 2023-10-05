@@ -89,7 +89,7 @@ def test_flatten_strict_with_comments():
     """Test the 'flatten' method in 'strict' mode with comments turned on"""
     feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
     feature.flatten(
-        "test/out/scenarios_flat_strict_with_comments.feature", comments=True
+        "test/out/scenarios_flat_strict_with_comments.feature", write_comments=True
     )
     assert filecmp.cmp(
         "test/out/scenarios_flat_strict_with_comments.feature",
@@ -113,7 +113,7 @@ def test_flatten_relaxed_with_comments():
     feature.flatten(
         "test/out/scenarios_flat_relaxed_with_comments.feature",
         mode="relaxed",
-        comments=True,
+        write_comments=True,
     )
     assert filecmp.cmp(
         "test/out/scenarios_flat_relaxed_with_comments.feature",

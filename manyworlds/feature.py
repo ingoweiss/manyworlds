@@ -346,7 +346,7 @@ class Feature:
 
     @classmethod
     def write_scenario_name(
-        cls, file_handle: TextIO, scenarios: List[Scenario], comments: bool = False
+        cls, file_handle: TextIO, scenarios: List[Scenario], write_comment: bool = False
     ) -> None:
         """Writes formatted scenario name to the end of a "relaxed" flat feature file.
 
@@ -358,8 +358,8 @@ class Feature:
         scenarios : List[Scenario]
             Organizational and validated scenarios along the path
 
-        comments : bool, default = False
-            Whether or not to write comments
+        write_comment : bool, default = False
+            Whether or not to write comment if present
         """
 
         # (1) Group consecutive regular or organizational scenarios:
@@ -397,7 +397,7 @@ class Feature:
 
         # (4) Optional comment:
         destination_scenario: Scenario = scenarios[-1]
-        if comments is True and destination_scenario.comment is not None:
+        if write_comment is True and destination_scenario.comment is not None:
             scenario_string += " # {comment}".format(
                 comment=destination_scenario.comment
             )
@@ -407,7 +407,7 @@ class Feature:
 
     @classmethod
     def write_scenario_steps(
-        cls, file_handle: TextIO, steps: List[Step], comments: bool = False
+        cls, file_handle: TextIO, steps: List[Step], write_comments: bool = False
     ) -> None:
         """Writes formatted scenario steps to the end of the flat feature file.
 
@@ -419,8 +419,8 @@ class Feature:
         steps : List[Step]
             Steps to append to file_handle
 
-        comments: bool, default = False
-            Whether or not to write comments
+        write_comments: bool, default = False
+            Whether or not to write comments if present
         """
 
         last_step: Optional[Step] = None
@@ -429,17 +429,19 @@ class Feature:
                 last_step is None or last_step.conjunction != step.conjunction
             )
             step_string: str = step.format(first_of_type=first_of_type)
-            if comments and step.comment:
+            if write_comments and step.comment:
                 step_string += " # {comment}".format(comment=step.comment)
             file_handle.write(step_string + "\n")
 
             if step.data:
-                Feature.write_data_table(file_handle, step.data, comments)
+                Feature.write_data_table(
+                    file_handle, step.data, write_comment=write_comments
+                )
             last_step = step
 
     @classmethod
     def write_data_table(
-        cls, file_handle: TextIO, data_table: DataTable, comments: bool = False
+        cls, file_handle: TextIO, data_table: DataTable, write_comment: bool = False
     ) -> None:
         """Writes formatted data table to the end of the flat feature file.
 
@@ -451,8 +453,8 @@ class Feature:
         data_table : DataTable
             A data table
 
-        comments : bool
-            Whether or not to write comments
+        write_comment : bool
+            Whether or not to write comment if present
         """
 
         # Determine column widths to accommodate all values:
@@ -474,7 +476,7 @@ class Feature:
             )
 
             # add comments:
-            if comments and row.comment:
+            if write_comment and row.comment:
                 table_row_string += " # {comment}".format(comment=row.comment)
 
             # write line:
@@ -484,7 +486,7 @@ class Feature:
         self,
         file_path: str,
         mode: Literal["strict", "relaxed"] = "strict",
-        comments: bool = False,
+        write_comments: bool = False,
     ) -> None:
         """Writes a flat (no indentation) feature file representing the feature.
 
@@ -507,11 +509,11 @@ class Feature:
 
             # Scenarios:
             if mode == "strict":
-                self.flatten_strict(flat_file, comments=comments)
+                self.flatten_strict(flat_file, write_comments=write_comments)
             elif mode == "relaxed":
-                self.flatten_relaxed(flat_file, comments=comments)
+                self.flatten_relaxed(flat_file, write_comments=write_comments)
 
-    def flatten_strict(self, flat_file: TextIO, comments: bool = False) -> None:
+    def flatten_strict(self, flat_file: TextIO, write_comments: bool = False) -> None:
         """Write. a flat (no indentation) feature file representing the feature
         using the "strict" flattening mode.
 
@@ -524,7 +526,7 @@ class Feature:
         flat_file : io.TextIOWrapper
             The flat feature file
 
-        comments : bool, default = False
+        write_comments : bool, default = False
             Whether or not to write comments
         """
 
@@ -536,7 +538,7 @@ class Feature:
                 if sc.is_organizational() or sc == scenario
             ]
             Feature.write_scenario_name(
-                flat_file, scenarios_for_naming, comments=comments
+                flat_file, scenarios_for_naming, write_comment=write_comments
             )
 
             ancestor_scenarios = scenario.ancestors()
@@ -549,10 +551,10 @@ class Feature:
             steps += scenario.steps
 
             # Write steps:
-            Feature.write_scenario_steps(flat_file, steps, comments=comments)
+            Feature.write_scenario_steps(flat_file, steps, write_comments=write_comments)
             flat_file.write("\n")  # Empty line to separate scenarios
 
-    def flatten_relaxed(self, flat_file: TextIO, comments: bool = False) -> None:
+    def flatten_relaxed(self, flat_file: TextIO, write_comments: bool = False) -> None:
         """Writes a flat (no indentation) feature file representing the feature
         using the "relaxed" flattening mode.
 
@@ -565,8 +567,8 @@ class Feature:
         flat_file : io.TextIOWrapper
             The flat feature file
 
-        comments : bool, default = False
-            Whether or not to write comments
+        write_comments : bool, default = False
+            Whether or not to write comments if present
         """
 
         for scenario in self.leaf_scenarios():
@@ -584,10 +586,10 @@ class Feature:
                     scenarios_for_naming.append(path_scenario)
 
             Feature.write_scenario_name(
-                flat_file, scenarios_for_naming, comments=comments
+                flat_file, scenarios_for_naming, write_comment=write_comments
             )
             # Write steps:
-            Feature.write_scenario_steps(flat_file, steps, comments=comments)
+            Feature.write_scenario_steps(flat_file, steps, write_comments=write_comments)
             flat_file.write("\n")  # Empty line to separate scenarios
 
     def find(self, *scenario_names: List[str]) -> Optional[Scenario]:
