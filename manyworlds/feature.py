@@ -203,7 +203,7 @@ class Feature:
                 # Comment line?
                 comment_match: Optional[re.Match] = cls.COMMENT_PATTERN.match(line)
                 if comment_match is not None:
-                    continue # skip comment lines
+                    continue  # skip comment lines
 
                 # Feature description line?
                 if feature.name is not None and len(feature.scenarios()) == 0:
