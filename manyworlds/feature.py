@@ -551,7 +551,9 @@ class Feature:
             steps += scenario.steps
 
             # Write steps:
-            Feature.write_scenario_steps(flat_file, steps, write_comments=write_comments)
+            Feature.write_scenario_steps(
+                flat_file, steps, write_comments=write_comments
+            )
             flat_file.write("\n")  # Empty line to separate scenarios
 
     def flatten_relaxed(self, flat_file: TextIO, write_comments: bool = False) -> None:
@@ -589,7 +591,9 @@ class Feature:
                 flat_file, scenarios_for_naming, write_comment=write_comments
             )
             # Write steps:
-            Feature.write_scenario_steps(flat_file, steps, write_comments=write_comments)
+            Feature.write_scenario_steps(
+                flat_file, steps, write_comments=write_comments
+            )
             flat_file.write("\n")  # Empty line to separate scenarios
 
     def find(self, *scenario_names: List[str]) -> Optional[Scenario]:
