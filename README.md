@@ -1,6 +1,6 @@
 # Manyworlds
 
-Organize BDD scenarios as hierarchical trees for more concise and expressive feature files.
+Organize BDD scenarios as directed graphs for more concise and expressive feature files.
 
 [![Build](https://github.com/ingoweiss/manyworlds/actions/workflows/build.yml/badge.svg)](https://github.com/ingoweiss/manyworlds/actions/workflows/build.yml)
 ![PyPI - Version](https://img.shields.io/pypi/v/manyworlds)
@@ -19,7 +19,7 @@ S⁴  A¹ → A² → A³ → A⁵ → A⁶: O⁴
 ```
 All four scenarios (S¹–S⁴) share the first three actions (A¹, A², A³). Scenarios S³ and S⁴ share one additional action (A⁵). This is very repetitive and makes it hard to understand how the scenarios are organized.
 
-Now consider the same scenarios represented as a tree:
+Now consider the same scenarios represented as a directed graph:
 
 ```text
 S¹  A¹ → A² → A³: O¹
@@ -27,21 +27,21 @@ S²             ↳ A⁴: O²
 S³             ↳ A⁵: O³
 S⁴                ↳ A⁶: O⁴
 ```
-The tree structure has a few benefits:
-1. Many actions are now implied by their scenario's position in the tree and no longer need to be stated which eliminates repetition and noise.
+The graph format has a few benefits:
+1. Many actions are now implied by their scenario's position in the graph and no longer need to be stated which eliminates repetition and noise.
 2. We can now see how scenarios relate to each other. Specifically, we can start thinking in terms of parent and child scenarios.
 3. We now have what amounts to a decision tree of possible paths that a user can take through the app. This makes it easier to notice missing scenarios.
 
- What if … we could use _indentation_ in feature files to reap these benefits? That is the simple idea behind Manyworlds. With Manyworlds we can:
- 1. Use indentation in feature files to organize scenarios hierarchically.
- 2. Expand the hierarchical feature files into standard, flat feature files which can be run using any testing tool that understands Gherkin.
+So how could we start experimenting with scenario graphs using existing tools? What if we could simply use _indentation_ in feature files? This would limit us to one type of graph (trees/forests), but maybe that would cover the vast majority of use cases? That is the idea behind Manyworlds. With Manyworlds we can:
+ 1. Use indentation in feature files to organize scenarios as scenario trees.
+ 2. Expand indented feature files into standard, flat feature files which can be run using any testing tool that understands Gherkin.
 
 ## Usage
 
-Here is an example of an indented, hierarchical feature file:
+Here is an example of an indented feature file:
 
 ```Cucumber
-# hierarchical.feature
+# indented.feature
 
 Scenario: View users
 Given the following users:
@@ -70,19 +70,19 @@ Then I see the following users:
         Scenario: Select user
         When I select user "Ben"
         Then I see "1 user selected"
-        
+
             Scenario: Deselect user
             When I deselect user "Ben"
             Then I see "0 users selected"
-            
+
             Scenario: Select multiple users
             When I select user "Alice"
             Then I see "2 users selected"
-            
+
                 Scenario: Deselect all users
                 When I click "Deselect all"
                 Then I see "0 users selected"
-                
+
                 Scenario: Bulk deactivate users
                 When I click "Deactivate all"
                 Then I see a confirmation dialog
@@ -107,7 +107,7 @@ Then I see the following users:
 Now let's use Manyworlds to flatten it:
 
 ```bash
-python -m manyworlds --input hierarchical.feature --output flat.feature
+python -m manyworlds --input indented.feature --output flat.feature
 ```
 This will print the structure of the scenario tree(s) to the terminal …
 
@@ -261,7 +261,7 @@ By default, Manyworlds creates one scenario per _node_ in the scenario tree, res
 Manyworlds also supports a "relaxed" mode that creates one scenario per _leaf node_ in the scenario tree, resulting in fewer scenarios that may have multiple consecutive "when/then" pairs which is widely considered an anti-pattern. For starters, it makes it hard to name scenarios well. However, it does reduce repetition and will run faster:
 
 ```bash
-python -m manyworlds --input hierarchical.feature --output flat_relaxed.feature --mode relaxed
+python -m manyworlds --input indented.feature --output flat_relaxed.feature --mode relaxed
 ```
 
 This will write the following "relaxed" flat feature file:
@@ -356,7 +356,7 @@ Then I see "2 users selected"
 
 ### File Size
 
-Manyworlds feature files are significantly shorter than the conventional output feature files, which is another reason I why find them easier to maintain. The exact factor is a function mostly of the depth of the scenario hierarchy. A factor of around 3 is not uncommon.
+Manyworlds feature files are significantly shorter than the conventional output feature files, which is another reason I why find them easier to maintain. The exact factor is a function mostly of the depth of the scenario tree. A factor of around 3 is not uncommon.
 
 ### Organizational Scenarios
 
@@ -368,7 +368,7 @@ You can add inline comments to just about anything in Manyworlds feature files: 
 
 ### Using the Feature Class Directly
 
-If you want to use Manyworlds in your code rather than using the cli, here's how to to do that:
+If you want to use Manyworlds in your code rather than using the cli, here's how to do that:
 
 ```python
 import manyworlds as mw
