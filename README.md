@@ -389,7 +389,7 @@ mw.Feature.from_file('hierarchical.feature').flatten('flat.feature')
 pip install manyworlds
 ```
 
-### What If Test Runners Could Run Scenario Trees Directly?
+### What If Test Runners Could Run Scenario Graphs Directly?
 
 I believe this is where it could get really interesting. A few examples:
 
