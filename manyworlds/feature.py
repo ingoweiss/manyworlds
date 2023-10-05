@@ -429,7 +429,7 @@ class Feature:
                 last_step is None or last_step.conjunction != step.conjunction
             )
             step_string: str = step.format(first_of_type=first_of_type)
-            if write_comments and step.comment:
+            if write_comments is True and step.comment is not None:
                 step_string += " # {comment}".format(comment=step.comment)
             file_handle.write(step_string + "\n")
 
@@ -476,7 +476,7 @@ class Feature:
             )
 
             # add comments:
-            if write_comment and row.comment:
+            if write_comment is True and row.comment is not None:
                 table_row_string += " # {comment}".format(comment=row.comment)
 
             # write line:
