@@ -72,6 +72,7 @@ def test_from_file():
     assert len(leaf_scenario.prerequisites()) == 0
     assert len(leaf_scenario.actions()) == 1
     assert len(leaf_scenario.assertions()) == 2
+    assert leaf_scenario.comment == 'by clicking "OK"'
 
 
 def test_flatten_strict():
@@ -88,7 +89,7 @@ def test_flatten_strict_with_comments():
     """Test the 'flatten' method in 'strict' mode with comments turned on"""
     feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
     feature.flatten(
-        "test/out/scenarios_flat_strict_with_comments.feature", comments=True
+        "test/out/scenarios_flat_strict_with_comments.feature", write_comments=True
     )
     assert filecmp.cmp(
         "test/out/scenarios_flat_strict_with_comments.feature",
@@ -103,6 +104,20 @@ def test_flatten_relaxed():
     assert filecmp.cmp(
         "test/out/scenarios_flat_relaxed.feature",
         "test/fixtures/out/scenarios_flat_relaxed.feature",
+    )
+
+
+def test_flatten_relaxed_with_comments():
+    """Test the 'flatten' method in 'relaxed' mode with comments turned on"""
+    feature = mw.Feature.from_file("test/fixtures/in/feature.feature")
+    feature.flatten(
+        "test/out/scenarios_flat_relaxed_with_comments.feature",
+        mode="relaxed",
+        write_comments=True,
+    )
+    assert filecmp.cmp(
+        "test/out/scenarios_flat_relaxed_with_comments.feature",
+        "test/fixtures/out/scenarios_flat_relaxed_with_comments.feature",
     )
 
 

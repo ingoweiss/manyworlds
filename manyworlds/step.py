@@ -10,20 +10,27 @@ class Step:
     """A BDD scenario step"""
 
     STEP_PATTERN: re.Pattern = re.compile(
-        "^(?P<conjunction>Given|When|Then|And|But) (?P<name>[^#]+)(# (?P<comment>.+))?"
+        r"""
+        ^                                        # start of line
+        (?P<conjunction>Given|When|Then|And|But) # conjunction
+        [ ]                                      # space
+        (?P<name>[^#]+)                          # name
+        (?:\#[ ](?P<comment>.+))?                # optional comment
+        $                                        # end of line
+        """,
+        re.VERBOSE,
     )
+    """
+    re.Pattern
+
+    Pattern describing a BDD step line ("Given", "When", ...)
+    with optional comment
+    """
 
     name: str
     conjunction: Literal["Given", "When", "Then"]
     data: Optional[DataTable]
     comment: Optional[str]
-
-    """
-    re.Pattern
-
-    A conjunction ("Given", "When", ...), followed by an arbitrary string,
-    followed by an optional comment
-    """
 
     def __init__(
         self, name: str, data: Optional[DataTable] = None, comment: Optional[str] = None

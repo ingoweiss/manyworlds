@@ -12,21 +12,37 @@ from .step import Step, Prerequisite, Action, Assertion
 class Scenario:
     """A BDD Scenario"""
 
-    SCENARIO_PATTERN: re.Pattern = re.compile("^Scenario: (?P<scenario_name>.*)")
+    SCENARIO_PATTERN: re.Pattern = re.compile(
+        r"""
+        ^                        # start of line
+        Scenario:                # "Scenario:" keyword
+        [ ]                      # space
+        (?P<scenario_name>[^#]*) # scenario name
+        (?:\# (?P<comment>.+))?  # optional comment
+        $                        # end of line
+        """,
+        re.VERBOSE,
+    )
     """
     re.Pattern
 
-    The string "Scenario: ", followed by arbitrary string
+    Pattern describing a BDD scenario line ("Scenario: …")
+    followed by an optional comment
     """
 
     name: str
     graph: ig.Graph
     vertex: ig.Vertex
     steps: List[Step]
+    comment: Optional[str]
     _validated: bool
 
     def __init__(
-        self, name: str, graph: ig.Graph, parent_scenario: Optional["Scenario"] = None
+        self,
+        name: str,
+        graph: ig.Graph,
+        parent_scenario: Optional["Scenario"] = None,
+        comment: Optional[str] = None,
     ) -> None:
         """Constructor method
 
@@ -40,6 +56,8 @@ class Scenario:
 
         parent_scenario: Scenario (optional)
             The parent scenario to connect the new scenario to
+
+        comment : str, optional
         """
 
         self.name = name.strip()
@@ -48,7 +66,7 @@ class Scenario:
         self.vertex["scenario"] = self
         self.steps = []
         self._validated = False
-
+        self.comment = comment.strip() if comment is not None else None
         if parent_scenario is not None:
             self.graph.add_edge(parent_scenario.vertex, self.vertex)
 

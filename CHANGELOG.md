@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.0] - 2023-10-05
+
+### Added
+
+- Support for in-line comments on scenario lines
+- Support for separate line comments (ignored for output)
+
+### Changed
+
+- Write step comments in-line instead of on following line
+
 ## [0.4.1] - 2023-09-08
 
 ### Fixed

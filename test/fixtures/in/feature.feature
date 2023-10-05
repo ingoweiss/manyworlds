@@ -26,7 +26,7 @@ Then I see the following users:
         | Alice  | Active |
         | Connie | Active |
 
-    Scenario: Bulk operations
+    Scenario: Bulk operations # on multiple users
 
         Scenario: Select user
         When I select user "Ben"
@@ -48,7 +48,7 @@ Then I see the following users:
                 When I click "Deactivate all"
                 Then I see a confirmation dialog
 
-                    Scenario: Confirm bulk deactivation of users
+                    Scenario: Confirm bulk deactivation of users # by clicking "OK"
                     When I click "OK"
                     Then I see "0 users selected"
                     And I see the following users: # I no longer see Ben or Alice
@@ -63,3 +63,5 @@ Then I see the following users:
                         | Ben    | Active | # still there
                         | Alice  | Active | # still there
                         | Connie | Active |
+
+                    # TODO: add a scenario for bulk activation of users
