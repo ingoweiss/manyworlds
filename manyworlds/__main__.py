@@ -18,10 +18,11 @@ def main():
         help="flattening mode",
     )
     parser.add_argument(
-        "--write-comments", "-c",
+        "--write-comments",
+        "-c",
         default=False,
         action="store_true",
-        help="output comments"
+        help="output comments",
     )
     args = parser.parse_args()
 
